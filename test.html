@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abheet Seth — Software Engineer | Cyber Security & AI</title>
+    
+    <!-- Google Fonts: Syne (Hero Display), Plus Jakarta Sans (Editorial UI), JetBrains Mono (Specs) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0e100f;
+            --surface: #121413;
+            --surface-border: rgba(255, 252, 225, 0.12);
+            --text: #fffce1;
+            --text-muted: #8a8c84;
+            --neon-green: #0ae448;
+            --neon-purple: #9d95ff;
+            --neon-orange: #ff8709;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        html, body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Subtle Architectural Dot Grid */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: radial-gradient(rgba(255, 252, 225, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .syne {
+            font-family: 'Syne', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem 4rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .preloader-top {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .counter {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(5rem, 14vw, 12rem);
+            font-weight: 800;
+            line-height: 0.8;
+            color: var(--text);
+            align-self: flex-end;
+        }
+
+        /* Minimalist Custom Cursor */
+        .cursor {
+            width: 12px;
+            height: 12px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--bg);
+            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                        height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        background-color 0.25s;
+        }
+
+        .cursor span {
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .cursor.active {
+            width: 72px;
+            height: 72px;
+            background-color: var(--text);
+        }
+
+        .cursor.active span {
+            opacity: 1;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 2px;
+            width: 0%;
+            background: var(--neon-green);
+            z-index: 999;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1.3rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background: rgba(14, 16, 15, 0.8);
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--neon-green); }
+
+        .nav-links {
+            display: flex;
+            gap: 2.2rem;
+            align-items: center;
+        }
+
+        .nav-links a:not(.nav-btn) {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:not(.nav-btn):hover { color: var(--text); }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            border: 1px solid var(--surface-border);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .nav-btn {
+            background: var(--text);
+            color: var(--bg);
+            padding: 0.6rem 1.3rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.82rem;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover { background: var(--neon-green); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            z-index: 2;
+        }
+
+        .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 4px;
+            border: 1px solid var(--surface-border);
+            background: rgba(255, 252, 225, 0.02);
+            color: var(--text-muted);
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 8.2vw, 8.4rem);
+            line-height: 0.92;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .line-mask {
+            overflow: hidden;
+            display: block;
+            padding-bottom: 0.08em;
+        }
+
+        .word-pill {
+            display: inline-block;
+            border: 2px solid var(--neon-green);
+            border-radius: 150px;
+            padding: 0.02em 0.4em;
+            color: var(--neon-green);
+        }
+
+        .hero-sub {
+            max-width: 640px;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            font-size: 1.08rem;
+            line-height: 1.65;
+            z-index: 2;
+        }
+
+        .hero-sub strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Crisp SVG Stickers */
+        .sticker {
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+        .sticker-star { top: 20%; left: 8%; width: 75px; height: 75px; }
+        .sticker-ring { bottom: 16%; right: 9%; width: 100px; height: 100px; }
+
+        /* Velocity Marquee */
+        .marquee-wrapper {
+            padding: 1.1rem 0;
+            background: var(--surface);
+            color: var(--text);
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            border-top: 1px solid var(--surface-border);
+            border-bottom: 1px solid var(--surface-border);
+            position: relative;
+            z-index: 2;
+        }
+
+        .marquee-track {
+            display: flex;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .marquee-item {
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .marquee-item span.dot {
+            color: var(--neon-green);
+            margin-right: 0.8rem;
+        }
+
+        /* Section Tag & Headers */
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--neon-green);
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .section-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2rem, 3.8vw, 3.2rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        /* About Section */
+        .about-section {
+            padding: 9rem 4rem 6rem;
+            max-width: 1260px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .reveal-text {
+            font-size: clamp(1.5rem, 2.8vw, 2.5rem);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            line-height: 1.35;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.28em;
+            margin-top: 1rem;
+        }
+
+        .reveal-word {
+            opacity: 0.18;
+            transition: opacity 0.2s;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            margin-top: 5rem;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .stat-box {
+            padding: 2.2rem;
+            border-right: 1px solid var(--surface-border);
+        }
+        .stat-box:last-child { border-right: none; }
+
+        .stat-box h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .stat-box p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.6rem;
+        }
+
+        /* =================================================================
+           UPGRADED EDITORIAL PROJECT COMPONENT (NO AI SLOP / NO STOCK PHOTOS)
+           ================================================================= */
+        .work-section {
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            padding-top: 3rem;
+        }
+
+        .work-header {
+            padding: 0 4rem 1.5rem;
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .work-container {
+            height: 84vh;
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        .panel {
+            width: 100vw;
+            height: 84vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 4rem;
+        }
+
+        .project-card {
+            width: 100%;
+            max-width: 1220px;
+            height: 78%;
+            background: #111312;
+            border: 1px solid rgba(255, 252, 225, 0.14);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text);
+            transition: border-color 0.35s ease, background 0.35s ease;
+        }
+
+        .project-card:hover {
+            border-color: rgba(255, 252, 225, 0.38);
+            background: #141715;
+        }
+
+        /* Left Column: Clean Editorial Typography */
+        .project-info {
+            padding: 3.2rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid rgba(255, 252, 225, 0.1);
+        }
+
+        .project-header-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            padding-bottom: 1.4rem;
+            border-bottom: 1px solid rgba(255, 252, 225, 0.08);
+        }
+
+        .project-index {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .project-body {
+            margin: auto 0;
+            padding: 1.5rem 0;
+        }
+
+        .project-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2rem, 3.2vw, 2.9rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--text);
+            margin-bottom: 1.1rem;
+        }
+
+        .project-desc {
+            font-size: 0.98rem;
+            color: var(--text-muted);
+            line-height: 1.68;
+            max-width: 490px;
+        }
+
+        /* Bottom Spec Bar */
+        .project-specs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.4rem;
+            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .spec-stack {
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .spec-stack strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .spec-link {
+            white-space: nowrap;
+            color: var(--text);
+            font-weight: 600;
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .project-card:hover .spec-link {
+            color: var(--neon-green);
+            transform: translateX(4px);
+        }
+
+        /* Right Column: Custom Engineered SVG Blueprint Canvas */
+        .project-schematic {
+            position: relative;
+            background: #0b0d0c;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.8rem 2.2rem;
+            overflow: hidden;
+            background-image: 
+                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .schematic-top, .schematic-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: #555853;
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+
+        .schematic-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+        }
+
+        .schematic-status::before {
+            content: "";
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--neon-green);
+        }
+
+        .schematic-canvas {
+            margin: auto 0;
+            width: 100%;
+            height: 230px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schematic-canvas svg {
+            width: 100%;
+            max-width: 340px;
+            height: auto;
+            overflow: visible;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-card:hover .schematic-canvas svg {
+            transform: scale(1.04);
+        }
+
+        /* Skills Bento Grid */
+        .skills-section {
+            padding: 8rem 4rem;
+            max-width: 1260px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+        }
+
+        .bento-card {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--surface-border);
+            transition: border-color 0.3s;
+        }
+
+        .bento-card:hover { border-color: rgba(255, 252, 225, 0.3); }
+        .bento-card.wide { grid-column: span 2; }
+
+        .bento-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0.9rem 0 0.5rem;
+        }
+
+        .bento-card p {
+            color: var(--text-muted);
+            line-height: 1.55;
+            font-size: 0.9rem;
+        }
+
+        .bento-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 1.5rem;
+        }
+
+        .bento-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 4px;
+            background: rgba(255, 252, 225, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text);
+        }
+
+        .bento-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* Academic & Milestones */
+        .timeline-section {
+            padding: 4rem 4rem 6rem;
+            max-width: 1260px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+        }
+
+        .milestone-card {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 2.2rem;
+            transition: border-color 0.3s;
+        }
+
+        .milestone-card:hover { border-color: rgba(255, 252, 225, 0.3); }
+
+        .milestone-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.74rem;
+            color: var(--neon-green);
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+
+        .milestone-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.35rem;
+        }
+
+        .milestone-sub {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .milestone-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* =================================================================
+           NEW SECTION: 05 // CONVOCATION & DEGREE ARCHIVE
+           ================================================================= */
+        .archive-section {
+            padding: 4rem 4rem 9rem;
+            max-width: 1260px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .archive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .archive-ledger-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text);
+            padding: 0.55rem 1rem;
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .archive-ledger-pill span.verified-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 0.85fr;
+            gap: 1.2rem;
+        }
+
+        .archive-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .archive-card {
+            background: #111312;
+            border: 1px solid rgba(255, 252, 225, 0.14);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.35s ease, transform 0.35s ease;
+        }
+
+        .archive-card:hover {
+            border-color: rgba(255, 252, 225, 0.42);
+        }
+
+        .archive-card-top {
+            padding: 1rem 1.4rem;
+            border-bottom: 1px solid rgba(255, 252, 225, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            background: #141715;
+        }
+
+        .archive-card-top strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .archive-img-wrap {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #0a0c0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .archive-card.featured .archive-img-wrap {
+            height: 460px;
+        }
+
+        .archive-card.degree-doc .archive-img-wrap {
+            height: 310px;
+            padding: 1.2rem;
+            background-image: 
+                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .archive-card.regalia .archive-img-wrap {
+            height: 220px;
+        }
+
+        .archive-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+        }
+
+        .archive-card.degree-doc .archive-img-wrap img {
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+        }
+
+        .archive-card:hover .archive-img-wrap img {
+            transform: scale(1.03);
+        }
+
+        .archive-card-footer {
+            padding: 1.35rem 1.5rem;
+            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            background: #111312;
+        }
+
+        .archive-card-footer h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.35rem;
+        }
+
+        .archive-card-footer p {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+
+        .archive-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+        }
+
+        .meta-cell span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .meta-cell strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Lightbox Modal for Full-Screen Degree & Photo Inspection */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 12, 11, 0.92);
+            backdrop-filter: blur(14px);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-top, .lightbox-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .lightbox-close {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--surface-border);
+            padding: 0.5rem 1.1rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .lightbox-close:hover {
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .lightbox-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 1.5rem 0;
+        }
+
+        .lightbox-body img {
+            max-width: 92%;
+            max-height: 78vh;
+            object-fit: contain;
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Footer */
+        footer {
+            min-height: 65vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6rem 4rem 3rem;
+            border-top: 1px solid var(--surface-border);
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-cta {
+            text-align: center;
+            margin: auto 0;
+        }
+
+        .footer-cta h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.6rem, 6.5vw, 6.2rem);
+            line-height: 0.94;
+            text-transform: uppercase;
+            margin-bottom: 2.2rem;
+        }
+
+        .big-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            padding: 1.1rem 2.6rem;
+            border-radius: 50px;
+            background: var(--neon-green);
+            color: var(--bg);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--surface-border);
+            padding-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .social-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+        }
+
+        .social-links a:hover { color: var(--neon-green); }
+
+        @media (max-width: 968px) {
+            nav { padding: 1.1rem 1.8rem; }
+            .nav-links a:not(.nav-btn), .status-pill { display: none; }
+            .about-section, .skills-section, .timeline-section, .archive-section { padding: 4rem 1.5rem; }
+            .project-card { grid-template-columns: 1fr; height: auto; }
+            .project-info { border-right: none; border-bottom: 1px solid var(--surface-border); padding: 2rem; }
+            .project-schematic { height: 220px; }
+            .bento-grid, .timeline-grid, .archive-grid { grid-template-columns: 1fr; }
+            .bento-card.wide { grid-column: span 1; }
+            .about-stats, .archive-meta-grid { grid-template-columns: 1fr 1fr; }
+            .archive-card.featured .archive-img-wrap { height: 280px; }
+            .panel { padding: 1rem 1.5rem; }
+            .lightbox { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-top">
+            <span>ABHEET SETH // PORTFOLIO</span>
+            <span>VIT BHOPAL '26 • CSE (CYBER SECURITY & FORENSICS)</span>
+        </div>
+        <div class="counter">0%</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"><span id="cursor-text">OPEN</span></div>
+
+    <!-- Full-Screen Lightbox Modal for Degree & Convocation Photos -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-top">
+            <span id="lightbox-code">ARCHIVE // VERIFIED DOCUMENT</span>
+            <button class="lightbox-close" id="lightbox-close">[ ESC / CLOSE ✕ ]</button>
+        </div>
+        <div class="lightbox-body">
+            <img src="" alt="Expanded Archive View" id="lightbox-img">
+        </div>
+        <div class="lightbox-bottom">
+            <span id="lightbox-caption">B.Tech. CSE (Cyber Security & Digital Forensics) — VIT Bhopal University</span>
+            <span>REG NO: 22BCY10162 • CGPA: 8.94</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">ABHEET<span>.</span></a>
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span class="mono">B.Tech CSE '26 (8.94 CGPA) • Open to M.Tech & Roles</span>
+        </div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#work">Work</a>
+            <a href="#skills">Stack</a>
+            <a href="#journey">Credentials</a>
+            <a href="#convocation">Convocation</a>
+            <a href="#contact" class="nav-btn magnetic">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <svg class="sticker sticker-star" viewBox="0 0 100 100" fill="none">
+            <path d="M50 0L58.5 41.5L100 50L58.5 58.5L50 100L41.5 58.5L0 50L41.5 41.5L50 0Z" fill="#0ae448"/>
+        </svg>
+        <svg class="sticker sticker-ring" viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="45" stroke="#9d95ff" stroke-width="16" stroke-dasharray="150 45"/>
+        </svg>
+
+        <div class="hero-badges">
+            <span class="badge">VIT BHOPAL • GRADUATED 03 OCT 2026</span>
+            <span class="badge">CYBER SECURITY & DIGITAL FORENSICS</span>
+            <span class="badge">CGPA: 8.94 / 10</span>
+        </div>
+        
+        <h1>
+            <span class="line-mask"><span class="hero-line">ABHEET SETH</span></span>
+            <span class="line-mask"><span class="hero-line"><span class="word-pill">SECURITY</span> & AI</span></span>
+            <span class="line-mask"><span class="hero-line">ENGINEER</span></span>
+        </h1>
+
+        <p class="hero-sub">
+            Computer Science & Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software.
+        </p>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-wrapper">
+        <div class="marquee-track" id="marquee-track"></div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <span class="section-tag">01 // ENGINEERING OVERVIEW</span>
+        <div class="reveal-text" id="about-text"></div>
+        <div class="about-stats" id="about-stats"></div>
+    </section>
+
+    <!-- Upgraded Horizontal Scroll Projects -->
+    <section class="work-section" id="work">
+        <div class="work-header">
+            <div>
+                <span class="section-tag">02 // SELECTED SYSTEMS</span>
+                <h2 class="section-heading">Engineered Works</h2>
+            </div>
+            <p class="mono" style="color: var(--text-muted); font-size: 0.78rem;">SCROLL TO INSPECT [01 — 05] →</p>
+        </div>
+
+        <div class="work-container" id="work-container"></div>
+    </section>
+
+    <!-- Bento Arsenal -->
+    <section class="skills-section" id="skills">
+        <span class="section-tag">03 // TECHNICAL PROFICIENCY</span>
+        <h2 class="section-heading">Core Stack & Theory</h2>
+        <div class="bento-grid" id="bento-grid"></div>
+    </section>
+
+    <!-- Academic & Milestones -->
+    <section class="timeline-section" id="journey">
+        <span class="section-tag">04 // CREDENTIALS & VISION</span>
+        <h2 class="section-heading">Education & Honors</h2>
+        <div class="timeline-grid" id="timeline-grid"></div>
+    </section>
+
+    <!-- NEW SECTION: 05 // CONVOCATION & DEGREE ARCHIVE -->
+    <section class="archive-section" id="convocation">
+        <div class="archive-header">
+            <div>
+                <span class="section-tag">05 // OFFICIAL ACADEMIC ARCHIVE</span>
+                <h2 class="section-heading">7th Annual Convocation & Degree</h2>
+            </div>
+            <div class="archive-ledger-pill">
+                <span class="verified-dot"></span>
+                <span>REG NO: 22BCY10162 • SL NO: 111122 • CLICK TO INSPECT</span>
+            </div>
+        </div>
+
+        <div class="archive-grid" id="archive-grid"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-cta">
+            <span class="section-tag">06 // INITIATE CONTACT</span>
+            <h2>LET'S ENGINEER<br>SOMETHING SOLID.</h2>
+            <a href="mailto:aseth9588@gmail.com" id="footer-email" class="big-btn magnetic">aseth9588@gmail.com ↗</a>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="mono" id="footer-copy"></div>
+            <div class="social-links" id="social-links"></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        /* =====================================================================
+           📁 GRADUATION & DEGREE IMAGE PATHS
+           Save your 3 uploaded photos in the same folder as index.html with
+           these exact names (or replace the paths below with your filenames).
+           ===================================================================== */
+        const CONVOCATION_MEDIA = {
+            stagePhoto: {
+                src: "convocation-stage.jpg", // 3rd image: 7th Annual Convocation stage photo
+                code: "ARCHIVE // 01 — CONVOCATION STAGE",
+                date: "03 OCT 2026",
+                title: "7th Annual Convocation Ceremony — VIT Bhopal University",
+                desc: "Conferral of the Bachelor of Technology degree in Computer Science & Engineering (Cyber Security & Digital Forensics) at the Convocation Hall, VIT Bhopal University.",
+                meta: [
+                    { label: "EVENT", value: "7th Convocation" },
+                    { label: "DATE", value: "03.10.2026" },
+                    { label: "VENUE", value: "Convocation Hall" },
+                    { label: "HONOR", value: "8.94 CGPA" }
+                ]
+            },
+            degreeCert: {
+                src: "vit-degree.jpg", // 1st image: Official B.Tech Degree Certificate scan
+                code: "ARCHIVE // 02 — DEGREE CERTIFICATE",
+                date: "SL NO: 111122",
+                title: "Official B.Tech. Degree Certificate (CGPA: 8.94)",
+                desc: "Certified by the Board of Management, VIT Bhopal University • Reg No: 22BCY10162 • Examination held in April 2026 • Dated: 11-Sep-2026."
+            },
+            regaliaPhoto: {
+                src: "vit-folder-stole.jpg", // 2nd image: VIT Bhopal black leather folder & orange stole
+                code: "ARCHIVE // 03 — ACADEMIC REGALIA",
+                date: "22BCY10162",
+                title: "Convocation Stole & Official Degree Portfolio",
+                desc: "Official VIT Bhopal University convocation regalia and embossed degree folder issued to Abheet Seth (22BCY10162)."
+            }
+        };
+
+        const ABHEET_DATA = {
+            email: "aseth9588@gmail.com",
+            
+            marqueeSkills: [
+                "CYBER SECURITY & DIGITAL FORENSICS",
+                "MERN STACK",
+                "PYTORCH & TENSORFLOW",
+                "SAAS DEVELOPMENT",
+                "DATA STRUCTURES & ALGORITHMS",
+                "DOCKER & LINUX",
+                "GSSOC '24 TOP 950"
+            ],
+
+            aboutBio: "Graduated on 3 October 2026 from VIT Bhopal with a B.Tech. in Computer Science and Engineering (Cyber Security & Digital Forensics) and an 8.94 CGPA. I bridge foundational computer science—DSA, Operating Systems, Networks, DBMS, and Theory of Computation—with full-stack product development, deep learning, and security engineering.",
+
+            stats: [
+                { number: "8.94", label: "B.Tech. CGPA / 10 (VIT Bhopal)" },
+                { number: "Top 950", label: "GirlScript Summer of Code '24" },
+                { number: "05", label: "Production & Research Systems" },
+                { number: "IIT KGP", label: "NPTEL Cyber-Physical Systems" }
+            ],
+
+            projects: [
+                {
+                    id: "01",
+                    category: "FULL-STACK MERN PLATFORM",
+                    title: "PawVaidya",
+                    description: "A full-stack veterinary consultancy platform enabling real-time online consultations, appointment scheduling, geolocation clinic discovery, and role-based administrative dashboards.",
+                    stack: "MongoDB · Express · React · Node.js · Tailwind · JWT",
+                    sysCode: "SYS // MERN-VET-01",
+                    status: "PRODUCTION READY",
+                    link: "https://github.com/AbheetHacker4278",
+                    schematic: `
+                        <svg viewBox="0 0 320 200" fill="none">
+                            <rect x="10" y="30" width="85" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="24" y="52" fill="#fffce1" font-family="JetBrains Mono" font-size="9">CLIENT UI</text>
+                            <text x="24" y="66" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">React + TW</text>
+                            
+                            <rect x="10" y="120" width="85" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="24" y="142" fill="#fffce1" font-family="JetBrains Mono" font-size="9">ADMIN OPS</text>
+                            <text x="24" y="156" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">RBAC Panel</text>
+
+                            <rect x="125" y="65" width="80" height="70" rx="4" stroke="#0ae448" stroke-opacity="0.7" fill="#0f1912"/>
+                            <text x="142" y="96" fill="#0ae448" font-family="JetBrains Mono" font-size="9">REST API</text>
+                            <text x="138" y="112" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Node + JWT</text>
+
+                            <rect x="235" y="75" width="75" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="248" y="98" fill="#fffce1" font-family="JetBrains Mono" font-size="9">MONGODB</text>
+                            <text x="248" y="111" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Cluster</text>
+
+                            <path d="M95 55 H110 V90 H125" stroke="#fffce1" stroke-opacity="0.25" stroke-dasharray="3 3"/>
+                            <path d="M95 145 H110 V110 H125" stroke="#fffce1" stroke-opacity="0.25" stroke-dasharray="3 3"/>
+                            <path d="M205 100 H235" stroke="#0ae448" stroke-opacity="0.6"/>
+                            <circle cx="125" cy="90" r="3" fill="#0ae448"/>
+                            <circle cx="125" cy="110" r="3" fill="#0ae448"/>
+                            <circle cx="235" cy="100" r="3" fill="#0ae448"/>
+                        </svg>
+                    `
+                },
+                {
+                    id: "02",
+                    category: "DEVELOPER TOOLING & SAAS",
+                    title: "GitViz Repository Visualizer",
+                    description: "A SaaS application focused on interactive GitHub repository visualization—transforming complex directory trees, commit histories, and module dependencies into navigable node graphs.",
+                    stack: "React.js · JavaScript · GitHub REST API · AST Graph",
+                    sysCode: "SYS // GIT-DAG-02",
+                    status: "SAAS ARCHITECTURE",
+                    link: "https://github.com/AbheetHacker4278",
+                    schematic: `
+                        <svg viewBox="0 0 320 200" fill="none">
+                            <path d="M40 100 C90 100, 90 45, 140 45" stroke="#9d95ff" stroke-width="1.5" stroke-opacity="0.7"/>
+                            <path d="M40 100 C90 100, 90 155, 140 155" stroke="#fffce1" stroke-opacity="0.25"/>
+                            <path d="M140 45 C190 45, 190 100, 240 100" stroke="#9d95ff" stroke-width="1.5" stroke-opacity="0.7"/>
+                            <path d="M140 45 H270" stroke="#0ae448" stroke-opacity="0.5" stroke-dasharray="4 4"/>
+                            <path d="M140 155 C190 155, 190 100, 240 100" stroke="#fffce1" stroke-opacity="0.25"/>
+
+                            <circle cx="40" cy="100" r="8" fill="#141715" stroke="#fffce1" stroke-width="2"/>
+                            <circle cx="140" cy="45" r="8" fill="#141715" stroke="#9d95ff" stroke-width="2"/>
+                            <circle cx="140" cy="155" r="8" fill="#141715" stroke="#fffce1" stroke-opacity="0.4" stroke-width="2"/>
+                            <circle cx="240" cy="100" r="9" fill="#0f1912" stroke="#0ae448" stroke-width="2"/>
+                            <circle cx="270" cy="45" r="6" fill="#9d95ff"/>
+
+                            <text x="25" y="128" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">root/main</text>
+                            <text x="115" y="25" fill="#9d95ff" font-family="JetBrains Mono" font-size="8">feat/graph-ast</text>
+                            <text x="220" y="128" fill="#0ae448" font-family="JetBrains Mono" font-size="8">HEAD -> v2.4</text>
+                        </svg>
+                    `
+                },
+                {
+                    id: "03",
+                    category: "DEEP LEARNING & MEDIA FORENSICS",
+                    title: "Deepfake Detection Engine",
+                    description: "Spatio-temporal digital forensics system engineered to detect manipulated facial media by combining ResNeXt50 convolutional feature extraction with LSTM sequence classification.",
+                    stack: "PyTorch · TensorFlow · ResNeXt50 · LSTM · Python",
+                    sysCode: "SYS // CNN-LSTM-03",
+                    status: "FORENSIC AI MODEL",
+                    link: "https://github.com/AbheetHacker4278",
+                    schematic: `
+                        <svg viewBox="0 0 320 200" fill="none">
+                            <rect x="20" y="55" width="45" height="65" rx="2" stroke="#fffce1" stroke-opacity="0.25" fill="#141715"/>
+                            <rect x="32" y="65" width="45" height="65" rx="2" stroke="#fffce1" stroke-opacity="0.45" fill="#141715"/>
+                            <rect x="44" y="75" width="45" height="65" rx="2" stroke="#ff8709" stroke-opacity="0.8" fill="#181410"/>
+                            <text x="20" y="162" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">ResNeXt50 CNN</text>
+
+                            <path d="M100 105 H130" stroke="#fffce1" stroke-opacity="0.4"/>
+
+                            <rect x="135" y="85" width="32" height="40" rx="3" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
+                            <rect x="175" y="85" width="32" height="40" rx="3" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
+                            <text x="142" y="108" fill="#fffce1" font-family="JetBrains Mono" font-size="8">t-1</text>
+                            <text x="185" y="108" fill="#fffce1" font-family="JetBrains Mono" font-size="8">t</text>
+                            <text x="140" y="162" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">LSTM Temporal</text>
+
+                            <path d="M215 105 H235" stroke="#0ae448" stroke-opacity="0.7"/>
+                            <rect x="240" y="78" width="68" height="54" rx="4" stroke="#0ae448" stroke-opacity="0.6" fill="#0f1912"/>
+                            <text x="250" y="101" fill="#0ae448" font-family="JetBrains Mono" font-size="8">REAL: 98%</text>
+                            <text x="250" y="116" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">FAKE: 02%</text>
+                        </svg>
+                    `
+                },
+                {
+                    id: "04",
+                    category: "CLINICAL MACHINE LEARNING",
+                    title: "Breast Cancer Diagnostic Model",
+                    description: "Supervised machine learning pipeline trained on clinical cytological features to classify benign vs. malignant tumors with high recall and low false-negative rates.",
+                    stack: "Python · Scikit-Learn · Keras · TensorFlow",
+                    sysCode: "SYS // BIO-ML-04",
+                    status: "VALIDATED PIPELINE",
+                    link: "https://github.com/AbheetHacker4278",
+                    schematic: `
+                        <svg viewBox="0 0 320 200" fill="none">
+                            <line x1="45" y1="160" x2="285" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
+                            <line x1="45" y1="30" x2="45" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
+                            
+                            <path d="M45 160 Q 85 38, 280 35" stroke="#0ae448" stroke-width="1.75" fill="none"/>
+                            <path d="M45 160 L280 35" stroke="#fffce1" stroke-opacity="0.15" stroke-dasharray="4 4"/>
+
+                            <circle cx="95" cy="65" r="3.5" fill="#9d95ff"/>
+                            <circle cx="115" cy="55" r="3.5" fill="#9d95ff"/>
+                            <circle cx="105" cy="80" r="3.5" fill="#9d95ff"/>
+                            <circle cx="185" cy="115" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
+                            <circle cx="205" cy="130" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
+                            <circle cx="220" cy="110" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
+
+                            <text x="175" y="65" fill="#0ae448" font-family="JetBrains Mono" font-size="9">AUC-ROC = 0.992</text>
+                            <text x="55" y="178" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">FPR (1 - Specificity)</text>
+                        </svg>
+                    `
+                },
+                {
+                    id: "05",
+                    category: "CYBER SECURITY AUTOMATION",
+                    title: "Voice Sec-Ops Assistant",
+                    description: "A voice-enabled security management assistant designed for hands-free system monitoring, access control execution, automated threat checks, and streamlined Linux security operations.",
+                    stack: "Python · Cyber Security · Speech Recognition · Linux CLI",
+                    sysCode: "SYS // SEC-VOICE-05",
+                    status: "DAEMON ACTIVE",
+                    link: "https://github.com/AbheetHacker4278",
+                    schematic: `
+                        <svg viewBox="0 0 320 200" fill="none">
+                            <rect x="20" y="25" width="280" height="150" rx="6" fill="#111312" stroke="#fffce1" stroke-opacity="0.2"/>
+                            <line x1="20" y1="48" x2="300" y2="48" stroke="#fffce1" stroke-opacity="0.12"/>
+                            <circle cx="35" cy="36.5" r="3" fill="#fffce1" fill-opacity="0.3"/>
+                            <circle cx="47" cy="36.5" r="3" fill="#fffce1" fill-opacity="0.3"/>
+                            <text x="115" y="40" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">sec-ops-daemon — bash</text>
+
+                            <g stroke="#0ae448" stroke-width="2.5" stroke-linecap="round">
+                                <line x1="45" y1="82" x2="45" y2="94"/>
+                                <line x1="55" y1="74" x2="55" y2="102"/>
+                                <line x1="65" y1="64" x2="65" y2="112"/>
+                                <line x1="75" y1="78" x2="75" y2="98"/>
+                                <line x1="85" y1="70" x2="85" y2="106"/>
+                                <line x1="95" y1="83" x2="95" y2="93"/>
+                            </g>
+
+                            <text x="118" y="78" fill="#fffce1" font-family="JetBrains Mono" font-size="8.5">$ voice --audit-ports</text>
+                            <text x="118" y="95" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">> Scanning netstat...</text>
+                            <text x="118" y="112" fill="#0ae448" font-family="JetBrains Mono" font-size="8">> 0 unauthorized listeners</text>
+                            <rect x="42" y="135" width="236" height="22" rx="3" fill="#0b0d0c" stroke="#fffce1" stroke-opacity="0.1"/>
+                            <text x="52" y="149" fill="#8a8c84" font-family="JetBrains Mono" font-size="7.5">STATUS: ENCRYPTED VOICE CHANNEL</text>
+                        </svg>
+                    `
+                }
+            ],
+
+            arsenal: [
+                {
+                    tag: "01 // FULL-STACK & SAAS",
+                    title: "Web & API Engineering",
+                    desc: "Building responsive interfaces and scalable backend services with secure authentication and relational/NoSQL databases.",
+                    pills: ["React.js", "Node.js", "Express.js", "MongoDB", "SQL", "Tailwind CSS", "HTML5/CSS3", "JWT Auth"],
+                    wide: true
+                },
+                {
+                    tag: "02 // LANGUAGES",
+                    title: "Core Programming",
+                    desc: "Low-level memory management, object-oriented design, and algorithmic problem solving.",
+                    pills: ["C", "C++", "Java", "Python", "JavaScript"],
+                    wide: false
+                },
+                {
+                    tag: "03 // SECURITY",
+                    title: "Cyber Security & Forensics",
+                    desc: "Digital forensics analysis, web application security, cyber-physical systems, and Linux hardening.",
+                    pills: ["Digital Forensics", "Web App Security", "Linux", "Cyber-Physical Systems"],
+                    wide: false
+                },
+                {
+                    tag: "04 // ARTIFICIAL INTELLIGENCE",
+                    title: "Machine Learning & Deep Learning",
+                    desc: "Designing computer vision, sequence modeling, and diagnostic classification pipelines.",
+                    pills: ["PyTorch", "TensorFlow", "Keras", "Scikit-learn", "ResNeXt50", "LSTM"],
+                    wide: true
+                },
+                {
+                    tag: "05 // CS FUNDAMENTALS",
+                    title: "Computer Science Core",
+                    desc: "Rigorous theoretical foundation for advanced postgraduate M.Tech research and systems architecture.",
+                    pills: ["Data Structures & Algorithms", "Operating Systems", "Computer Networks", "DBMS", "Theory of Computation"],
+                    wide: true
+                },
+                {
+                    tag: "06 // INFRASTRUCTURE",
+                    title: "DevOps & Version Control",
+                    desc: "Containerized deployments and open-source Git workflows.",
+                    pills: ["Docker", "Git", "GitHub", "Linux CLI"],
+                    wide: false
+                }
+            ],
+
+            milestones: [
+                {
+                    date: "GRADUATED: 03 OCT 2026",
+                    title: "B.Tech. in CSE (Cyber Security & Digital Forensics)",
+                    sub: "Vellore Institute of Technology (VIT), Bhopal • CGPA: 8.94 / 10",
+                    desc: "Graduated with distinction, specializing in digital forensics, network defense, cryptography, and core computer science engineering."
+                },
+                {
+                    date: "OPEN SOURCE • 2024",
+                    title: "GirlScript Summer of Code (GSSoC '24)",
+                    sub: "Ranked within Top 950 Participants",
+                    desc: "Contributed production code to open-source software projects, collaborating with distributed teams via Git and GitHub."
+                },
+                {
+                    date: "CERTIFICATION • IIT KHARAGPUR",
+                    title: "Foundation of Cyber Physical Systems",
+                    sub: "NPTEL Certification — IIT Kharagpur",
+                    desc: "Studied embedded computation, real-time control loops, and security architectures in cyber-physical environments."
+                },
+                {
+                    date: "2026 & BEYOND",
+                    title: "Postgraduate (M.Tech) & Engineering Focus",
+                    sub: "Advanced CS Research & Product Engineering",
+                    desc: "Focused on pursuing M.Tech programmes in Computer Science and competitive entrance examinations while engineering secure AI and SaaS applications."
+                }
+            ],
+
+            socials: [
+                { name: "GITHUB", url: "https://github.com/AbheetHacker4278" },
+                { name: "LINKEDIN", url: "https://www.linkedin.com/in/abheet-seth-58533a251/" },
+                { name: "TWITTER / X", url: "https://x.com" },
+                { name: "EMAIL", url: "mailto:aseth9588@gmail.com" }
+            ]
+        };
+
+        // Populate Marquee
+        document.getElementById('marquee-track').innerHTML = [...ABHEET_DATA.marqueeSkills, ...ABHEET_DATA.marqueeSkills]
+            .map(skill => `<div class="marquee-item"><span class="dot">●</span><span>${skill}</span></div>`).join('');
+
+        // Populate About Words
+        const aboutContainer = document.getElementById('about-text');
+        ABHEET_DATA.aboutBio.split(' ').forEach(word => {
+            const span = document.createElement('span');
+            span.className = 'reveal-word';
+            span.textContent = word;
+            aboutContainer.appendChild(span);
+        });
+
+        // Populate Stats
+        document.getElementById('about-stats').innerHTML = ABHEET_DATA.stats.map(s => `
+            <div class="stat-box">
+                <h4>${s.number}</h4>
+                <p class="mono">${s.label}</p>
+            </div>
+        `).join('');
+
+        // Populate Upgraded Editorial Project Cards
+        const workContainer = document.getElementById('work-container');
+        workContainer.style.width = `${ABHEET_DATA.projects.length * 100}%`;
+        workContainer.innerHTML = ABHEET_DATA.projects.map(proj => `
+            <div class="panel">
+                <a href="${proj.link}" target="_blank" class="project-card" data-cursor="OPEN">
+                    <div class="project-info">
+                        <div class="project-header-meta">
+                            <span class="project-index">${proj.id} / 05</span>
+                            <span>${proj.category}</span>
+                        </div>
+                        <div class="project-body">
+                            <h3 class="project-title">${proj.title}</h3>
+                            <p class="project-desc">${proj.description}</p>
+                        </div>
+                        <div class="project-specs">
+                            <div class="spec-stack">STACK: <strong>${proj.stack}</strong></div>
+                            <span class="spec-link">SOURCE ↗</span>
+                        </div>
+                    </div>
+                    <div class="project-schematic">
+                        <div class="schematic-top">
+                            <span>${proj.sysCode}</span>
+                            <span class="schematic-status">${proj.status}</span>
+                        </div>
+                        <div class="schematic-canvas">
+                            ${proj.schematic}
+                        </div>
+                        <div class="schematic-bottom">
+                            <span>ARCH // VERIFIED</span>
+                            <span>ABHEET.SETH</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        `).join('');
+
+        // Populate Bento Grid
+        document.getElementById('bento-grid').innerHTML = ABHEET_DATA.arsenal.map(item => `
+            <div class="bento-card ${item.wide ? 'wide' : ''}">
+                <div>
+                    <span class="bento-icon">${item.tag}</span>
+                    <h3>${item.title}</h3>
+                    <p>${item.desc}</p>
+                </div>
+                <div class="bento-pills">
+                    ${item.pills.map(p => `<span class="bento-pill">${p}</span>`).join('')}
+                </div>
+            </div>
+        `).join('');
+
+        // Populate Milestones
+        document.getElementById('timeline-grid').innerHTML = ABHEET_DATA.milestones.map(m => `
+            <div class="milestone-card">
+                <span class="milestone-date">${m.date}</span>
+                <h3>${m.title}</h3>
+                <div class="milestone-sub">${m.sub}</div>
+                <p>${m.desc}</p>
+            </div>
+        `).join('');
+
+        // Populate Convocation & Degree Archive Section
+        const archiveGrid = document.getElementById('archive-grid');
+        archiveGrid.innerHTML = `
+            <!-- Left Column: Featured 7th Annual Convocation Stage Photo -->
+            <div class="archive-card featured" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.stagePhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
+                <div>
+                    <div class="archive-card-top">
+                        <span><strong>${CONVOCATION_MEDIA.stagePhoto.code}</strong></span>
+                        <span>${CONVOCATION_MEDIA.stagePhoto.date}</span>
+                    </div>
+                    <div class="archive-img-wrap">
+                        <img src="${CONVOCATION_MEDIA.stagePhoto.src}" alt="${CONVOCATION_MEDIA.stagePhoto.title}">
+                    </div>
+                </div>
+                <div class="archive-card-footer">
+                    <h3>${CONVOCATION_MEDIA.stagePhoto.title}</h3>
+                    <p>${CONVOCATION_MEDIA.stagePhoto.desc}</p>
+                    <div class="archive-meta-grid">
+                        ${CONVOCATION_MEDIA.stagePhoto.meta.map(m => `
+                            <div class="meta-cell">
+                                <span>${m.label}</span>
+                                <strong>${m.value}</strong>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column Stack: Official Degree Scan + Folder & Stole -->
+            <div class="archive-stack">
+                <div class="archive-card degree-doc" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.degreeCert.src}" data-lightbox-code="${CONVOCATION_MEDIA.degreeCert.code}" data-lightbox-caption="${CONVOCATION_MEDIA.degreeCert.title}">
+                    <div class="archive-card-top">
+                        <span><strong>${CONVOCATION_MEDIA.degreeCert.code}</strong></span>
+                        <span style="color: var(--neon-green)">● VERIFIED SEAL</span>
+                    </div>
+                    <div class="archive-img-wrap">
+                        <img src="${CONVOCATION_MEDIA.degreeCert.src}" alt="${CONVOCATION_MEDIA.degreeCert.title}">
+                    </div>
+                    <div class="archive-card-footer">
+                        <h3>${CONVOCATION_MEDIA.degreeCert.title}</h3>
+                        <p>${CONVOCATION_MEDIA.degreeCert.desc}</p>
+                    </div>
+                </div>
+
+                <div class="archive-card regalia" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.regaliaPhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.regaliaPhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.regaliaPhoto.title}">
+                    <div class="archive-card-top">
+                        <span><strong>${CONVOCATION_MEDIA.regaliaPhoto.code}</strong></span>
+                        <span>${CONVOCATION_MEDIA.regaliaPhoto.date}</span>
+                    </div>
+                    <div class="archive-img-wrap">
+                        <img src="${CONVOCATION_MEDIA.regaliaPhoto.src}" alt="${CONVOCATION_MEDIA.regaliaPhoto.title}">
+                    </div>
+                    <div class="archive-card-footer">
+                        <h3>${CONVOCATION_MEDIA.regaliaPhoto.title}</h3>
+                        <p>${CONVOCATION_MEDIA.regaliaPhoto.desc}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Populate Footer
+        document.getElementById('footer-copy').textContent = `© 2026 ABHEET SETH • B.TECH CSE (CYBER SECURITY & DIGITAL FORENSICS) VIT BHOPAL.`;
+        document.getElementById('social-links').innerHTML = ABHEET_DATA.socials
+            .map(s => `<a href="${s.url}" target="_blank">${s.name} ↗</a>`).join('');
+
+        /* =====================================================================
+           LIGHTBOX MODAL LOGIC
+           ===================================================================== */
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCode = document.getElementById('lightbox-code');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxClose = document.getElementById('lightbox-close');
+
+        document.querySelectorAll('[data-lightbox-src]').forEach(card => {
+            card.addEventListener('click', () => {
+                lightboxImg.src = card.getAttribute('data-lightbox-src');
+                lightboxCode.textContent = card.getAttribute('data-lightbox-code');
+                lightboxCaption.textContent = card.getAttribute('data-lightbox-caption');
+                lightbox.classList.add('open');
+            });
+        });
+
+        const closeLightbox = () => lightbox.classList.remove('open');
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target.classList.contains('lightbox-body')) closeLightbox();
+        });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        /* =====================================================================
+           GSAP + LENIS ANIMATION ENGINE
+           ===================================================================== */
+        gsap.registerPlugin(ScrollTrigger);
+
+        const lenis = new Lenis({
+            duration: 1.15,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        gsap.to("#scroll-progress", {
+            width: "100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: document.body,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.1
+            }
+        });
+
+        // Preloader
+        let counterObj = { val: 0 };
+        const counterEl = document.querySelector('.counter');
+        const masterTl = gsap.timeline();
+
+        masterTl.to(counterObj, {
+            val: 100,
+            duration: 1.3,
+            ease: "power3.inOut",
+            onUpdate: () => { counterEl.textContent = Math.floor(counterObj.val) + "%"; }
+        })
+        .to(".preloader", {
+            yPercent: -100,
+            duration: 0.85,
+            ease: "expo.inOut"
+        })
+        .from(".hero-line", {
+            yPercent: 115,
+            duration: 1,
+            stagger: 0.1,
+            ease: "power4.out"
+        }, "-=0.4")
+        .from(".hero-badges .badge, .hero-sub", {
+            y: 20,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.06,
+            ease: "power3.out"
+        }, "-=0.6");
+
+        gsap.to(".sticker-star", { rotation: 360, duration: 24, repeat: -1, ease: "linear" });
+        gsap.to(".sticker-ring", { rotation: -360, duration: 30, repeat: -1, ease: "linear" });
+
+        // Marquee
+        gsap.to(".marquee-track", {
+            xPercent: -50,
+            repeat: -1,
+            duration: 28,
+            ease: "linear"
+        });
+
+        // About Word Scrub
+        gsap.to(".reveal-word", {
+            opacity: 1,
+            stagger: 0.08,
+            scrollTrigger: {
+                trigger: ".about-section",
+                start: "top 75%",
+                end: "bottom 65%",
+                scrub: 1
+            }
+        });
+
+        // Horizontal Scroll Projects
+        const panels = gsap.utils.toArray(".panel");
+        gsap.to(panels, {
+            xPercent: -100 * (panels.length - 1),
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".work-section",
+                pin: true,
+                scrub: 1,
+                snap: 1 / (panels.length - 1),
+                end: () => "+=" + document.querySelector(".work-container").offsetWidth
+            }
+        });
+
+        // Scroll Reveal for Convocation Archive Cards
+        gsap.from(".archive-card", {
+            scrollTrigger: {
+                trigger: ".archive-section",
+                start: "top 78%"
+            },
+            y: 45,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power3.out"
+        });
+
+        // Cursor & Magnetic Buttons
+        const cursor = document.querySelector('.cursor');
+        const cursorText = document.getElementById('cursor-text');
+
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1, ease: "power3.out" });
+        });
+
+        document.querySelectorAll('[data-cursor]').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorText.textContent = el.getAttribute('data-cursor');
+                cursor.classList.add('active');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+        });
+
+        document.querySelectorAll('.magnetic').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: "power2.out" });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
+            });
+        });
+    </script>
+</body>
+</html>
