@@ -20,6 +20,7 @@
             --neon-green: #0ae448;
             --neon-purple: #9d95ff;
             --neon-orange: #ff8709;
+            --neon-cyan: #00f0ff;
         }
 
         * {
@@ -214,7 +215,9 @@
 
         .nav-btn:hover { background: var(--neon-green); }
 
-        /* Hero Section */
+        /* =================================================================
+           GSAP.COM SIGNATURE HERO SECTION & INLINE KINETIC TYPOGRAPHY
+           ================================================================= */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -222,10 +225,23 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            padding: 8rem 2rem 4rem;
+            padding: 8.5rem 2rem 4rem;
             text-align: center;
             overflow: hidden;
             z-index: 1;
+            perspective: 1200px;
+        }
+
+        /* Ambient Subtle Glow Behind Headline */
+        .hero-glow {
+            position: absolute;
+            width: 620px;
+            height: 620px;
+            background: radial-gradient(circle, rgba(10, 228, 72, 0.08) 0%, rgba(157, 149, 255, 0.05) 45%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
         }
 
         .hero-badges {
@@ -239,40 +255,164 @@
 
         .badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            padding: 0.4rem 0.9rem;
-            border-radius: 4px;
+            font-size: 0.74rem;
+            padding: 0.42rem 0.95rem;
+            border-radius: 50px;
             border: 1px solid var(--surface-border);
-            background: rgba(255, 252, 225, 0.02);
+            background: rgba(18, 20, 19, 0.75);
             color: var(--text-muted);
+            backdrop-filter: blur(8px);
         }
 
-        .hero h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2.8rem, 8.2vw, 8.4rem);
-            line-height: 0.92;
-            letter-spacing: -0.03em;
-            text-transform: uppercase;
-            z-index: 2;
-        }
-
-        .line-mask {
-            overflow: hidden;
-            display: block;
-            padding-bottom: 0.08em;
-        }
-
-        .word-pill {
-            display: inline-block;
-            border: 2px solid var(--neon-green);
-            border-radius: 150px;
-            padding: 0.02em 0.4em;
+        .badge.badge-accent {
+            border-color: rgba(10, 228, 72, 0.4);
             color: var(--neon-green);
         }
 
+        .hero-title, .footer-kinetic-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.6rem, 7.8vw, 8.2rem);
+            line-height: 0.96;
+            letter-spacing: -0.035em;
+            text-transform: uppercase;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.08em;
+            user-select: none;
+        }
+
+        .hero-row, .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.18em;
+            perspective: 1000px;
+        }
+
+        /* Split 3D Character Styling */
+        .char-wrap {
+            display: inline-block;
+            overflow: visible;
+            perspective: 800px;
+        }
+
+        .hero-char, .footer-char {
+            display: inline-block;
+            transform-origin: 50% 100%;
+            will-change: transform, opacity;
+            transition: color 0.2s ease;
+        }
+
+        .hero-char:hover, .footer-char:hover {
+            color: var(--neon-green);
+        }
+
+        /* GSAP-Style Inline Animated Gadgets inside the Headline */
+        .inline-gadget, .footer-inline-gadget {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .gadget-windmill {
+            width: clamp(2.4rem, 6vw, 5.8rem);
+            height: clamp(2.4rem, 6vw, 5.8rem);
+        }
+
+        .word-pill-gsap {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.18em;
+            border: 2.5px solid var(--neon-green);
+            border-radius: 200px;
+            padding: 0.04em 0.38em 0.08em;
+            color: var(--neon-green);
+            background: rgba(10, 228, 72, 0.08);
+            box-shadow: 0 0 35px rgba(10, 228, 72, 0.12);
+            transform-origin: center center;
+        }
+
+        .word-pill-purple {
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            background: rgba(157, 149, 255, 0.08);
+            box-shadow: 0 0 35px rgba(157, 149, 255, 0.12);
+        }
+
+        .gadget-eye {
+            width: clamp(2rem, 4.6vw, 4.4rem);
+            height: clamp(2rem, 4.6vw, 4.4rem);
+            background: var(--surface);
+            border: 2px solid var(--neon-purple);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .eye-pupil {
+            width: 42%;
+            height: 42%;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .eye-pupil::after {
+            content: "";
+            position: absolute;
+            top: 18%;
+            left: 18%;
+            width: 28%;
+            height: 28%;
+            background: var(--text);
+            border-radius: 50%;
+        }
+
+        .gadget-wave-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: clamp(2.2rem, 5.4vw, 5.2rem);
+            padding: 0 1.2rem;
+            border-radius: 120px;
+            background: rgba(157, 149, 255, 0.12);
+            border: 2px solid var(--neon-purple);
+        }
+
+        .gadget-wave-pill svg {
+            width: clamp(3.2rem, 7vw, 6.8rem);
+            height: 60%;
+            overflow: visible;
+        }
+
+        /* Hand-Drawn SVG Squiggle Underline */
+        .hero-underline-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .hero-squiggle {
+            position: absolute;
+            bottom: -0.14em;
+            left: 2%;
+            width: 96%;
+            height: 0.22em;
+            pointer-events: none;
+            overflow: visible;
+        }
+
         .hero-sub {
-            max-width: 640px;
-            margin-top: 2rem;
+            max-width: 650px;
+            margin-top: 2.4rem;
             color: var(--text-muted);
             font-size: 1.08rem;
             line-height: 1.65;
@@ -284,15 +424,81 @@
             font-weight: 500;
         }
 
-        /* Crisp SVG Stickers */
-        .sticker {
+        /* GSAP Signature Curly-Brace CTA Row */
+        .hero-cta-row {
+            margin-top: 2.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .gsap-brace-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 100px;
+            border: 1.5px solid var(--neon-green);
+            background: rgba(10, 228, 72, 0.08);
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.84rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .gsap-brace-btn .brace {
+            color: var(--neon-green);
+            font-size: 1.15rem;
+            font-weight: 700;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
+        }
+
+        .gsap-brace-btn:hover {
+            background: var(--neon-green);
+            color: var(--bg);
+            box-shadow: 0 0 30px rgba(10, 228, 72, 0.35);
+        }
+
+        .gsap-brace-btn:hover .brace {
+            color: var(--bg);
+        }
+
+        .gsap-brace-btn:hover .brace-left { transform: translateX(-4px); }
+        .gsap-brace-btn:hover .brace-right { transform: translateX(4px); }
+
+        .hero-secondary-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.85rem 1.3rem;
+            border: 1px solid var(--surface-border);
+            border-radius: 100px;
+            transition: color 0.25s, border-color 0.25s;
+        }
+
+        .hero-secondary-link:hover {
+            color: var(--text);
+            border-color: rgba(255, 252, 225, 0.35);
+        }
+
+        /* Floating 3D Geometric SVG Stickers around the Hero & Footer */
+        .sticker, .footer-sticker {
             position: absolute;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.85;
+            will-change: transform;
         }
-        .sticker-star { top: 20%; left: 8%; width: 75px; height: 75px; }
-        .sticker-ring { bottom: 16%; right: 9%; width: 100px; height: 100px; }
+        .sticker-star { top: 17%; left: 7%; width: 82px; height: 82px; }
+        .sticker-ring { bottom: 16%; right: 8%; width: 110px; height: 110px; }
+        .sticker-cross { top: 20%; right: 10%; width: 64px; height: 64px; }
+        .sticker-diamond { bottom: 19%; left: 9%; width: 76px; height: 76px; }
 
         /* Velocity Marquee */
         .marquee-wrapper {
@@ -724,7 +930,7 @@
            FIXED SECTION: 05 // CONVOCATION & DEGREE ARCHIVE (ZERO CROPPING)
            ================================================================= */
         .archive-section {
-            padding: 4rem 4rem 9rem;
+            padding: 4rem 4rem 7rem;
             max-width: 1260px;
             margin: 0 auto;
             position: relative;
@@ -798,7 +1004,6 @@
             font-weight: 600;
         }
 
-        /* 1. Top Full-Width Split Card for Wide Convocation Stage Photo */
         .archive-stage-body {
             display: grid;
             grid-template-columns: 1.35fr 0.85fr;
@@ -822,7 +1027,7 @@
             width: 100%;
             height: auto;
             max-height: 460px;
-            object-fit: contain; /* Guarantees 0% cropping */
+            object-fit: contain;
             border-radius: 6px;
             display: block;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
@@ -879,7 +1084,6 @@
             font-weight: 600;
         }
 
-        /* 2. Bottom 2-Column Grid for Portrait Degree & Regalia Photos */
         .archive-docs-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -906,7 +1110,7 @@
             max-height: 100%;
             width: auto;
             height: auto;
-            object-fit: contain; /* Never crops vertical degree or folder/stole */
+            object-fit: contain;
             border-radius: 6px;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
             transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -935,6 +1139,157 @@
             color: var(--text-muted);
             line-height: 1.55;
         }
+
+        /* =================================================================
+           NEW: GREENSOCK 3D SCROLL-DRIVEN CYLINDER / TUBE SECTION
+           (Inspired by codepen.io/GreenSock/pen/raerLaK — Theme-Matched)
+           ================================================================= */
+        .tunnel-section {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3.5rem 4rem;
+            border-top: 1px solid var(--surface-border);
+            background: radial-gradient(circle at 50% 50%, rgba(157, 149, 255, 0.07) 0%, rgba(10, 228, 72, 0.04) 38%, rgba(14, 16, 15, 0) 70%);
+            z-index: 2;
+        }
+
+        .tunnel-hud-top, .tunnel-hud-bottom {
+            width: 100%;
+            max-width: 1260px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .tunnel-stage {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1100px;
+            overflow: visible;
+        }
+
+        /* Central 3D Wireframe Core */
+        .tunnel-core-mesh {
+            position: absolute;
+            width: clamp(220px, 28vw, 360px);
+            height: clamp(220px, 28vw, 360px);
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .core-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(10, 228, 72, 0.35);
+            transform-style: preserve-3d;
+        }
+
+        .core-ring.ring-2 {
+            inset: 12%;
+            border: 1.5px solid rgba(157, 149, 255, 0.35);
+            transform: rotateX(60deg) rotateY(25deg);
+        }
+
+        .core-ring.ring-3 {
+            inset: 24%;
+            border: 1.5px dashed rgba(255, 135, 9, 0.4);
+            transform: rotateY(65deg) rotateX(-25deg);
+        }
+
+        .core-ring.ring-4 {
+            inset: 36%;
+            border: 1px solid rgba(0, 240, 255, 0.4);
+        }
+
+        /* 3D Rotating Cylinder Tube of Engineering Pillars */
+        .cylinder-3d {
+            position: relative;
+            width: 100%;
+            height: 76px;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .cylinder-face {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: min(86vw, 820px);
+            height: 74px;
+            margin-left: calc(min(86vw, 820px) / -2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-radius: 100px;
+            background: rgba(18, 20, 19, 0.86);
+            border: 1px solid rgba(255, 252, 225, 0.16);
+            backdrop-filter: blur(8px);
+            backface-visibility: visible;
+            transform-style: preserve-3d;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+            transition: border-color 0.3s;
+        }
+
+        .cylinder-face.accent-green {
+            border-color: rgba(10, 228, 72, 0.55);
+            background: rgba(10, 228, 72, 0.08);
+        }
+
+        .cylinder-face.accent-purple {
+            border-color: rgba(157, 149, 255, 0.55);
+            background: rgba(157, 149, 255, 0.08);
+        }
+
+        .cylinder-face.accent-orange {
+            border-color: rgba(255, 135, 9, 0.55);
+            background: rgba(255, 135, 9, 0.08);
+        }
+
+        .cylinder-face.accent-cyan {
+            border-color: rgba(0, 240, 255, 0.55);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        .face-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.1rem, 2.5vw, 2.15rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+
+        .face-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+        }
+
+        .accent-green .face-meta { color: var(--neon-green); }
+        .accent-purple .face-meta { color: var(--neon-purple); }
+        .accent-orange .face-meta { color: var(--neon-orange); }
+        .accent-cyan .face-meta { color: var(--neon-cyan); }
 
         /* Lightbox Modal for Full-Screen Degree & Photo Inspection */
         .lightbox {
@@ -1000,41 +1355,87 @@
             box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
         }
 
-        /* Footer */
+        /* =================================================================
+           UPGRADED GSAP.COM KINETIC FOOTER SECTION (06 // INITIATE CONTACT)
+           ================================================================= */
         footer {
-            min-height: 65vh;
+            min-height: 92vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 6rem 4rem 3rem;
+            padding: 7rem 4rem 3rem;
             border-top: 1px solid var(--surface-border);
             position: relative;
+            overflow: hidden;
             z-index: 2;
+            perspective: 1200px;
         }
+
+        .footer-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 580px;
+            height: 580px;
+            background: radial-gradient(circle, rgba(10, 228, 72, 0.08) 0%, rgba(157, 149, 255, 0.05) 45%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+        }
+
+        .footer-sticker-star { top: 18%; left: 8%; width: 76px; height: 76px; }
+        .footer-sticker-ring { bottom: 22%; right: 8%; width: 100px; height: 100px; }
+        .footer-sticker-cross { top: 22%; right: 11%; width: 58px; height: 58px; }
+        .footer-sticker-diamond { bottom: 24%; left: 10%; width: 68px; height: 68px; }
 
         .footer-cta {
             text-align: center;
             margin: auto 0;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .footer-cta h2 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2.6rem, 6.5vw, 6.2rem);
-            line-height: 0.94;
-            text-transform: uppercase;
-            margin-bottom: 2.2rem;
+        .footer-kinetic-title {
+            font-size: clamp(2.5rem, 6.8vw, 7.2rem);
+            margin: 0.6rem 0 2.8rem;
+        }
+
+        .footer-cta-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
         }
 
         .big-btn {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.95rem;
-            padding: 1.1rem 2.6rem;
-            border-radius: 50px;
+            padding: 1.1rem 2.4rem;
+            border-radius: 100px;
             background: var(--neon-green);
             color: var(--bg);
             text-decoration: none;
             font-weight: 600;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            box-shadow: 0 0 35px rgba(10, 228, 72, 0.25);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .big-btn:hover {
+            box-shadow: 0 0 50px rgba(10, 228, 72, 0.5);
+        }
+
+        .big-btn .brace {
+            font-weight: 700;
+            font-size: 1.15rem;
         }
 
         .footer-bottom {
@@ -1047,6 +1448,8 @@
             color: var(--text-muted);
             flex-wrap: wrap;
             gap: 1rem;
+            position: relative;
+            z-index: 2;
         }
 
         .social-links {
@@ -1078,6 +1481,10 @@
             .archive-doc-frame { height: 340px; }
             .panel { padding: 1rem 1.5rem; }
             .lightbox { padding: 1.5rem; }
+            .sticker, .footer-sticker { display: none; }
+            .tunnel-section { padding: 2rem 1.2rem; }
+            .face-meta { display: none; }
+            .cylinder-face { justify-content: center; }
         }
     </style>
 </head>
@@ -1114,7 +1521,7 @@
 
     <!-- Navigation -->
     <nav>
-        <a href="#" class="logo">ABHEET<span>.</span></a>
+        <a href="#" class="logo">𝗔𝗯𝗵𝗲𝗲𝘁 𝗦𝗲𝘁𝗵 𝗣𝗼𝗿𝘁𝗳𝗼𝗹𝗶𝗼<span>.</span></a>
         <div class="status-pill">
             <span class="status-dot"></span>
             <span class="mono">B.Tech CSE '26 (8.94 CGPA) • Open to M.Tech & Roles</span>
@@ -1129,30 +1536,93 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- =================================================================
+         GSAP.COM STYLE HERO SECTION (3D SPLIT CHARS + INLINE SVG GADGETS)
+         ================================================================= -->
+    <section class="hero" id="hero">
+        <div class="hero-glow"></div>
+
+        <!-- Floating 3D Parallax SVG Shapes around the Hero -->
         <svg class="sticker sticker-star" viewBox="0 0 100 100" fill="none">
             <path d="M50 0L58.5 41.5L100 50L58.5 58.5L50 100L41.5 58.5L0 50L41.5 41.5L50 0Z" fill="#0ae448"/>
+            <circle cx="50" cy="50" r="10" fill="#0e100f"/>
         </svg>
+
         <svg class="sticker sticker-ring" viewBox="0 0 120 120" fill="none">
-            <circle cx="60" cy="60" r="45" stroke="#9d95ff" stroke-width="16" stroke-dasharray="150 45"/>
+            <circle cx="60" cy="60" r="44" stroke="#9d95ff" stroke-width="18" stroke-dasharray="145 40" stroke-linecap="round"/>
+            <circle cx="60" cy="60" r="20" stroke="#0ae448" stroke-width="3" stroke-dasharray="12 8"/>
+        </svg>
+
+        <svg class="sticker sticker-cross" viewBox="0 0 100 100" fill="none">
+            <rect x="38" width="24" height="100" rx="12" fill="#ff8709"/>
+            <rect y="38" width="100" height="24" rx="12" fill="#ff8709"/>
+        </svg>
+
+        <svg class="sticker sticker-diamond" viewBox="0 0 100 100" fill="none">
+            <rect x="50" y="6" width="62" height="62" rx="14" transform="rotate(45 50 6)" stroke="#00f0ff" stroke-width="10"/>
+            <circle cx="50" cy="50" r="10" fill="#ff8709"/>
         </svg>
 
         <div class="hero-badges">
-            <span class="badge">VIT BHOPAL • GRADUATED 03 OCT 2026</span>
+            <span class="badge badge-accent">● VIT BHOPAL • GRADUATED 03 OCT 2026</span>
             <span class="badge">CYBER SECURITY & DIGITAL FORENSICS</span>
             <span class="badge">CGPA: 8.94 / 10</span>
         </div>
         
-        <h1>
-            <span class="line-mask"><span class="hero-line">ABHEET SETH</span></span>
-            <span class="line-mask"><span class="hero-line"><span class="word-pill">SECURITY</span> & AI</span></span>
-            <span class="line-mask"><span class="hero-line">ENGINEER</span></span>
+        <h1 class="hero-title">
+            <!-- Row 1: ABHEET + Spinning Starburst Gadget + SETH -->
+            <div class="hero-row">
+                <span class="split-words" data-text="ABHEET">ABHEET</span>
+                <span class="inline-gadget gadget-windmill" aria-hidden="true">
+                    <svg class="windmill-svg" viewBox="0 0 100 100" fill="none">
+                        <path d="M50 2L57 38L85 15L62 43L98 50L62 57L85 85L57 62L50 98L43 62L15 85L38 57L2 50L38 43L15 15L43 38L50 2Z" fill="#ff8709"/>
+                        <circle cx="50" cy="50" r="12" fill="#0e100f"/>
+                    </svg>
+                </span>
+                <span class="split-words" data-text="SETH">SETH</span>
+            </div>
+
+            <!-- Row 2: Expanding Pill [CYBER SECURITY] + Interactive Tracking Eye + & AI -->
+            <div class="hero-row">
+                <span class="word-pill-gsap" id="hero-pill">
+                    <span class="split-words" data-text="CYBER">CYBER</span>
+                    <span class="split-words" data-text="SECURITY">SECURITY</span>
+                </span>
+                <span class="inline-gadget gadget-eye" id="hero-eye" aria-hidden="true">
+                    <span class="eye-pupil" id="eye-pupil"></span>
+                </span>
+                <span class="split-words" data-text="& AI">&amp; AI</span>
+            </div>
+
+            <!-- Row 3: Live Sine-Wave Pill + ENGINEER with Hand-Drawn SVG Squiggle -->
+            <div class="hero-row">
+                <span class="inline-gadget gadget-wave-pill" aria-hidden="true">
+                    <svg viewBox="0 0 120 40" fill="none">
+                        <path id="gsap-wave-path" d="M 4 20 Q 18 2, 32 20 T 60 20 T 88 20 T 116 20" stroke="#9d95ff" stroke-width="5" stroke-linecap="round" fill="none"/>
+                    </svg>
+                </span>
+                <span class="hero-underline-wrap">
+                    <span class="split-words" data-text="ENGINEER">ENGINEER</span>
+                    <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
+                        <path id="squiggle-path" d="M4 20 C95 4, 185 26, 280 11 C335 3, 380 22, 416 12" stroke="#0ae448" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </div>
         </h1>
 
         <p class="hero-sub">
             Computer Science & Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software.
         </p>
+
+        <!-- GSAP Signature Curly-Brace Action Bar -->
+        <div class="hero-cta-row">
+            <a href="#work" class="gsap-brace-btn magnetic">
+                <span class="brace brace-left">{</span>
+                <span>EXPLORE ENGINEERED WORKS</span>
+                <span class="brace brace-right">}</span>
+            </a>
+            <a href="#convocation" class="hero-secondary-link magnetic">VIEW DEGREE ARCHIVE ↓</a>
+        </div>
     </section>
 
     <!-- Marquee -->
@@ -1210,12 +1680,103 @@
         <div class="archive-layout" id="archive-grid"></div>
     </section>
 
-    <!-- Footer -->
+    <!-- =================================================================
+         NEW: GREENSOCK 3D SCROLL-DRIVEN KINETIC CYLINDER / TUBE
+         (Inspired by https://codepen.io/GreenSock/pen/raerLaK)
+         ================================================================= -->
+    <section class="tunnel-section" id="kinetic-scroll-tunnel">
+        <div class="tunnel-hud-top">
+            <span style="color: var(--neon-green)">● 3D KINETIC CORE // SCROLL-DRIVEN TUBE</span>
+            <span>PERSPECTIVE: 1100PX • 360° ARCHITECTURE</span>
+        </div>
+
+        <div class="tunnel-stage" id="tunnel-stage">
+            <!-- 3D Wireframe Gyroscope Core -->
+            <div class="tunnel-core-mesh" id="tunnel-core-mesh">
+                <div class="core-ring ring-1"></div>
+                <div class="core-ring ring-2"></div>
+                <div class="core-ring ring-3"></div>
+                <div class="core-ring ring-4"></div>
+            </div>
+
+            <!-- 3D Rotating Cylinder Tube -->
+            <div class="cylinder-3d" id="cylinder-3d"></div>
+        </div>
+
+        <div class="tunnel-hud-bottom">
+            <span>ABHEET SETH // FULL-STACK • CYBER • AI</span>
+            <span>[ SCROLL TO ROTATE 3D CYLINDER ↓ ]</span>
+        </div>
+    </section>
+
+    <!-- =================================================================
+         UPGRADED GSAP.COM KINETIC FOOTER SECTION (06 // INITIATE CONTACT)
+         ================================================================= -->
     <footer id="contact">
+        <div class="footer-glow"></div>
+
+        <!-- Floating 3D Parallax SVG Stickers for Footer -->
+        <svg class="footer-sticker footer-sticker-star" viewBox="0 0 100 100" fill="none">
+            <path d="M50 0L58.5 41.5L100 50L58.5 58.5L50 100L41.5 58.5L0 50L41.5 41.5L50 0Z" fill="#0ae448"/>
+            <circle cx="50" cy="50" r="10" fill="#0e100f"/>
+        </svg>
+
+        <svg class="footer-sticker footer-sticker-ring" viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="44" stroke="#9d95ff" stroke-width="18" stroke-dasharray="145 40" stroke-linecap="round"/>
+            <circle cx="60" cy="60" r="20" stroke="#0ae448" stroke-width="3" stroke-dasharray="12 8"/>
+        </svg>
+
+        <svg class="footer-sticker footer-sticker-cross" viewBox="0 0 100 100" fill="none">
+            <rect x="38" width="24" height="100" rx="12" fill="#ff8709"/>
+            <rect y="38" width="100" height="24" rx="12" fill="#ff8709"/>
+        </svg>
+
+        <svg class="footer-sticker footer-sticker-diamond" viewBox="0 0 100 100" fill="none">
+            <rect x="50" y="6" width="62" height="62" rx="14" transform="rotate(45 50 6)" stroke="#00f0ff" stroke-width="10"/>
+            <circle cx="50" cy="50" r="10" fill="#ff8709"/>
+        </svg>
+
         <div class="footer-cta">
             <span class="section-tag">06 // INITIATE CONTACT</span>
-            <h2>LET'S ENGINEER<br>SOMETHING SOLID.</h2>
-            <a href="mailto:aseth9588@gmail.com" id="footer-email" class="big-btn magnetic">aseth9588@gmail.com ↗</a>
+
+            <h2 class="footer-kinetic-title">
+                <!-- Row 1: LET'S + Spinning Windmill Gadget + ENGINEER -->
+                <div class="footer-row">
+                    <span class="split-footer-words" data-text="LET'S">LET'S</span>
+                    <span class="footer-inline-gadget gadget-windmill" aria-hidden="true">
+                        <svg class="windmill-svg" viewBox="0 0 100 100" fill="none">
+                            <path d="M50 2L57 38L85 15L62 43L98 50L62 57L85 85L57 62L50 98L43 62L15 85L38 57L2 50L38 43L15 15L43 38L50 2Z" fill="#0ae448"/>
+                            <circle cx="50" cy="50" r="12" fill="#0e100f"/>
+                        </svg>
+                    </span>
+                    <span class="split-footer-words" data-text="ENGINEER">ENGINEER</span>
+                </div>
+
+                <!-- Row 2: SOMETHING (with Squiggle) + Interactive Eye + [SOLID.] Pill -->
+                <div class="footer-row">
+                    <span class="hero-underline-wrap">
+                        <span class="split-footer-words" data-text="SOMETHING">SOMETHING</span>
+                        <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
+                            <path id="footer-squiggle-path" d="M4 20 C95 4, 185 26, 280 11 C335 3, 380 22, 416 12" stroke="#ff8709" stroke-width="6" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <span class="footer-inline-gadget gadget-eye" aria-hidden="true">
+                        <span class="eye-pupil" id="footer-eye-pupil"></span>
+                    </span>
+                    <span class="word-pill-gsap word-pill-purple">
+                        <span class="split-footer-words" data-text="SOLID.">SOLID.</span>
+                    </span>
+                </div>
+            </h2>
+
+            <div class="footer-cta-actions">
+                <a href="mailto:aseth9588@gmail.com" id="footer-email" class="big-btn magnetic">
+                    <span class="brace">{</span>
+                    <span>aseth9588@gmail.com ↗</span>
+                    <span class="brace">}</span>
+                </a>
+                <a href="https://www.linkedin.com/in/abheet-seth-58533a251/" target="_blank" class="hero-secondary-link magnetic">CONNECT ON LINKEDIN ↗</a>
+            </div>
         </div>
 
         <div class="footer-bottom">
@@ -1232,7 +1793,7 @@
     <script>
         const CONVOCATION_MEDIA = {
             stagePhoto: {
-                src: "convocation-stage.jpg",
+                src: "https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG",
                 code: "ARCHIVE // 01 — CONVOCATION STAGE",
                 date: "03 OCT 2026",
                 title: "7th Annual Convocation Ceremony — VIT Bhopal University",
@@ -1247,14 +1808,14 @@
                 ]
             },
             degreeCert: {
-                src: "vit-degree.jpg",
+                src: "https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true",
                 code: "ARCHIVE // 02 — DEGREE CERTIFICATE",
                 date: "SL NO: 111122",
                 title: "Official B.Tech. Degree Certificate (CGPA: 8.94)",
                 desc: "Certified by the Board of Management, VIT Bhopal University • Reg No: 22BCY10162 • Examination held in April 2026 • Dated: 11-Sep-2026."
             },
             regaliaPhoto: {
-                src: "vit-folder-stole.jpg",
+                src: "https://github.com/AbheetHacker4278/Portfolio/blob/main/image.png?raw=true",
                 code: "ARCHIVE // 03 — ACADEMIC REGALIA",
                 date: "22BCY10162",
                 title: "Convocation Stole & Official Degree Portfolio",
@@ -1518,6 +2079,20 @@
                 }
             ],
 
+            // 10-Sided 3D Cylinder Items for the GreenSock Scroll-Driven Tube
+            cylinderItems: [
+                { title: "CYBER SECURITY", meta: "01 // NETWORK & WEB DEFENSE", accent: "accent-green" },
+                { title: "DIGITAL FORENSICS", meta: "02 // DEEPFAKE & MEDIA ANALYSIS", accent: "accent-purple" },
+                { title: "MERN ARCHITECTURE", meta: "03 // SCALABLE FULL-STACK SAAS", accent: "" },
+                { title: "DEEP LEARNING AI", meta: "04 // PYTORCH & TENSORFLOW", accent: "accent-orange" },
+                { title: "RESNEXT50 + LSTM", meta: "05 // SPATIO-TEMPORAL VISION", accent: "accent-cyan" },
+                { title: "VIT BHOPAL '26", meta: "06 // 8.94 CGPA DISTINCTION", accent: "accent-green" },
+                { title: "DATA STRUCTURES", meta: "07 // ALGORITHMIC PROBLEM SOLVING", accent: "" },
+                { title: "LINUX & DOCKER", meta: "08 // CONTAINERIZED SEC-OPS", accent: "accent-purple" },
+                { title: "OPEN SOURCE GSSOC", meta: "09 // TOP 950 RANK NATIONWIDE", accent: "accent-orange" },
+                { title: "M.TECH ASPIRANT", meta: "10 // ADVANCED CS RESEARCH", accent: "accent-cyan" }
+            ],
+
             socials: [
                 { name: "GITHUB", url: "https://github.com/AbheetHacker4278" },
                 { name: "LINKEDIN", url: "https://www.linkedin.com/in/abheet-seth-58533a251/" },
@@ -1525,6 +2100,37 @@
                 { name: "EMAIL", url: "mailto:aseth9588@gmail.com" }
             ]
         };
+
+        // 0. Split Hero & Footer Words into Individual 3D Characters
+        document.querySelectorAll('.split-words').forEach(el => {
+            const text = el.getAttribute('data-text') || el.textContent;
+            el.innerHTML = text.split('').map(char => {
+                if (char === ' ') return '<span style="display:inline-block;width:0.28em;">&nbsp;</span>';
+                return `<span class="char-wrap"><span class="hero-char">${char}</span></span>`;
+            }).join('');
+        });
+
+        document.querySelectorAll('.split-footer-words').forEach(el => {
+            const text = el.getAttribute('data-text') || el.textContent;
+            el.innerHTML = text.split('').map(char => {
+                if (char === ' ') return '<span style="display:inline-block;width:0.28em;">&nbsp;</span>';
+                return `<span class="char-wrap"><span class="footer-char">${char}</span></span>`;
+            }).join('');
+        });
+
+        // Populate 3D Cylinder Faces (10 faces arranged in a 360-degree 3D drum)
+        const cylinderEl = document.getElementById('cylinder-3d');
+        const totalFaces = ABHEET_DATA.cylinderItems.length;
+        const radius = window.innerWidth < 768 ? 175 : 235;
+        cylinderEl.innerHTML = ABHEET_DATA.cylinderItems.map((item, idx) => {
+            const angle = idx * (360 / totalFaces);
+            return `
+                <div class="cylinder-face ${item.accent}" style="transform: rotateX(${angle}deg) translateZ(${radius}px);">
+                    <span class="face-title">${item.title}</span>
+                    <span class="face-meta">${item.meta}</span>
+                </div>
+            `;
+        }).join('');
 
         // Populate Marquee
         document.getElementById('marquee-track').innerHTML = [...ABHEET_DATA.marqueeSkills, ...ABHEET_DATA.marqueeSkills]
@@ -1608,7 +2214,7 @@
             </div>
         `).join('');
 
-        // Populate Fixed Convocation & Degree Archive Section (Zero Cropping, Zero Empty Gap)
+        // Populate Fixed Convocation & Degree Archive Section
         const archiveGrid = document.getElementById('archive-grid');
         archiveGrid.innerHTML = `
             <!-- Top Full-Width Split Showcase for Wide Stage Photo -->
@@ -1704,7 +2310,7 @@
         });
 
         /* =====================================================================
-           GSAP + LENIS ANIMATION ENGINE
+           GSAP.COM SIGNATURE HERO + 3D CYLINDER + FOOTER ANIMATION ENGINE
            ===================================================================== */
         gsap.registerPlugin(ScrollTrigger);
 
@@ -1728,14 +2334,23 @@
             }
         });
 
-        // Preloader
+        // Prep SVG Squiggle stroke dash for Hero & Footer
+        const squigglePath = document.getElementById('squiggle-path');
+        const squiggleLen = squigglePath.getTotalLength();
+        gsap.set(squigglePath, { strokeDasharray: squiggleLen, strokeDashoffset: squiggleLen });
+
+        const footerSquigglePath = document.getElementById('footer-squiggle-path');
+        const footerSquiggleLen = footerSquigglePath.getTotalLength();
+        gsap.set(footerSquigglePath, { strokeDasharray: footerSquiggleLen, strokeDashoffset: footerSquiggleLen });
+
+        // 1. Preloader + GSAP.com 3D Split-Char & Inline SVG Gadget Choreography
         let counterObj = { val: 0 };
         const counterEl = document.querySelector('.counter');
         const masterTl = gsap.timeline();
 
         masterTl.to(counterObj, {
             val: 100,
-            duration: 1.3,
+            duration: 1.25,
             ease: "power3.inOut",
             onUpdate: () => { counterEl.textContent = Math.floor(counterObj.val) + "%"; }
         })
@@ -1744,22 +2359,131 @@
             duration: 0.85,
             ease: "expo.inOut"
         })
-        .from(".hero-line", {
-            yPercent: 115,
-            duration: 1,
-            stagger: 0.1,
-            ease: "power4.out"
-        }, "-=0.4")
-        .from(".hero-badges .badge, .hero-sub", {
-            y: 20,
+        .from(".hero-char", {
+            yPercent: 130,
+            rotationX: -95,
+            rotationZ: () => gsap.utils.random(-12, 12),
+            scale: 0.65,
             opacity: 0,
-            duration: 0.6,
-            stagger: 0.06,
+            duration: 1.05,
+            stagger: 0.024,
+            ease: "back.out(1.8)"
+        }, "-=0.45")
+        .from(".inline-gadget, #hero-pill", {
+            scale: 0,
+            rotation: () => gsap.utils.random(-90, 90),
+            duration: 1.15,
+            stagger: 0.12,
+            ease: "elastic.out(1.1, 0.45)"
+        }, "-=0.85")
+        .to(squigglePath, {
+            strokeDashoffset: 0,
+            duration: 0.9,
             ease: "power3.out"
-        }, "-=0.6");
+        }, "-=0.6")
+        .from(".sticker", {
+            scale: 0,
+            rotation: -180,
+            opacity: 0,
+            duration: 1.3,
+            stagger: 0.1,
+            ease: "elastic.out(1, 0.5)"
+        }, "-=0.9")
+        .from(".hero-badges .badge, .hero-sub, .hero-cta-row > *", {
+            y: 24,
+            opacity: 0,
+            duration: 0.65,
+            stagger: 0.07,
+            ease: "power3.out"
+        }, "-=0.85");
 
-        gsap.to(".sticker-star", { rotation: 360, duration: 24, repeat: -1, ease: "linear" });
-        gsap.to(".sticker-ring", { rotation: -360, duration: 30, repeat: -1, ease: "linear" });
+        // 2. Interactive Rubber-Band Letter Bounce on Hover (Both Hero & Footer!)
+        document.querySelectorAll('.hero-char, .footer-char').forEach(char => {
+            char.addEventListener('mouseenter', () => {
+                if (!gsap.isTweening(char)) {
+                    gsap.fromTo(char,
+                        { y: 0, scaleY: 1, scaleX: 1 },
+                        {
+                            keyframes: [
+                                { y: -16, scaleY: 1.25, scaleX: 0.85, duration: 0.18, ease: "power2.out" },
+                                { y: 0, scaleY: 0.82, scaleX: 1.18, duration: 0.18, ease: "power2.in" },
+                                { y: 0, scaleY: 1, scaleX: 1, duration: 0.5, ease: "elastic.out(1.2, 0.35)" }
+                            ]
+                        }
+                    );
+                }
+            });
+        });
+
+        // 3. Continuous Ambient Loops for Inline Gadgets & Stickers (Hero + Footer)
+        gsap.to(".windmill-svg", { rotation: 360, duration: 10, repeat: -1, ease: "linear" });
+        gsap.to(".sticker-star, .footer-sticker-star", { rotation: 360, duration: 22, repeat: -1, ease: "linear" });
+        gsap.to(".sticker-ring, .footer-sticker-ring", { rotation: -360, duration: 28, repeat: -1, ease: "linear" });
+        gsap.to(".sticker-cross, .footer-sticker-cross", { rotation: 180, duration: 14, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        gsap.to(".sticker-diamond, .footer-sticker-diamond", { y: -18, rotation: 25, duration: 3.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+        // Live Oscilloscope Sine-Wave Animation inside the Hero Pill
+        gsap.to("#gsap-wave-path", {
+            attr: { d: "M 4 20 Q 18 38, 32 20 T 60 20 T 88 20 T 116 20" },
+            duration: 0.65,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+
+        // 4. GSAP quickTo() Mouse-Tracking Physics for Stickers, Glow & Both Eye Pupils
+        const starX = gsap.quickTo(".sticker-star, .footer-sticker-star", "x", { duration: 0.8, ease: "power3.out" });
+        const starY = gsap.quickTo(".sticker-star, .footer-sticker-star", "y", { duration: 0.8, ease: "power3.out" });
+        const ringX = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "x", { duration: 1.1, ease: "power3.out" });
+        const ringY = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "y", { duration: 1.1, ease: "power3.out" });
+        const crossX = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "x", { duration: 0.9, ease: "power3.out" });
+        const crossY = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "y", { duration: 0.9, ease: "power3.out" });
+        const diaX = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "x", { duration: 1.2, ease: "power3.out" });
+        const diaY = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "y", { duration: 1.2, ease: "power3.out" });
+        const glowX = gsap.quickTo(".hero-glow", "x", { duration: 1.4, ease: "power2.out" });
+        const glowY = gsap.quickTo(".hero-glow", "y", { duration: 1.4, ease: "power2.out" });
+        const pupilX = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "x", { duration: 0.25, ease: "power2.out" });
+        const pupilY = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "y", { duration: 0.25, ease: "power2.out" });
+
+        window.addEventListener('mousemove', (e) => {
+            const nx = (e.clientX / window.innerWidth - 0.5);
+            const ny = (e.clientY / window.innerHeight - 0.5);
+
+            starX(nx * 70);
+            starY(ny * 70);
+            ringX(nx * -90);
+            ringY(ny * -90);
+            crossX(nx * -55);
+            crossY(ny * 55);
+            diaX(nx * 60);
+            diaY(ny * -60);
+            glowX(nx * 180);
+            glowY(ny * 180);
+            pupilX(nx * 22);
+            pupilY(ny * 22);
+        });
+
+        // 5. Scroll-Scrubbed Hero Scatter Effect
+        gsap.to(".windmill-svg", {
+            rotation: "+=540",
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            }
+        });
+
+        gsap.to(".sticker", {
+            yPercent: (i) => (i % 2 === 0 ? -120 : -180),
+            rotation: (i) => (i % 2 === 0 ? 140 : -140),
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            }
+        });
 
         // Marquee
         gsap.to(".marquee-track", {
@@ -1807,6 +2531,75 @@
             stagger: 0.15,
             ease: "power3.out"
         });
+
+        // 6. GreenSock 3D Scroll-Driven Cylinder / Tube Animation (codepen.io/GreenSock/pen/raerLaK style)
+        const tunnelTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#kinetic-scroll-tunnel",
+                pin: true,
+                start: "top top",
+                end: "+=2200",
+                scrub: 1
+            }
+        });
+
+        tunnelTl.fromTo("#cylinder-3d",
+            { rotationX: -20, rotationZ: -8, scale: 0.86 },
+            { rotationX: 340, rotationZ: 8, scale: 1.06, ease: "none" },
+            0
+        )
+        .to("#tunnel-core-mesh", {
+            rotationY: 360,
+            rotationX: 180,
+            scale: 1.25,
+            ease: "none"
+        }, 0);
+
+        // 7. Scroll-Triggered GSAP.com Entrance Choreography for 06 // INITIATE CONTACT Footer
+        const footerTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#contact",
+                start: "top 72%"
+            }
+        });
+
+        footerTl.from(".footer-char", {
+            yPercent: 130,
+            rotationX: -95,
+            rotationZ: () => gsap.utils.random(-12, 12),
+            scale: 0.65,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.022,
+            ease: "back.out(1.8)"
+        })
+        .from(".footer-inline-gadget, .word-pill-purple", {
+            scale: 0,
+            rotation: () => gsap.utils.random(-90, 90),
+            duration: 1.1,
+            stagger: 0.12,
+            ease: "elastic.out(1.1, 0.45)"
+        }, "-=0.8")
+        .to(footerSquigglePath, {
+            strokeDashoffset: 0,
+            duration: 0.9,
+            ease: "power3.out"
+        }, "-=0.6")
+        .from(".footer-sticker", {
+            scale: 0,
+            rotation: -180,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.1,
+            ease: "elastic.out(1, 0.5)"
+        }, "-=0.9")
+        .from(".footer-cta-actions > *", {
+            y: 24,
+            opacity: 0,
+            duration: 0.65,
+            stagger: 0.1,
+            ease: "power3.out"
+        }, "-=0.8");
 
         // Cursor & Magnetic Buttons
         const cursor = document.querySelector('.cursor');
