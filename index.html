@@ -721,7 +721,7 @@
         }
 
         /* =================================================================
-           NEW SECTION: 05 // CONVOCATION & DEGREE ARCHIVE
+           FIXED SECTION: 05 // CONVOCATION & DEGREE ARCHIVE (ZERO CROPPING)
            ================================================================= */
         .archive-section {
             padding: 4rem 4rem 9rem;
@@ -761,16 +761,10 @@
             box-shadow: 0 0 8px var(--neon-green);
         }
 
-        .archive-grid {
-            display: grid;
-            grid-template-columns: 1.35fr 0.85fr;
-            gap: 1.2rem;
-        }
-
-        .archive-stack {
+        .archive-layout {
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
+            gap: 1.4rem;
         }
 
         .archive-card {
@@ -780,8 +774,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            transition: border-color 0.35s ease, transform 0.35s ease;
+            transition: border-color 0.35s ease;
         }
 
         .archive-card:hover {
@@ -789,7 +782,7 @@
         }
 
         .archive-card-top {
-            padding: 1rem 1.4rem;
+            padding: 0.95rem 1.4rem;
             border-bottom: 1px solid rgba(255, 252, 225, 0.08);
             display: flex;
             justify-content: space-between;
@@ -805,91 +798,142 @@
             font-weight: 600;
         }
 
-        .archive-img-wrap {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
+        /* 1. Top Full-Width Split Card for Wide Convocation Stage Photo */
+        .archive-stage-body {
+            display: grid;
+            grid-template-columns: 1.35fr 0.85fr;
+            align-items: stretch;
+        }
+
+        .archive-stage-media {
             background: #0a0c0b;
+            padding: 1.2rem;
+            border-right: 1px solid rgba(255, 252, 225, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .archive-card.featured .archive-img-wrap {
-            height: 460px;
-        }
-
-        .archive-card.degree-doc .archive-img-wrap {
-            height: 310px;
-            padding: 1.2rem;
             background-image: 
                 linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
             background-size: 20px 20px;
         }
 
-        .archive-card.regalia .archive-img-wrap {
-            height: 220px;
-        }
-
-        .archive-img-wrap img {
+        .archive-stage-media img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+            height: auto;
+            max-height: 460px;
+            object-fit: contain; /* Guarantees 0% cropping */
+            border-radius: 6px;
+            display: block;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .archive-card.degree-doc .archive-img-wrap img {
-            object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+        .archive-card:hover .archive-stage-media img {
+            transform: scale(1.015);
         }
 
-        .archive-card:hover .archive-img-wrap img {
-            transform: scale(1.03);
-        }
-
-        .archive-card-footer {
-            padding: 1.35rem 1.5rem;
-            border-top: 1px solid rgba(255, 252, 225, 0.08);
+        .archive-stage-info {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             background: #111312;
         }
 
-        .archive-card-footer h3 {
-            font-size: 1.15rem;
-            font-weight: 600;
+        .archive-stage-info h3 {
+            font-size: 1.55rem;
+            font-weight: 700;
             letter-spacing: -0.02em;
+            line-height: 1.25;
             color: var(--text);
-            margin-bottom: 0.35rem;
+            margin-bottom: 1rem;
         }
 
-        .archive-card-footer p {
-            font-size: 0.86rem;
+        .archive-stage-info p {
+            font-size: 0.94rem;
             color: var(--text-muted);
-            line-height: 1.55;
+            line-height: 1.65;
         }
 
         .archive-meta-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.8rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid rgba(255, 252, 225, 0.08);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
         }
 
         .meta-cell span {
             display: block;
             color: var(--text-muted);
-            font-size: 0.65rem;
-            margin-bottom: 0.2rem;
+            font-size: 0.68rem;
+            margin-bottom: 0.25rem;
         }
 
         .meta-cell strong {
             color: var(--text);
+            font-size: 0.82rem;
             font-weight: 600;
+        }
+
+        /* 2. Bottom 2-Column Grid for Portrait Degree & Regalia Photos */
+        .archive-docs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.4rem;
+        }
+
+        .archive-doc-frame {
+            height: 430px;
+            width: 100%;
+            padding: 1.5rem;
+            background: #0a0c0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: hidden;
+        }
+
+        .archive-doc-frame img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Never crops vertical degree or folder/stole */
+            border-radius: 6px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .archive-card:hover .archive-doc-frame img {
+            transform: scale(1.03);
+        }
+
+        .archive-card-footer {
+            padding: 1.5rem 1.8rem;
+            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            background: #111312;
+        }
+
+        .archive-card-footer h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+
+        .archive-card-footer p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.55;
         }
 
         /* Lightbox Modal for Full-Screen Degree & Photo Inspection */
@@ -1027,10 +1071,11 @@
             .project-card { grid-template-columns: 1fr; height: auto; }
             .project-info { border-right: none; border-bottom: 1px solid var(--surface-border); padding: 2rem; }
             .project-schematic { height: 220px; }
-            .bento-grid, .timeline-grid, .archive-grid { grid-template-columns: 1fr; }
+            .bento-grid, .timeline-grid, .archive-stage-body, .archive-docs-grid { grid-template-columns: 1fr; }
+            .archive-stage-media { border-right: none; border-bottom: 1px solid rgba(255, 252, 225, 0.08); }
             .bento-card.wide { grid-column: span 1; }
-            .about-stats, .archive-meta-grid { grid-template-columns: 1fr 1fr; }
-            .archive-card.featured .archive-img-wrap { height: 280px; }
+            .about-stats { grid-template-columns: 1fr 1fr; }
+            .archive-doc-frame { height: 340px; }
             .panel { padding: 1rem 1.5rem; }
             .lightbox { padding: 1.5rem; }
         }
@@ -1149,7 +1194,7 @@
         <div class="timeline-grid" id="timeline-grid"></div>
     </section>
 
-    <!-- NEW SECTION: 05 // CONVOCATION & DEGREE ARCHIVE -->
+    <!-- FIXED SECTION: 05 // CONVOCATION & DEGREE ARCHIVE -->
     <section class="archive-section" id="convocation">
         <div class="archive-header">
             <div>
@@ -1158,11 +1203,11 @@
             </div>
             <div class="archive-ledger-pill">
                 <span class="verified-dot"></span>
-                <span>REG NO: 22BCY10162 • SL NO: 111122 • CLICK TO INSPECT</span>
+                <span>REG NO: 22BCY10162 • SL NO: 111122 • CLICK ANY FRAME TO ENLARGE</span>
             </div>
         </div>
 
-        <div class="archive-grid" id="archive-grid"></div>
+        <div class="archive-layout" id="archive-grid"></div>
     </section>
 
     <!-- Footer -->
@@ -1185,14 +1230,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <script>
-        /* =====================================================================
-           📁 GRADUATION & DEGREE IMAGE PATHS
-           Save your 3 uploaded photos in the same folder as index.html with
-           these exact names (or replace the paths below with your filenames).
-           ===================================================================== */
         const CONVOCATION_MEDIA = {
             stagePhoto: {
-                src: "https://github.com/AbheetHacker4278/Portfolio/blob/main/NMPF5834.JPG?raw=true", // 3rd image: 7th Annual Convocation stage photo
+                src: "convocation-stage.jpg",
                 code: "ARCHIVE // 01 — CONVOCATION STAGE",
                 date: "03 OCT 2026",
                 title: "7th Annual Convocation Ceremony — VIT Bhopal University",
@@ -1201,18 +1241,20 @@
                     { label: "EVENT", value: "7th Convocation" },
                     { label: "DATE", value: "03.10.2026" },
                     { label: "VENUE", value: "Convocation Hall" },
-                    { label: "HONOR", value: "8.94 CGPA" }
+                    { label: "CGPA", value: "8.94 / 10" },
+                    { label: "REG NO", value: "22BCY10162" },
+                    { label: "SPECIALIZATION", value: "Cyber Security" }
                 ]
             },
             degreeCert: {
-                src: "https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true", // 1st image: Official B.Tech Degree Certificate scan
+                src: "vit-degree.jpg",
                 code: "ARCHIVE // 02 — DEGREE CERTIFICATE",
                 date: "SL NO: 111122",
                 title: "Official B.Tech. Degree Certificate (CGPA: 8.94)",
                 desc: "Certified by the Board of Management, VIT Bhopal University • Reg No: 22BCY10162 • Examination held in April 2026 • Dated: 11-Sep-2026."
             },
             regaliaPhoto: {
-                src: "https://github.com/AbheetHacker4278/Portfolio/blob/main/image.png?raw=true", // 2nd image: VIT Bhopal black leather folder & orange stole
+                src: "vit-folder-stole.jpg",
                 code: "ARCHIVE // 03 — ACADEMIC REGALIA",
                 date: "22BCY10162",
                 title: "Convocation Stole & Official Degree Portfolio",
@@ -1566,43 +1608,46 @@
             </div>
         `).join('');
 
-        // Populate Convocation & Degree Archive Section
+        // Populate Fixed Convocation & Degree Archive Section (Zero Cropping, Zero Empty Gap)
         const archiveGrid = document.getElementById('archive-grid');
         archiveGrid.innerHTML = `
-            <!-- Left Column: Featured 7th Annual Convocation Stage Photo -->
-            <div class="archive-card featured" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.stagePhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
-                <div>
-                    <div class="archive-card-top">
-                        <span><strong>${CONVOCATION_MEDIA.stagePhoto.code}</strong></span>
-                        <span>${CONVOCATION_MEDIA.stagePhoto.date}</span>
-                    </div>
-                    <div class="archive-img-wrap">
-                        <img src="${CONVOCATION_MEDIA.stagePhoto.src}" alt="${CONVOCATION_MEDIA.stagePhoto.title}">
-                    </div>
+            <!-- Top Full-Width Split Showcase for Wide Stage Photo -->
+            <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.stagePhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
+                <div class="archive-card-top">
+                    <span><strong>${CONVOCATION_MEDIA.stagePhoto.code}</strong></span>
+                    <span>${CONVOCATION_MEDIA.stagePhoto.date}</span>
                 </div>
-                <div class="archive-card-footer">
-                    <h3>${CONVOCATION_MEDIA.stagePhoto.title}</h3>
-                    <p>${CONVOCATION_MEDIA.stagePhoto.desc}</p>
-                    <div class="archive-meta-grid">
-                        ${CONVOCATION_MEDIA.stagePhoto.meta.map(m => `
-                            <div class="meta-cell">
-                                <span>${m.label}</span>
-                                <strong>${m.value}</strong>
-                            </div>
-                        `).join('')}
+                <div class="archive-stage-body">
+                    <div class="archive-stage-media">
+                        <img src="https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG" alt="${CONVOCATION_MEDIA.stagePhoto.title}">
+                    </div>
+                    <div class="archive-stage-info">
+                        <div>
+                            <span class="section-tag" style="margin-bottom: 0.6rem;">CONVOCATION HALL // VIT BHOPAL</span>
+                            <h3>${CONVOCATION_MEDIA.stagePhoto.title}</h3>
+                            <p>${CONVOCATION_MEDIA.stagePhoto.desc}</p>
+                        </div>
+                        <div class="archive-meta-grid">
+                            ${CONVOCATION_MEDIA.stagePhoto.meta.map(m => `
+                                <div class="meta-cell">
+                                    <span>${m.label}</span>
+                                    <strong>${m.value}</strong>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column Stack: Official Degree Scan + Folder & Stole -->
-            <div class="archive-stack">
-                <div class="archive-card degree-doc" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.degreeCert.src}" data-lightbox-code="${CONVOCATION_MEDIA.degreeCert.code}" data-lightbox-caption="${CONVOCATION_MEDIA.degreeCert.title}">
+            <!-- Bottom 2-Column Upright Museum Frames for Portrait Degree & Regalia Photos -->
+            <div class="archive-docs-grid">
+                <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.degreeCert.src}" data-lightbox-code="${CONVOCATION_MEDIA.degreeCert.code}" data-lightbox-caption="${CONVOCATION_MEDIA.degreeCert.title}">
                     <div class="archive-card-top">
                         <span><strong>${CONVOCATION_MEDIA.degreeCert.code}</strong></span>
-                        <span style="color: var(--neon-green)">● VERIFIED SEAL</span>
+                        <span style="color: var(--neon-green)">● VERIFIED SEAL (SL: 111122)</span>
                     </div>
-                    <div class="archive-img-wrap">
-                        <img src="${CONVOCATION_MEDIA.degreeCert.src}" alt="${CONVOCATION_MEDIA.degreeCert.title}">
+                    <div class="archive-doc-frame">
+                        <img src="https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true" alt="${CONVOCATION_MEDIA.degreeCert.title}">
                     </div>
                     <div class="archive-card-footer">
                         <h3>${CONVOCATION_MEDIA.degreeCert.title}</h3>
@@ -1610,13 +1655,13 @@
                     </div>
                 </div>
 
-                <div class="archive-card regalia" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.regaliaPhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.regaliaPhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.regaliaPhoto.title}">
+                <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="${CONVOCATION_MEDIA.regaliaPhoto.src}" data-lightbox-code="${CONVOCATION_MEDIA.regaliaPhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.regaliaPhoto.title}">
                     <div class="archive-card-top">
                         <span><strong>${CONVOCATION_MEDIA.regaliaPhoto.code}</strong></span>
-                        <span>${CONVOCATION_MEDIA.regaliaPhoto.date}</span>
+                        <span>REG NO: ${CONVOCATION_MEDIA.regaliaPhoto.date}</span>
                     </div>
-                    <div class="archive-img-wrap">
-                        <img src="${CONVOCATION_MEDIA.regaliaPhoto.src}" alt="${CONVOCATION_MEDIA.regaliaPhoto.title}">
+                    <div class="archive-doc-frame">
+                        <img src="https://github.com/AbheetHacker4278/Portfolio/blob/main/image.png?raw=true" alt="${CONVOCATION_MEDIA.regaliaPhoto.title}">
                     </div>
                     <div class="archive-card-footer">
                         <h3>${CONVOCATION_MEDIA.regaliaPhoto.title}</h3>
