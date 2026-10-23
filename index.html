@@ -5,22 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abheet Seth — Software Engineer | Cyber Security & AI</title>
     
-    <!-- Google Fonts: Syne (Hero Display), Plus Jakarta Sans (Editorial UI), JetBrains Mono (Specs) -->
+    <!-- Google Fonts: Syne, Plus Jakarta Sans, JetBrains Mono + Silkscreen (Pixel Font for Minecraft Voxel Accents) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --bg: #0e100f;
-            --surface: #121413;
-            --surface-border: rgba(255, 252, 225, 0.12);
+            --surface: #131614;
+            --surface-dark: #0a0c0b;
+            --surface-border: rgba(255, 252, 225, 0.14);
             --text: #fffce1;
             --text-muted: #8a8c84;
             --neon-green: #0ae448;
             --neon-purple: #9d95ff;
             --neon-orange: #ff8709;
             --neon-cyan: #00f0ff;
+            /* Minecraft Voxel 3D Bevel Shadows */
+            --voxel-bevel: inset 2px 2px 0px rgba(255, 252, 225, 0.12), inset -2px -2px 0px rgba(0, 0, 0, 0.75);
+            --voxel-bevel-green: inset 2px 2px 0px rgba(255, 255, 255, 0.35), inset -2px -2px 0px rgba(0, 80, 20, 0.8), 4px 4px 0px #000000;
+            --voxel-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85);
         }
 
         * {
@@ -38,15 +43,20 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Subtle Architectural Dot Grid */
+        /* Pixelated Voxel Grid + Dither Matrix Texture Overlay (GPU Cached Layer) */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: radial-gradient(rgba(255, 252, 225, 0.05) 1px, transparent 0);
-            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(rgba(10, 228, 72, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 228, 72, 0.025) 1px, transparent 1px),
+                radial-gradient(rgba(255, 252, 225, 0.06) 2px, transparent 0);
+            background-size: 16px 16px, 16px 16px, 32px 32px;
+            image-rendering: pixelated;
             pointer-events: none;
             z-index: 0;
+            transform: translateZ(0);
         }
 
         .syne {
@@ -58,7 +68,23 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Preloader */
+        .pixel-font {
+            font-family: 'Silkscreen', monospace;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        /* 60FPS Voxel Block-Break Particle Canvas */
+        #voxel-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Preloader (Minecraft World Generation Style) */
         .preloader {
             position: fixed;
             inset: 0;
@@ -68,32 +94,53 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 3rem 4rem;
-            border-bottom: 1px solid var(--surface-border);
+            border-bottom: 4px solid var(--neon-green);
         }
 
         .preloader-top {
             display: flex;
             justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-muted);
-            font-size: 0.82rem;
+            font-family: 'Silkscreen', monospace;
+            color: var(--neon-green);
+            font-size: 0.78rem;
+        }
+
+        .preloader-chunk-bar {
+            width: min(420px, 80vw);
+            height: 22px;
+            background: #080909;
+            border: 2px solid var(--text-muted);
+            padding: 3px;
+            box-shadow: var(--voxel-shadow);
+            margin: auto 0;
+        }
+
+        .preloader-chunk-fill {
+            height: 100%;
+            width: 0%;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--neon-green) 0px,
+                var(--neon-green) 12px,
+                #06992e 12px,
+                #06992e 16px
+            );
         }
 
         .counter {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(5rem, 14vw, 12rem);
-            font-weight: 800;
-            line-height: 0.8;
+            font-family: 'Silkscreen', monospace;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 700;
+            line-height: 0.85;
             color: var(--text);
             align-self: flex-end;
+            text-shadow: 6px 6px 0px #0ae448;
         }
 
-        /* Minimalist Custom Cursor */
+        /* Minecraft Pixel Crosshair & Voxel Selection Cursor */
         .cursor {
-            width: 12px;
-            height: 12px;
-            background-color: var(--neon-green);
-            border-radius: 50%;
+            width: 20px;
+            height: 20px;
             position: fixed;
             top: 0; left: 0;
             pointer-events: none;
@@ -102,121 +149,165 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
+            font-family: 'Silkscreen', monospace;
+            font-size: 9px;
             color: var(--bg);
-            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-                        height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                        background-color 0.25s;
+            will-change: transform;
+            transition: width 0.2s steps(4), height 0.2s steps(4), background-color 0.15s;
         }
+
+        /* Default Crosshair lines */
+        .cursor::before, .cursor::after {
+            content: "";
+            position: absolute;
+            background: var(--neon-green);
+            box-shadow: 1px 1px 0 #000;
+        }
+        .cursor::before { width: 16px; height: 2px; }
+        .cursor::after { width: 2px; height: 16px; }
 
         .cursor span {
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.1s;
         }
 
         .cursor.active {
-            width: 72px;
-            height: 72px;
-            background-color: var(--text);
+            width: 76px;
+            height: 36px;
+            background-color: var(--neon-green);
+            border: 2px solid var(--text);
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        .cursor.active::before, .cursor.active::after {
+            display: none;
         }
 
         .cursor.active span {
             opacity: 1;
         }
 
-        /* Scroll Progress Bar */
-        .scroll-progress {
+        /* Minecraft XP Bar Style Top Scroll Progress */
+        .scroll-progress-wrap {
             position: fixed;
             top: 0; left: 0;
-            height: 2px;
-            width: 0%;
-            background: var(--neon-green);
+            width: 100%;
+            height: 6px;
+            background: #070808;
             z-index: 999;
+            border-bottom: 1px solid rgba(255, 252, 225, 0.12);
+        }
+
+        .scroll-progress {
+            height: 100%;
+            width: 0%;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--neon-green) 0px,
+                var(--neon-green) 18px,
+                #068e2b 18px,
+                #068e2b 20px
+            );
+            box-shadow: 0 0 10px rgba(10, 228, 72, 0.6);
+            will-change: width;
         }
 
         /* Navigation */
         nav {
             position: fixed;
-            top: 0; width: 100%;
-            padding: 1.3rem 4rem;
+            top: 6px; width: 100%;
+            padding: 1.1rem 4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            backdrop-filter: blur(12px);
-            background: rgba(14, 16, 15, 0.8);
-            border-bottom: 1px solid var(--surface-border);
+            background: rgba(14, 16, 15, 0.92);
+            border-bottom: 2px solid var(--surface-border);
         }
 
         .logo {
             font-family: 'Syne', sans-serif;
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 800;
             letter-spacing: -0.5px;
             color: var(--text);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
 
         .logo span { color: var(--neon-green); }
 
         .nav-links {
             display: flex;
-            gap: 2.2rem;
+            gap: 2rem;
             align-items: center;
         }
 
         .nav-links a:not(.nav-btn) {
             color: var(--text-muted);
             text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 500;
-            transition: color 0.2s;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
+            transition: color 0.15s;
         }
 
-        .nav-links a:not(.nav-btn):hover { color: var(--text); }
+        .nav-links a:not(.nav-btn):hover { color: var(--neon-green); }
 
         .status-pill {
             display: flex;
             align-items: center;
-            gap: 0.55rem;
-            padding: 0.4rem 0.9rem;
-            border-radius: 50px;
-            border: 1px solid var(--surface-border);
-            font-size: 0.74rem;
+            gap: 0.65rem;
+            padding: 0.38rem 0.9rem;
+            background: #141816;
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--voxel-bevel);
+            font-size: 0.7rem;
             color: var(--text-muted);
         }
 
+        .fps-badge {
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
+            color: var(--neon-green);
+            padding-left: 0.6rem;
+            border-left: 1px solid var(--surface-border);
+        }
+
         .status-dot {
-            width: 7px; height: 7px;
+            width: 8px; height: 8px;
             background: var(--neon-green);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: pulse 1.5s steps(2) infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.25; }
         }
 
+        /* Voxel Beveled Button */
         .nav-btn {
-            background: var(--text);
+            background: var(--neon-green);
             color: var(--bg);
-            padding: 0.6rem 1.3rem;
-            border-radius: 50px;
-            font-weight: 600;
+            padding: 0.55rem 1.2rem;
+            font-family: 'Silkscreen', monospace;
+            font-weight: 700;
             text-decoration: none;
-            font-size: 0.82rem;
+            font-size: 0.72rem;
             display: inline-block;
-            transition: background 0.2s;
+            border: 2px solid var(--text);
+            box-shadow: var(--voxel-bevel-green);
+            transition: transform 0.1s steps(2);
         }
 
-        .nav-btn:hover { background: var(--neon-green); }
+        .nav-btn:hover {
+            transform: translate(-2px, -2px);
+        }
 
         /* =================================================================
-           GSAP.COM SIGNATURE HERO SECTION & INLINE KINETIC TYPOGRAPHY
+           GSAP.COM SIGNATURE HERO + MINECRAFT VOXEL PIXEL-ART GADGETS
            ================================================================= */
         .hero {
             min-height: 100vh;
@@ -232,16 +323,15 @@
             perspective: 1200px;
         }
 
-        /* Ambient Subtle Glow Behind Headline */
         .hero-glow {
             position: absolute;
-            width: 620px;
-            height: 620px;
+            width: 580px;
+            height: 580px;
             background: radial-gradient(circle, rgba(10, 228, 72, 0.08) 0%, rgba(157, 149, 255, 0.05) 45%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 0;
-            filter: blur(40px);
+            will-change: transform;
         }
 
         .hero-badges {
@@ -254,18 +344,17 @@
         }
 
         .badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.74rem;
-            padding: 0.42rem 0.95rem;
-            border-radius: 50px;
-            border: 1px solid var(--surface-border);
-            background: rgba(18, 20, 19, 0.75);
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
+            padding: 0.45rem 0.9rem;
+            border: 2px solid var(--surface-border);
+            background: #141715;
             color: var(--text-muted);
-            backdrop-filter: blur(8px);
+            box-shadow: var(--voxel-bevel), var(--voxel-shadow);
         }
 
         .badge.badge-accent {
-            border-color: rgba(10, 228, 72, 0.4);
+            border-color: var(--neon-green);
             color: var(--neon-green);
         }
 
@@ -292,7 +381,7 @@
             perspective: 1000px;
         }
 
-        /* Split 3D Character Styling */
+        /* Split 3D Character Styling + Voxel Shadow */
         .char-wrap {
             display: inline-block;
             overflow: visible;
@@ -303,53 +392,62 @@
             display: inline-block;
             transform-origin: 50% 100%;
             will-change: transform, opacity;
-            transition: color 0.2s ease;
+            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85);
+            transition: color 0.15s steps(2);
         }
 
         .hero-char:hover, .footer-char:hover {
             color: var(--neon-green);
+            text-shadow: 4px 4px 0px #065f1e;
         }
 
-        /* GSAP-Style Inline Animated Gadgets inside the Headline */
+        /* Inline Animated Voxel Gadgets */
         .inline-gadget, .footer-inline-gadget {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             vertical-align: middle;
             position: relative;
+            image-rendering: pixelated;
         }
 
         .gadget-windmill {
-            width: clamp(2.4rem, 6vw, 5.8rem);
-            height: clamp(2.4rem, 6vw, 5.8rem);
+            width: clamp(2.4rem, 6vw, 5.6rem);
+            height: clamp(2.4rem, 6vw, 5.6rem);
         }
 
+        /* Minecraft Enchanted Item Shimmer Pill */
         .word-pill-gsap {
             display: inline-flex;
             align-items: center;
             gap: 0.18em;
-            border: 2.5px solid var(--neon-green);
-            border-radius: 200px;
-            padding: 0.04em 0.38em 0.08em;
+            border: 3px solid var(--neon-green);
+            padding: 0.04em 0.36em 0.08em;
             color: var(--neon-green);
-            background: rgba(10, 228, 72, 0.08);
-            box-shadow: 0 0 35px rgba(10, 228, 72, 0.12);
+            background: linear-gradient(110deg, rgba(10, 228, 72, 0.1) 35%, rgba(157, 149, 255, 0.28) 50%, rgba(10, 228, 72, 0.1) 65%);
+            background-size: 200% 100%;
+            animation: enchantGlint 3.5s linear infinite;
+            box-shadow: var(--voxel-bevel), 6px 6px 0px #000000;
             transform-origin: center center;
+        }
+
+        @keyframes enchantGlint {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .word-pill-purple {
             border-color: var(--neon-purple);
             color: var(--neon-purple);
-            background: rgba(157, 149, 255, 0.08);
-            box-shadow: 0 0 35px rgba(157, 149, 255, 0.12);
         }
 
+        /* Pixel-Art Ender Eye Gadget */
         .gadget-eye {
-            width: clamp(2rem, 4.6vw, 4.4rem);
-            height: clamp(2rem, 4.6vw, 4.4rem);
-            background: var(--surface);
-            border: 2px solid var(--neon-purple);
-            border-radius: 50%;
+            width: clamp(2.1rem, 4.6vw, 4.4rem);
+            height: clamp(2.1rem, 4.6vw, 4.4rem);
+            background: #101412;
+            border: 3px solid var(--neon-purple);
+            box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -358,22 +456,12 @@
         }
 
         .eye-pupil {
-            width: 42%;
-            height: 42%;
-            background: var(--neon-purple);
-            border-radius: 50%;
+            width: 44%;
+            height: 44%;
+            background: var(--neon-green);
+            box-shadow: inset 3px 3px 0px #fffce1;
             position: relative;
-        }
-
-        .eye-pupil::after {
-            content: "";
-            position: absolute;
-            top: 18%;
-            left: 18%;
-            width: 28%;
-            height: 28%;
-            background: var(--text);
-            border-radius: 50%;
+            will-change: transform;
         }
 
         .gadget-wave-pill {
@@ -381,10 +469,10 @@
             align-items: center;
             justify-content: center;
             height: clamp(2.2rem, 5.4vw, 5.2rem);
-            padding: 0 1.2rem;
-            border-radius: 120px;
+            padding: 0 1.1rem;
             background: rgba(157, 149, 255, 0.12);
-            border: 2px solid var(--neon-purple);
+            border: 3px solid var(--neon-purple);
+            box-shadow: var(--voxel-bevel), 5px 5px 0px #000;
         }
 
         .gadget-wave-pill svg {
@@ -393,7 +481,6 @@
             overflow: visible;
         }
 
-        /* Hand-Drawn SVG Squiggle Underline */
         .hero-underline-wrap {
             position: relative;
             display: inline-flex;
@@ -414,17 +501,17 @@
             max-width: 650px;
             margin-top: 2.4rem;
             color: var(--text-muted);
-            font-size: 1.08rem;
+            font-size: 1.06rem;
             line-height: 1.65;
             z-index: 2;
         }
 
         .hero-sub strong {
             color: var(--text);
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        /* GSAP Signature Curly-Brace CTA Row */
+        /* Voxel Beveled Curly-Brace CTA Row */
         .hero-cta-row {
             margin-top: 2.4rem;
             display: flex;
@@ -439,88 +526,81 @@
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.9rem 1.8rem;
-            border-radius: 100px;
-            border: 1.5px solid var(--neon-green);
-            background: rgba(10, 228, 72, 0.08);
+            padding: 0.9rem 1.7rem;
+            border: 2px solid var(--neon-green);
+            background: #131c15;
             color: var(--text);
             text-decoration: none;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.84rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.76rem;
+            box-shadow: var(--voxel-bevel), 5px 5px 0px #000;
+            transition: background 0.15s steps(2), color 0.15s steps(2), transform 0.15s steps(2);
         }
 
         .gsap-brace-btn .brace {
             color: var(--neon-green);
-            font-size: 1.15rem;
-            font-weight: 700;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
+            font-size: 1rem;
         }
 
         .gsap-brace-btn:hover {
             background: var(--neon-green);
             color: var(--bg);
-            box-shadow: 0 0 30px rgba(10, 228, 72, 0.35);
+            transform: translate(-2px, -2px);
         }
 
-        .gsap-brace-btn:hover .brace {
-            color: var(--bg);
-        }
-
-        .gsap-brace-btn:hover .brace-left { transform: translateX(-4px); }
-        .gsap-brace-btn:hover .brace-right { transform: translateX(4px); }
+        .gsap-brace-btn:hover .brace { color: var(--bg); }
 
         .hero-secondary-link {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
             color: var(--text-muted);
             text-decoration: none;
-            padding: 0.85rem 1.3rem;
-            border: 1px solid var(--surface-border);
-            border-radius: 100px;
-            transition: color 0.25s, border-color 0.25s;
+            padding: 0.9rem 1.3rem;
+            background: var(--surface);
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
+            transition: color 0.2s, border-color 0.2s;
         }
 
         .hero-secondary-link:hover {
-            color: var(--text);
-            border-color: rgba(255, 252, 225, 0.35);
+            color: var(--neon-green);
+            border-color: var(--neon-green);
         }
 
-        /* Floating 3D Geometric SVG Stickers around the Hero & Footer */
+        /* Floating 16x16 Pixel-Art Voxel SVG Stickers */
         .sticker, .footer-sticker {
             position: absolute;
             z-index: 1;
             pointer-events: none;
             will-change: transform;
+            image-rendering: pixelated;
+            filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85));
         }
-        .sticker-star { top: 17%; left: 7%; width: 82px; height: 82px; }
-        .sticker-ring { bottom: 16%; right: 8%; width: 110px; height: 110px; }
-        .sticker-cross { top: 20%; right: 10%; width: 64px; height: 64px; }
-        .sticker-diamond { bottom: 19%; left: 9%; width: 76px; height: 76px; }
+        .sticker-star { top: 17%; left: 7%; width: 80px; height: 80px; }
+        .sticker-ring { bottom: 16%; right: 8%; width: 96px; height: 96px; }
+        .sticker-cross { top: 20%; right: 10%; width: 72px; height: 72px; }
+        .sticker-diamond { bottom: 19%; left: 9%; width: 78px; height: 78px; }
 
         /* Velocity Marquee */
         .marquee-wrapper {
-            padding: 1.1rem 0;
-            background: var(--surface);
+            padding: 1rem 0;
+            background: #101311;
             color: var(--text);
             overflow: hidden;
             white-space: nowrap;
             display: flex;
-            border-top: 1px solid var(--surface-border);
-            border-bottom: 1px solid var(--surface-border);
+            border-top: 2px solid var(--surface-border);
+            border-bottom: 2px solid var(--surface-border);
             position: relative;
             z-index: 2;
         }
 
         .marquee-track {
             display: flex;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.88rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.8rem;
             color: var(--text-muted);
+            will-change: transform;
         }
 
         .marquee-item {
@@ -536,12 +616,15 @@
 
         /* Section Tag & Headers */
         .section-tag {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Silkscreen', monospace;
             color: var(--neon-green);
-            font-size: 0.78rem;
-            letter-spacing: 0.06em;
-            margin-bottom: 1rem;
+            font-size: 0.74rem;
+            margin-bottom: 0.9rem;
             display: inline-block;
+            padding: 0.3rem 0.7rem;
+            background: rgba(10, 228, 72, 0.08);
+            border: 1px solid rgba(10, 228, 72, 0.35);
+            box-shadow: 3px 3px 0px #000;
         }
 
         .section-heading {
@@ -573,42 +656,40 @@
 
         .reveal-word {
             opacity: 0.18;
-            transition: opacity 0.2s;
+            will-change: opacity;
         }
 
         .about-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            border: 1px solid var(--surface-border);
-            border-radius: 8px;
+            border: 2px solid var(--surface-border);
             margin-top: 5rem;
             background: var(--surface);
-            overflow: hidden;
+            box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
         }
 
         .stat-box {
             padding: 2.2rem;
-            border-right: 1px solid var(--surface-border);
+            border-right: 2px solid var(--surface-border);
         }
         .stat-box:last-child { border-right: none; }
 
         .stat-box h4 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 2.4rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--text);
+            font-family: 'Silkscreen', monospace;
+            font-size: 2rem;
+            color: var(--neon-green);
             line-height: 1;
+            text-shadow: 3px 3px 0px #000;
         }
 
         .stat-box p {
             color: var(--text-muted);
             font-size: 0.8rem;
-            margin-top: 0.6rem;
+            margin-top: 0.7rem;
         }
 
         /* =================================================================
-           UPGRADED EDITORIAL PROJECT COMPONENT (NO AI SLOP / NO STOCK PHOTOS)
+           UPGRADED EDITORIAL + VOXEL PROJECT COMPONENT
            ================================================================= */
         .work-section {
             overflow: hidden;
@@ -630,6 +711,7 @@
             height: 84vh;
             display: flex;
             flex-wrap: nowrap;
+            will-change: transform;
         }
 
         .panel {
@@ -645,47 +727,44 @@
             width: 100%;
             max-width: 1220px;
             height: 78%;
-            background: #111312;
-            border: 1px solid rgba(255, 252, 225, 0.14);
-            border-radius: 10px;
+            background: #111412;
+            border: 2px solid rgba(255, 252, 225, 0.18);
+            box-shadow: var(--voxel-bevel), 8px 8px 0px #000000;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
             position: relative;
             overflow: hidden;
             text-decoration: none;
             color: var(--text);
-            transition: border-color 0.35s ease, background 0.35s ease;
+            transition: border-color 0.2s steps(2), transform 0.2s steps(2);
         }
 
         .project-card:hover {
-            border-color: rgba(255, 252, 225, 0.38);
-            background: #141715;
+            border-color: var(--neon-green);
+            transform: translate(-3px, -3px);
         }
 
-        /* Left Column: Clean Editorial Typography */
         .project-info {
             padding: 3.2rem 3.5rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border-right: 1px solid rgba(255, 252, 225, 0.1);
+            border-right: 2px solid rgba(255, 252, 225, 0.1);
         }
 
         .project-header-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.76rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
             color: var(--text-muted);
-            letter-spacing: 0.04em;
             padding-bottom: 1.4rem;
-            border-bottom: 1px solid rgba(255, 252, 225, 0.08);
+            border-bottom: 2px solid rgba(255, 252, 225, 0.08);
         }
 
         .project-index {
-            color: var(--text);
-            font-weight: 600;
+            color: var(--neon-green);
         }
 
         .project-body {
@@ -710,14 +789,13 @@
             max-width: 490px;
         }
 
-        /* Bottom Spec Bar */
         .project-specs {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
             padding-top: 1.4rem;
-            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            border-top: 2px solid rgba(255, 252, 225, 0.08);
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.75rem;
         }
@@ -733,39 +811,32 @@
         }
 
         .spec-link {
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
             white-space: nowrap;
-            color: var(--text);
-            font-weight: 600;
-            transition: transform 0.25s ease, color 0.25s ease;
-        }
-
-        .project-card:hover .spec-link {
             color: var(--neon-green);
-            transform: translateX(4px);
         }
 
-        /* Right Column: Custom Engineered SVG Blueprint Canvas */
         .project-schematic {
             position: relative;
-            background: #0b0d0c;
+            background: #0a0c0b;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 1.8rem 2.2rem;
             overflow: hidden;
             background-image: 
-                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
-            background-size: 24px 24px;
+                linear-gradient(rgba(10, 228, 72, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 228, 72, 0.035) 1px, transparent 1px);
+            background-size: 16px 16px;
         }
 
         .schematic-top, .schematic-bottom {
             display: flex;
             justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-            color: #555853;
-            letter-spacing: 0.05em;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.64rem;
+            color: #646862;
             z-index: 2;
         }
 
@@ -773,13 +844,12 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: var(--text-muted);
+            color: var(--neon-green);
         }
 
         .schematic-status::before {
             content: "";
             width: 6px; height: 6px;
-            border-radius: 50%;
             background: var(--neon-green);
         }
 
@@ -797,14 +867,14 @@
             max-width: 340px;
             height: auto;
             overflow: visible;
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.3s steps(4);
         }
 
         .project-card:hover .schematic-canvas svg {
             transform: scale(1.04);
         }
 
-        /* Skills Bento Grid */
+        /* Skills Voxel Bento Grid */
         .skills-section {
             padding: 8rem 4rem;
             max-width: 1260px;
@@ -822,18 +892,21 @@
 
         .bento-card {
             background: var(--surface);
-            border-radius: 10px;
             padding: 2.2rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--surface-border);
-            transition: border-color 0.3s;
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
+            transition: border-color 0.2s, transform 0.2s steps(2);
         }
 
-        .bento-card:hover { border-color: rgba(255, 252, 225, 0.3); }
+        .bento-card:hover {
+            border-color: var(--neon-green);
+            transform: translate(-2px, -2px);
+        }
         .bento-card.wide { grid-column: span 2; }
 
         .bento-card h3 {
@@ -859,17 +932,17 @@
         .bento-pill {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.72rem;
-            padding: 0.3rem 0.65rem;
-            border-radius: 4px;
-            background: rgba(255, 252, 225, 0.04);
+            padding: 0.32rem 0.68rem;
+            background: #0d0f0e;
             border: 1px solid var(--surface-border);
+            box-shadow: 2px 2px 0px #000;
             color: var(--text);
         }
 
         .bento-icon {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
+            color: var(--neon-purple);
         }
 
         /* Academic & Milestones */
@@ -890,17 +963,20 @@
 
         .milestone-card {
             background: var(--surface);
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
             padding: 2.2rem;
-            transition: border-color 0.3s;
+            transition: border-color 0.2s, transform 0.2s steps(2);
         }
 
-        .milestone-card:hover { border-color: rgba(255, 252, 225, 0.3); }
+        .milestone-card:hover {
+            border-color: var(--neon-orange);
+            transform: translate(-2px, -2px);
+        }
 
         .milestone-date {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.74rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.7rem;
             color: var(--neon-green);
             display: inline-block;
             margin-bottom: 0.8rem;
@@ -947,24 +1023,22 @@
         }
 
         .archive-ledger-pill {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
             color: var(--text);
             padding: 0.55rem 1rem;
-            border: 1px solid var(--surface-border);
-            border-radius: 6px;
+            border: 2px solid var(--surface-border);
             background: var(--surface);
+            box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
             display: flex;
             align-items: center;
             gap: 0.6rem;
         }
 
         .archive-ledger-pill span.verified-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
+            width: 8px;
+            height: 8px;
             background: var(--neon-green);
-            box-shadow: 0 0 8px var(--neon-green);
         }
 
         .archive-layout {
@@ -975,33 +1049,32 @@
 
         .archive-card {
             background: #111312;
-            border: 1px solid rgba(255, 252, 225, 0.14);
-            border-radius: 10px;
+            border: 2px solid rgba(255, 252, 225, 0.16);
+            box-shadow: var(--voxel-bevel), 7px 7px 0px #000;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: border-color 0.35s ease;
+            transition: border-color 0.25s;
         }
 
         .archive-card:hover {
-            border-color: rgba(255, 252, 225, 0.42);
+            border-color: var(--neon-green);
         }
 
         .archive-card-top {
             padding: 0.95rem 1.4rem;
-            border-bottom: 1px solid rgba(255, 252, 225, 0.08);
+            border-bottom: 2px solid rgba(255, 252, 225, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
             color: var(--text-muted);
             background: #141715;
         }
 
         .archive-card-top strong {
             color: var(--text);
-            font-weight: 600;
         }
 
         .archive-stage-body {
@@ -1013,14 +1086,14 @@
         .archive-stage-media {
             background: #0a0c0b;
             padding: 1.2rem;
-            border-right: 1px solid rgba(255, 252, 225, 0.08);
+            border-right: 2px solid rgba(255, 252, 225, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
             background-image: 
-                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
-            background-size: 20px 20px;
+                linear-gradient(rgba(10, 228, 72, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 228, 72, 0.03) 1px, transparent 1px);
+            background-size: 16px 16px;
         }
 
         .archive-stage-media img {
@@ -1028,10 +1101,9 @@
             height: auto;
             max-height: 460px;
             object-fit: contain;
-            border-radius: 6px;
             display: block;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 6px 6px 0px #000;
+            transition: transform 0.3s steps(4);
         }
 
         .archive-card:hover .archive-stage-media img {
@@ -1067,14 +1139,15 @@
             gap: 1.2rem;
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            border-top: 2px solid rgba(255, 252, 225, 0.08);
             font-family: 'JetBrains Mono', monospace;
         }
 
         .meta-cell span {
             display: block;
+            font-family: 'Silkscreen', monospace;
             color: var(--text-muted);
-            font-size: 0.68rem;
+            font-size: 0.62rem;
             margin-bottom: 0.25rem;
         }
 
@@ -1099,9 +1172,9 @@
             align-items: center;
             justify-content: center;
             background-image: 
-                linear-gradient(rgba(255, 252, 225, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 252, 225, 0.025) 1px, transparent 1px);
-            background-size: 20px 20px;
+                linear-gradient(rgba(10, 228, 72, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 228, 72, 0.03) 1px, transparent 1px);
+            background-size: 16px 16px;
             overflow: hidden;
         }
 
@@ -1111,9 +1184,8 @@
             width: auto;
             height: auto;
             object-fit: contain;
-            border-radius: 6px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 6px 6px 0px #000;
+            transition: transform 0.3s steps(4);
         }
 
         .archive-card:hover .archive-doc-frame img {
@@ -1122,7 +1194,7 @@
 
         .archive-card-footer {
             padding: 1.5rem 1.8rem;
-            border-top: 1px solid rgba(255, 252, 225, 0.08);
+            border-top: 2px solid rgba(255, 252, 225, 0.08);
             background: #111312;
         }
 
@@ -1141,8 +1213,8 @@
         }
 
         /* =================================================================
-           NEW: GREENSOCK 3D SCROLL-DRIVEN CYLINDER / TUBE SECTION
-           (Inspired by codepen.io/GreenSock/pen/raerLaK — Theme-Matched)
+           60FPS HARDWARE-ACCELERATED 3D SCROLL CYLINDER / TUBE SECTION
+           (No backdrop-filter blur on 3D faces to guarantee locked 60FPS)
            ================================================================= */
         .tunnel-section {
             height: 100vh;
@@ -1154,7 +1226,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 3.5rem 4rem;
-            border-top: 1px solid var(--surface-border);
+            border-top: 2px solid var(--surface-border);
             background: radial-gradient(circle at 50% 50%, rgba(157, 149, 255, 0.07) 0%, rgba(10, 228, 72, 0.04) 38%, rgba(14, 16, 15, 0) 70%);
             z-index: 2;
         }
@@ -1165,8 +1237,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.7rem;
             color: var(--text-muted);
             z-index: 5;
             pointer-events: none;
@@ -1183,48 +1255,47 @@
             overflow: visible;
         }
 
-        /* Central 3D Wireframe Core */
+        /* Central 3D Voxel Cube / Wireframe Core */
         .tunnel-core-mesh {
             position: absolute;
-            width: clamp(220px, 28vw, 360px);
-            height: clamp(220px, 28vw, 360px);
+            width: clamp(220px, 28vw, 340px);
+            height: clamp(220px, 28vw, 340px);
             transform-style: preserve-3d;
             display: flex;
             align-items: center;
             justify-content: center;
             pointer-events: none;
+            will-change: transform;
         }
 
         .core-ring {
             position: absolute;
             inset: 0;
-            border-radius: 50%;
-            border: 1.5px dashed rgba(10, 228, 72, 0.35);
+            border: 2px dashed rgba(10, 228, 72, 0.35);
             transform-style: preserve-3d;
         }
 
         .core-ring.ring-2 {
             inset: 12%;
-            border: 1.5px solid rgba(157, 149, 255, 0.35);
+            border: 2px solid rgba(157, 149, 255, 0.35);
             transform: rotateX(60deg) rotateY(25deg);
         }
 
         .core-ring.ring-3 {
             inset: 24%;
-            border: 1.5px dashed rgba(255, 135, 9, 0.4);
+            border: 2px dashed rgba(255, 135, 9, 0.4);
             transform: rotateY(65deg) rotateX(-25deg);
         }
 
         .core-ring.ring-4 {
             inset: 36%;
-            border: 1px solid rgba(0, 240, 255, 0.4);
+            border: 2px solid rgba(0, 240, 255, 0.4);
         }
 
-        /* 3D Rotating Cylinder Tube of Engineering Pillars */
         .cylinder-3d {
             position: relative;
             width: 100%;
-            height: 76px;
+            height: 74px;
             transform-style: preserve-3d;
             will-change: transform;
         }
@@ -1234,45 +1305,42 @@
             top: 0;
             left: 50%;
             width: min(86vw, 820px);
-            height: 74px;
+            height: 72px;
             margin-left: calc(min(86vw, 820px) / -2);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 2rem;
-            border-radius: 100px;
-            background: rgba(18, 20, 19, 0.86);
-            border: 1px solid rgba(255, 252, 225, 0.16);
-            backdrop-filter: blur(8px);
+            background: #141715;
+            border: 2px solid rgba(255, 252, 225, 0.2);
+            box-shadow: var(--voxel-bevel), 0 10px 25px rgba(0, 0, 0, 0.7);
             backface-visibility: visible;
             transform-style: preserve-3d;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
-            transition: border-color 0.3s;
         }
 
         .cylinder-face.accent-green {
-            border-color: rgba(10, 228, 72, 0.55);
-            background: rgba(10, 228, 72, 0.08);
+            border-color: var(--neon-green);
+            background: #101d14;
         }
 
         .cylinder-face.accent-purple {
-            border-color: rgba(157, 149, 255, 0.55);
-            background: rgba(157, 149, 255, 0.08);
+            border-color: var(--neon-purple);
+            background: #161523;
         }
 
         .cylinder-face.accent-orange {
-            border-color: rgba(255, 135, 9, 0.55);
-            background: rgba(255, 135, 9, 0.08);
+            border-color: var(--neon-orange);
+            background: #21160e;
         }
 
         .cylinder-face.accent-cyan {
-            border-color: rgba(0, 240, 255, 0.55);
-            background: rgba(0, 240, 255, 0.08);
+            border-color: var(--neon-cyan);
+            background: #0e1e21;
         }
 
         .face-title {
             font-family: 'Syne', sans-serif;
-            font-size: clamp(1.1rem, 2.5vw, 2.15rem);
+            font-size: clamp(1.1rem, 2.5vw, 2.1rem);
             font-weight: 800;
             letter-spacing: -0.02em;
             color: var(--text);
@@ -1280,10 +1348,9 @@
         }
 
         .face-meta {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.68rem;
             color: var(--text-muted);
-            letter-spacing: 0.06em;
         }
 
         .accent-green .face-meta { color: var(--neon-green); }
@@ -1291,12 +1358,11 @@
         .accent-orange .face-meta { color: var(--neon-orange); }
         .accent-cyan .face-meta { color: var(--neon-cyan); }
 
-        /* Lightbox Modal for Full-Screen Degree & Photo Inspection */
+        /* Lightbox Modal */
         .lightbox {
             position: fixed;
             inset: 0;
-            background: rgba(10, 12, 11, 0.92);
-            backdrop-filter: blur(14px);
+            background: rgba(10, 12, 11, 0.95);
             z-index: 10000;
             display: flex;
             flex-direction: column;
@@ -1304,7 +1370,7 @@
             padding: 2rem 4rem;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.25s ease;
         }
 
         .lightbox.open {
@@ -1316,20 +1382,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
 
         .lightbox-close {
             background: var(--surface);
             color: var(--text);
-            border: 1px solid var(--surface-border);
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
             padding: 0.5rem 1.1rem;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            transition: border-color 0.2s, color 0.2s;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
         }
 
         .lightbox-close:hover {
@@ -1350,9 +1415,8 @@
             max-width: 92%;
             max-height: 78vh;
             object-fit: contain;
-            border: 1px solid var(--surface-border);
-            border-radius: 6px;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--surface-border);
+            box-shadow: 10px 10px 0px #000;
         }
 
         /* =================================================================
@@ -1364,7 +1428,7 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 7rem 4rem 3rem;
-            border-top: 1px solid var(--surface-border);
+            border-top: 2px solid var(--surface-border);
             position: relative;
             overflow: hidden;
             z-index: 2;
@@ -1376,19 +1440,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 580px;
-            height: 580px;
+            width: 560px;
+            height: 560px;
             background: radial-gradient(circle, rgba(10, 228, 72, 0.08) 0%, rgba(157, 149, 255, 0.05) 45%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 0;
-            filter: blur(40px);
         }
 
         .footer-sticker-star { top: 18%; left: 8%; width: 76px; height: 76px; }
-        .footer-sticker-ring { bottom: 22%; right: 8%; width: 100px; height: 100px; }
-        .footer-sticker-cross { top: 22%; right: 11%; width: 58px; height: 58px; }
-        .footer-sticker-diamond { bottom: 24%; left: 10%; width: 68px; height: 68px; }
+        .footer-sticker-ring { bottom: 22%; right: 8%; width: 92px; height: 92px; }
+        .footer-sticker-cross { top: 22%; right: 11%; width: 64px; height: 64px; }
+        .footer-sticker-diamond { bottom: 24%; left: 10%; width: 72px; height: 72px; }
 
         .footer-cta {
             text-align: center;
@@ -1414,37 +1477,32 @@
         }
 
         .big-btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            padding: 1.1rem 2.4rem;
-            border-radius: 100px;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.85rem;
+            padding: 1.1rem 2.2rem;
             background: var(--neon-green);
             color: var(--bg);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             gap: 0.65rem;
-            box-shadow: 0 0 35px rgba(10, 228, 72, 0.25);
-            transition: transform 0.25s, box-shadow 0.25s;
+            border: 2px solid var(--text);
+            box-shadow: var(--voxel-bevel-green);
+            transition: transform 0.15s steps(2);
         }
 
         .big-btn:hover {
-            box-shadow: 0 0 50px rgba(10, 228, 72, 0.5);
-        }
-
-        .big-btn .brace {
-            font-weight: 700;
-            font-size: 1.15rem;
+            transform: translate(-3px, -3px);
         }
 
         .footer-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid var(--surface-border);
+            border-top: 2px solid var(--surface-border);
             padding-top: 2rem;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             flex-wrap: wrap;
             gap: 1rem;
@@ -1460,9 +1518,9 @@
         .social-links a {
             color: var(--text);
             text-decoration: none;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            transition: color 0.2s;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.72rem;
+            transition: color 0.15s;
         }
 
         .social-links a:hover { color: var(--neon-green); }
@@ -1472,10 +1530,10 @@
             .nav-links a:not(.nav-btn), .status-pill { display: none; }
             .about-section, .skills-section, .timeline-section, .archive-section { padding: 4rem 1.5rem; }
             .project-card { grid-template-columns: 1fr; height: auto; }
-            .project-info { border-right: none; border-bottom: 1px solid var(--surface-border); padding: 2rem; }
+            .project-info { border-right: none; border-bottom: 2px solid var(--surface-border); padding: 2rem; }
             .project-schematic { height: 220px; }
             .bento-grid, .timeline-grid, .archive-stage-body, .archive-docs-grid { grid-template-columns: 1fr; }
-            .archive-stage-media { border-right: none; border-bottom: 1px solid rgba(255, 252, 225, 0.08); }
+            .archive-stage-media { border-right: none; border-bottom: 2px solid rgba(255, 252, 225, 0.08); }
             .bento-card.wide { grid-column: span 1; }
             .about-stats { grid-template-columns: 1fr 1fr; }
             .archive-doc-frame { height: 340px; }
@@ -1490,19 +1548,31 @@
 </head>
 <body>
 
-    <div class="scroll-progress" id="scroll-progress"></div>
+    <!-- 60FPS Voxel Block-Break Particle Canvas -->
+    <canvas id="voxel-canvas"></canvas>
 
-    <!-- Preloader -->
+    <!-- Minecraft XP Bar Top Scroll Progress -->
+    <div class="scroll-progress-wrap">
+        <div class="scroll-progress" id="scroll-progress"></div>
+    </div>
+
+    <!-- Preloader (Minecraft World Generation Style) -->
     <div class="preloader">
         <div class="preloader-top">
-            <span>ABHEET SETH // PORTFOLIO</span>
-            <span>VIT BHOPAL '26 • CSE (CYBER SECURITY & FORENSICS)</span>
+            <span>GENERATING WORLD // ABHEET_SETH_2026</span>
+            <span>SEED: 22BCY10162 • CGPA: 8.94</span>
+        </div>
+        <div>
+            <div class="pixel-font" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">BUILDING TERRAIN &amp; LOADING CHUNKS...</div>
+            <div class="preloader-chunk-bar">
+                <div class="preloader-chunk-fill" id="preloader-fill"></div>
+            </div>
         </div>
         <div class="counter">0%</div>
     </div>
 
-    <!-- Custom Cursor -->
-    <div class="cursor"><span id="cursor-text">OPEN</span></div>
+    <!-- Custom Pixel Crosshair Cursor -->
+    <div class="cursor"><span id="cursor-text">[OPEN]</span></div>
 
     <!-- Full-Screen Lightbox Modal for Degree & Convocation Photos -->
     <div class="lightbox" id="lightbox">
@@ -1521,10 +1591,21 @@
 
     <!-- Navigation -->
     <nav>
-        <a href="#" class="logo">𝗔𝗯𝗵𝗲𝗲𝘁 𝗦𝗲𝘁𝗵 𝗣𝗼𝗿𝘁𝗳𝗼𝗹𝗶𝗼<span>.</span></a>
+        <a href="#" class="logo">
+            <!-- Mini 8-bit Voxel Block Icon -->
+            <svg width="22" height="22" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                <rect x="2" y="2" width="12" height="12" fill="#0ae448"/>
+                <rect x="2" y="2" width="12" height="3" fill="#6bff95"/>
+                <rect x="4" y="6" width="3" height="3" fill="#0e100f"/>
+                <rect x="9" y="6" width="3" height="3" fill="#0e100f"/>
+                <rect x="6" y="9" width="4" height="4" fill="#0e100f"/>
+            </svg>
+            𝗔𝗯𝗵𝗲𝗲𝘁 𝗦𝗲𝘁𝗵 𝗣𝗼𝗿𝘁𝗳𝗼𝗹𝗶𝗼<span>.</span>
+        </a>
         <div class="status-pill">
             <span class="status-dot"></span>
-            <span class="mono">B.Tech CSE '26 (8.94 CGPA) • Open to M.Tech & Roles</span>
+            <span class="mono">B.Tech CSE '26 (8.94 CGPA)</span>
+            <span class="fps-badge" id="fps-counter">60 FPS</span>
         </div>
         <div class="nav-links">
             <a href="#about">About</a>
@@ -1537,52 +1618,58 @@
     </nav>
 
     <!-- =================================================================
-         GSAP.COM STYLE HERO SECTION (3D SPLIT CHARS + INLINE SVG GADGETS)
+         GSAP.COM STYLE HERO + MINECRAFT PIXEL-ART SVG STICKERS
          ================================================================= -->
     <section class="hero" id="hero">
         <div class="hero-glow"></div>
 
-        <!-- Floating 3D Parallax SVG Shapes around the Hero -->
-        <svg class="sticker sticker-star" viewBox="0 0 100 100" fill="none">
-            <path d="M50 0L58.5 41.5L100 50L58.5 58.5L50 100L41.5 58.5L0 50L41.5 41.5L50 0Z" fill="#0ae448"/>
-            <circle cx="50" cy="50" r="10" fill="#0e100f"/>
+        <!-- 1. Pixel-Art Nether Star Sticker -->
+        <svg class="sticker sticker-star" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448"/>
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
+            <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
         </svg>
 
-        <svg class="sticker sticker-ring" viewBox="0 0 120 120" fill="none">
-            <circle cx="60" cy="60" r="44" stroke="#9d95ff" stroke-width="18" stroke-dasharray="145 40" stroke-linecap="round"/>
-            <circle cx="60" cy="60" r="20" stroke="#0ae448" stroke-width="3" stroke-dasharray="12 8"/>
+        <!-- 2. Pixel-Art Ender Portal Frame Ring -->
+        <svg class="sticker sticker-ring" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff"/>
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
         </svg>
 
-        <svg class="sticker sticker-cross" viewBox="0 0 100 100" fill="none">
-            <rect x="38" width="24" height="100" rx="12" fill="#ff8709"/>
-            <rect y="38" width="100" height="24" rx="12" fill="#ff8709"/>
+        <!-- 3. Pixel-Art Redstone Torch / Cyber Cross -->
+        <svg class="sticker sticker-cross" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709"/>
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
         </svg>
 
-        <svg class="sticker sticker-diamond" viewBox="0 0 100 100" fill="none">
-            <rect x="50" y="6" width="62" height="62" rx="14" transform="rotate(45 50 6)" stroke="#00f0ff" stroke-width="10"/>
-            <circle cx="50" cy="50" r="10" fill="#ff8709"/>
+        <!-- 4. Pixel-Art Minecraft Diamond / Emerald Gem -->
+        <svg class="sticker sticker-diamond" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff"/>
+            <path d="M6 3h4v2h2v4h-2v2H6V9H4V5h2V3z" fill="#fffce1"/>
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
         </svg>
 
         <div class="hero-badges">
-            <span class="badge badge-accent">● VIT BHOPAL • GRADUATED 03 OCT 2026</span>
-            <span class="badge">CYBER SECURITY & DIGITAL FORENSICS</span>
-            <span class="badge">CGPA: 8.94 / 10</span>
+            <span class="badge badge-accent">■ VIT BHOPAL • GRADUATED 03 OCT 2026</span>
+            <span class="badge">CYBER SECURITY &amp; DIGITAL FORENSICS</span>
+            <span class="badge">XP LEVEL: 8.94 / 10</span>
         </div>
         
         <h1 class="hero-title">
-            <!-- Row 1: ABHEET + Spinning Starburst Gadget + SETH -->
+            <!-- Row 1: ABHEET + Spinning Pixel Starburst Gadget + SETH -->
             <div class="hero-row">
                 <span class="split-words" data-text="ABHEET">ABHEET</span>
                 <span class="inline-gadget gadget-windmill" aria-hidden="true">
-                    <svg class="windmill-svg" viewBox="0 0 100 100" fill="none">
-                        <path d="M50 2L57 38L85 15L62 43L98 50L62 57L85 85L57 62L50 98L43 62L15 85L38 57L2 50L38 43L15 15L43 38L50 2Z" fill="#ff8709"/>
-                        <circle cx="50" cy="50" r="12" fill="#0e100f"/>
+                    <svg class="windmill-svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                        <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#ff8709"/>
+                        <rect x="5" y="5" width="6" height="6" fill="#0ae448"/>
+                        <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
                     </svg>
                 </span>
                 <span class="split-words" data-text="SETH">SETH</span>
             </div>
 
-            <!-- Row 2: Expanding Pill [CYBER SECURITY] + Interactive Tracking Eye + & AI -->
+            <!-- Row 2: Enchanted Voxel Pill [CYBER SECURITY] + Pixel Eye of Ender + & AI -->
             <div class="hero-row">
                 <span class="word-pill-gsap" id="hero-pill">
                     <span class="split-words" data-text="CYBER">CYBER</span>
@@ -1594,32 +1681,32 @@
                 <span class="split-words" data-text="& AI">&amp; AI</span>
             </div>
 
-            <!-- Row 3: Live Sine-Wave Pill + ENGINEER with Hand-Drawn SVG Squiggle -->
+            <!-- Row 3: Pixel Step-Wave Pill + ENGINEER with Voxel Squiggle -->
             <div class="hero-row">
                 <span class="inline-gadget gadget-wave-pill" aria-hidden="true">
                     <svg viewBox="0 0 120 40" fill="none">
-                        <path id="gsap-wave-path" d="M 4 20 Q 18 2, 32 20 T 60 20 T 88 20 T 116 20" stroke="#9d95ff" stroke-width="5" stroke-linecap="round" fill="none"/>
+                        <path id="gsap-wave-path" d="M 4 20 Q 18 2, 32 20 T 60 20 T 88 20 T 116 20" stroke="#9d95ff" stroke-width="5" stroke-linecap="square" fill="none"/>
                     </svg>
                 </span>
                 <span class="hero-underline-wrap">
                     <span class="split-words" data-text="ENGINEER">ENGINEER</span>
                     <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
-                        <path id="squiggle-path" d="M4 20 C95 4, 185 26, 280 11 C335 3, 380 22, 416 12" stroke="#0ae448" stroke-width="6" stroke-linecap="round"/>
+                        <path id="squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#0ae448" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
                     </svg>
                 </span>
             </div>
         </h1>
 
         <p class="hero-sub">
-            Computer Science & Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software.
+            Computer Science &amp; Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software. <span class="pixel-font" style="font-size: 0.7rem; color: var(--neon-green);">[CLICK ANYWHERE TO BREAK VOXELS]</span>
         </p>
 
-        <!-- GSAP Signature Curly-Brace Action Bar -->
+        <!-- Voxel Curly-Brace Action Bar -->
         <div class="hero-cta-row">
             <a href="#work" class="gsap-brace-btn magnetic">
-                <span class="brace brace-left">{</span>
+                <span class="brace brace-left">[</span>
                 <span>EXPLORE ENGINEERED WORKS</span>
-                <span class="brace brace-right">}</span>
+                <span class="brace brace-right">]</span>
             </a>
             <a href="#convocation" class="hero-secondary-link magnetic">VIEW DEGREE ARCHIVE ↓</a>
         </div>
@@ -1644,7 +1731,7 @@
                 <span class="section-tag">02 // SELECTED SYSTEMS</span>
                 <h2 class="section-heading">Engineered Works</h2>
             </div>
-            <p class="mono" style="color: var(--text-muted); font-size: 0.78rem;">SCROLL TO INSPECT [01 — 05] →</p>
+            <p class="pixel-font" style="color: var(--text-muted); font-size: 0.72rem;">SCROLL TO INSPECT [01 — 05] →</p>
         </div>
 
         <div class="work-container" id="work-container"></div>
@@ -1653,14 +1740,14 @@
     <!-- Bento Arsenal -->
     <section class="skills-section" id="skills">
         <span class="section-tag">03 // TECHNICAL PROFICIENCY</span>
-        <h2 class="section-heading">Core Stack & Theory</h2>
+        <h2 class="section-heading">Core Stack &amp; Theory</h2>
         <div class="bento-grid" id="bento-grid"></div>
     </section>
 
     <!-- Academic & Milestones -->
     <section class="timeline-section" id="journey">
-        <span class="section-tag">04 // CREDENTIALS & VISION</span>
-        <h2 class="section-heading">Education & Honors</h2>
+        <span class="section-tag">04 // CREDENTIALS &amp; VISION</span>
+        <h2 class="section-heading">Education &amp; Honors</h2>
         <div class="timeline-grid" id="timeline-grid"></div>
     </section>
 
@@ -1669,7 +1756,7 @@
         <div class="archive-header">
             <div>
                 <span class="section-tag">05 // OFFICIAL ACADEMIC ARCHIVE</span>
-                <h2 class="section-heading">7th Annual Convocation & Degree</h2>
+                <h2 class="section-heading">7th Annual Convocation &amp; Degree</h2>
             </div>
             <div class="archive-ledger-pill">
                 <span class="verified-dot"></span>
@@ -1681,17 +1768,16 @@
     </section>
 
     <!-- =================================================================
-         NEW: GREENSOCK 3D SCROLL-DRIVEN KINETIC CYLINDER / TUBE
-         (Inspired by https://codepen.io/GreenSock/pen/raerLaK)
+         60FPS GREENSOCK 3D SCROLL-DRIVEN KINETIC CYLINDER / TUBE
          ================================================================= -->
     <section class="tunnel-section" id="kinetic-scroll-tunnel">
         <div class="tunnel-hud-top">
-            <span style="color: var(--neon-green)">● 3D KINETIC CORE // SCROLL-DRIVEN TUBE</span>
-            <span>PERSPECTIVE: 1100PX • 360° ARCHITECTURE</span>
+            <span style="color: var(--neon-green)">■ 3D VOXEL CYLINDER // SCROLL-DRIVEN TUBE</span>
+            <span>60 FPS HARDWARE ACCELERATED • 360° ARCHITECTURE</span>
         </div>
 
         <div class="tunnel-stage" id="tunnel-stage">
-            <!-- 3D Wireframe Gyroscope Core -->
+            <!-- 3D Voxel Wireframe Core -->
             <div class="tunnel-core-mesh" id="tunnel-core-mesh">
                 <div class="core-ring ring-1"></div>
                 <div class="core-ring ring-2"></div>
@@ -1710,54 +1796,55 @@
     </section>
 
     <!-- =================================================================
-         UPGRADED GSAP.COM KINETIC FOOTER SECTION (06 // INITIATE CONTACT)
+         UPGRADED GSAP.COM + MINECRAFT KINETIC FOOTER (06 // INITIATE CONTACT)
          ================================================================= -->
     <footer id="contact">
         <div class="footer-glow"></div>
 
-        <!-- Floating 3D Parallax SVG Stickers for Footer -->
-        <svg class="footer-sticker footer-sticker-star" viewBox="0 0 100 100" fill="none">
-            <path d="M50 0L58.5 41.5L100 50L58.5 58.5L50 100L41.5 58.5L0 50L41.5 41.5L50 0Z" fill="#0ae448"/>
-            <circle cx="50" cy="50" r="10" fill="#0e100f"/>
+        <!-- Floating 16x16 Pixel-Art Stickers for Footer -->
+        <svg class="footer-sticker footer-sticker-star" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448"/>
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
         </svg>
 
-        <svg class="footer-sticker footer-sticker-ring" viewBox="0 0 120 120" fill="none">
-            <circle cx="60" cy="60" r="44" stroke="#9d95ff" stroke-width="18" stroke-dasharray="145 40" stroke-linecap="round"/>
-            <circle cx="60" cy="60" r="20" stroke="#0ae448" stroke-width="3" stroke-dasharray="12 8"/>
+        <svg class="footer-sticker footer-sticker-ring" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff"/>
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
         </svg>
 
-        <svg class="footer-sticker footer-sticker-cross" viewBox="0 0 100 100" fill="none">
-            <rect x="38" width="24" height="100" rx="12" fill="#ff8709"/>
-            <rect y="38" width="100" height="24" rx="12" fill="#ff8709"/>
+        <svg class="footer-sticker footer-sticker-cross" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709"/>
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
         </svg>
 
-        <svg class="footer-sticker footer-sticker-diamond" viewBox="0 0 100 100" fill="none">
-            <rect x="50" y="6" width="62" height="62" rx="14" transform="rotate(45 50 6)" stroke="#00f0ff" stroke-width="10"/>
-            <circle cx="50" cy="50" r="10" fill="#ff8709"/>
+        <svg class="footer-sticker footer-sticker-diamond" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff"/>
+            <rect x="6" y="6" width="4" height="4" fill="#ff8709"/>
         </svg>
 
         <div class="footer-cta">
             <span class="section-tag">06 // INITIATE CONTACT</span>
 
             <h2 class="footer-kinetic-title">
-                <!-- Row 1: LET'S + Spinning Windmill Gadget + ENGINEER -->
+                <!-- Row 1: LET'S + Spinning Pixel Starburst + ENGINEER -->
                 <div class="footer-row">
                     <span class="split-footer-words" data-text="LET'S">LET'S</span>
                     <span class="footer-inline-gadget gadget-windmill" aria-hidden="true">
-                        <svg class="windmill-svg" viewBox="0 0 100 100" fill="none">
-                            <path d="M50 2L57 38L85 15L62 43L98 50L62 57L85 85L57 62L50 98L43 62L15 85L38 57L2 50L38 43L15 15L43 38L50 2Z" fill="#0ae448"/>
-                            <circle cx="50" cy="50" r="12" fill="#0e100f"/>
+                        <svg class="windmill-svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                            <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#0ae448"/>
+                            <rect x="5" y="5" width="6" height="6" fill="#9d95ff"/>
+                            <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
                         </svg>
                     </span>
                     <span class="split-footer-words" data-text="ENGINEER">ENGINEER</span>
                 </div>
 
-                <!-- Row 2: SOMETHING (with Squiggle) + Interactive Eye + [SOLID.] Pill -->
+                <!-- Row 2: SOMETHING (with Stepped Pixel Squiggle) + Pixel Eye + [SOLID.] Pill -->
                 <div class="footer-row">
                     <span class="hero-underline-wrap">
                         <span class="split-footer-words" data-text="SOMETHING">SOMETHING</span>
                         <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
-                            <path id="footer-squiggle-path" d="M4 20 C95 4, 185 26, 280 11 C335 3, 380 22, 416 12" stroke="#ff8709" stroke-width="6" stroke-linecap="round"/>
+                            <path id="footer-squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#ff8709" stroke-width="6" stroke-linecap="square"/>
                         </svg>
                     </span>
                     <span class="footer-inline-gadget gadget-eye" aria-hidden="true">
@@ -1771,16 +1858,14 @@
 
             <div class="footer-cta-actions">
                 <a href="mailto:aseth9588@gmail.com" id="footer-email" class="big-btn magnetic">
-                    <span class="brace">{</span>
-                    <span>aseth9588@gmail.com ↗</span>
-                    <span class="brace">}</span>
+                    <span>[ aseth9588@gmail.com ↗ ]</span>
                 </a>
                 <a href="https://www.linkedin.com/in/abheet-seth-58533a251/" target="_blank" class="hero-secondary-link magnetic">CONNECT ON LINKEDIN ↗</a>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <div class="mono" id="footer-copy"></div>
+            <div class="pixel-font" id="footer-copy"></div>
             <div class="social-links" id="social-links"></div>
         </div>
     </footer>
@@ -1791,6 +1876,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <script>
+        // Force GPU 3D acceleration across all GSAP tweens for locked 60FPS
+        gsap.config({ force3D: true });
+
         const CONVOCATION_MEDIA = {
             stagePhoto: {
                 src: "https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG",
@@ -1856,29 +1944,29 @@
                     status: "PRODUCTION READY",
                     link: "https://github.com/AbheetHacker4278",
                     schematic: `
-                        <svg viewBox="0 0 320 200" fill="none">
-                            <rect x="10" y="30" width="85" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
-                            <text x="24" y="52" fill="#fffce1" font-family="JetBrains Mono" font-size="9">CLIENT UI</text>
-                            <text x="24" y="66" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">React + TW</text>
+                        <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
+                            <rect x="10" y="30" width="85" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="22" y="52" fill="#fffce1" font-family="Silkscreen" font-size="8">CLIENT UI</text>
+                            <text x="22" y="66" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">React + TW</text>
                             
-                            <rect x="10" y="120" width="85" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
-                            <text x="24" y="142" fill="#fffce1" font-family="JetBrains Mono" font-size="9">ADMIN OPS</text>
-                            <text x="24" y="156" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">RBAC Panel</text>
+                            <rect x="10" y="120" width="85" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="22" y="142" fill="#fffce1" font-family="Silkscreen" font-size="8">ADMIN OPS</text>
+                            <text x="22" y="156" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">RBAC Panel</text>
 
-                            <rect x="125" y="65" width="80" height="70" rx="4" stroke="#0ae448" stroke-opacity="0.7" fill="#0f1912"/>
-                            <text x="142" y="96" fill="#0ae448" font-family="JetBrains Mono" font-size="9">REST API</text>
+                            <rect x="125" y="65" width="80" height="70" stroke="#0ae448" stroke-width="2" fill="#0f1912"/>
+                            <text x="138" y="96" fill="#0ae448" font-family="Silkscreen" font-size="8">REST API</text>
                             <text x="138" y="112" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Node + JWT</text>
 
-                            <rect x="235" y="75" width="75" height="50" rx="4" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
-                            <text x="248" y="98" fill="#fffce1" font-family="JetBrains Mono" font-size="9">MONGODB</text>
+                            <rect x="235" y="75" width="75" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
+                            <text x="245" y="98" fill="#fffce1" font-family="Silkscreen" font-size="8">MONGODB</text>
                             <text x="248" y="111" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Cluster</text>
 
-                            <path d="M95 55 H110 V90 H125" stroke="#fffce1" stroke-opacity="0.25" stroke-dasharray="3 3"/>
-                            <path d="M95 145 H110 V110 H125" stroke="#fffce1" stroke-opacity="0.25" stroke-dasharray="3 3"/>
-                            <path d="M205 100 H235" stroke="#0ae448" stroke-opacity="0.6"/>
-                            <circle cx="125" cy="90" r="3" fill="#0ae448"/>
-                            <circle cx="125" cy="110" r="3" fill="#0ae448"/>
-                            <circle cx="235" cy="100" r="3" fill="#0ae448"/>
+                            <path d="M95 55 H110 V90 H125" stroke="#fffce1" stroke-opacity="0.35" stroke-dasharray="4 4"/>
+                            <path d="M95 145 H110 V110 H125" stroke="#fffce1" stroke-opacity="0.35" stroke-dasharray="4 4"/>
+                            <path d="M205 100 H235" stroke="#0ae448" stroke-width="2"/>
+                            <rect x="122" y="87" width="6" height="6" fill="#0ae448"/>
+                            <rect x="122" y="107" width="6" height="6" fill="#0ae448"/>
+                            <rect x="232" y="97" width="6" height="6" fill="#0ae448"/>
                         </svg>
                     `
                 },
@@ -1892,22 +1980,22 @@
                     status: "SAAS ARCHITECTURE",
                     link: "https://github.com/AbheetHacker4278",
                     schematic: `
-                        <svg viewBox="0 0 320 200" fill="none">
-                            <path d="M40 100 C90 100, 90 45, 140 45" stroke="#9d95ff" stroke-width="1.5" stroke-opacity="0.7"/>
-                            <path d="M40 100 C90 100, 90 155, 140 155" stroke="#fffce1" stroke-opacity="0.25"/>
-                            <path d="M140 45 C190 45, 190 100, 240 100" stroke="#9d95ff" stroke-width="1.5" stroke-opacity="0.7"/>
-                            <path d="M140 45 H270" stroke="#0ae448" stroke-opacity="0.5" stroke-dasharray="4 4"/>
-                            <path d="M140 155 C190 155, 190 100, 240 100" stroke="#fffce1" stroke-opacity="0.25"/>
+                        <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
+                            <path d="M40 100 H90 V45 H140" stroke="#9d95ff" stroke-width="2"/>
+                            <path d="M40 100 H90 V155 H140" stroke="#fffce1" stroke-opacity="0.3"/>
+                            <path d="M140 45 H190 V100 H240" stroke="#9d95ff" stroke-width="2"/>
+                            <path d="M140 45 H270" stroke="#0ae448" stroke-dasharray="4 4"/>
+                            <path d="M140 155 H190 V100 H240" stroke="#fffce1" stroke-opacity="0.3"/>
 
-                            <circle cx="40" cy="100" r="8" fill="#141715" stroke="#fffce1" stroke-width="2"/>
-                            <circle cx="140" cy="45" r="8" fill="#141715" stroke="#9d95ff" stroke-width="2"/>
-                            <circle cx="140" cy="155" r="8" fill="#141715" stroke="#fffce1" stroke-opacity="0.4" stroke-width="2"/>
-                            <circle cx="240" cy="100" r="9" fill="#0f1912" stroke="#0ae448" stroke-width="2"/>
-                            <circle cx="270" cy="45" r="6" fill="#9d95ff"/>
+                            <rect x="33" y="93" width="14" height="14" fill="#141715" stroke="#fffce1" stroke-width="2"/>
+                            <rect x="133" y="38" width="14" height="14" fill="#141715" stroke="#9d95ff" stroke-width="2"/>
+                            <rect x="133" y="148" width="14" height="14" fill="#141715" stroke="#fffce1" stroke-opacity="0.4" stroke-width="2"/>
+                            <rect x="233" y="93" width="16" height="16" fill="#0f1912" stroke="#0ae448" stroke-width="2"/>
+                            <rect x="265" y="40" width="10" height="10" fill="#9d95ff"/>
 
-                            <text x="25" y="128" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">root/main</text>
-                            <text x="115" y="25" fill="#9d95ff" font-family="JetBrains Mono" font-size="8">feat/graph-ast</text>
-                            <text x="220" y="128" fill="#0ae448" font-family="JetBrains Mono" font-size="8">HEAD -> v2.4</text>
+                            <text x="20" y="128" fill="#8a8c84" font-family="Silkscreen" font-size="7">root/main</text>
+                            <text x="110" y="25" fill="#9d95ff" font-family="Silkscreen" font-size="7">feat/ast</text>
+                            <text x="215" y="128" fill="#0ae448" font-family="Silkscreen" font-size="7">HEAD v2.4</text>
                         </svg>
                     `
                 },
@@ -1921,24 +2009,24 @@
                     status: "FORENSIC AI MODEL",
                     link: "https://github.com/AbheetHacker4278",
                     schematic: `
-                        <svg viewBox="0 0 320 200" fill="none">
-                            <rect x="20" y="55" width="45" height="65" rx="2" stroke="#fffce1" stroke-opacity="0.25" fill="#141715"/>
-                            <rect x="32" y="65" width="45" height="65" rx="2" stroke="#fffce1" stroke-opacity="0.45" fill="#141715"/>
-                            <rect x="44" y="75" width="45" height="65" rx="2" stroke="#ff8709" stroke-opacity="0.8" fill="#181410"/>
-                            <text x="20" y="162" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">ResNeXt50 CNN</text>
+                        <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
+                            <rect x="20" y="55" width="45" height="65" stroke="#fffce1" stroke-opacity="0.25" fill="#141715"/>
+                            <rect x="32" y="65" width="45" height="65" stroke="#fffce1" stroke-opacity="0.45" fill="#141715"/>
+                            <rect x="44" y="75" width="45" height="65" stroke="#ff8709" stroke-width="2" fill="#181410"/>
+                            <text x="18" y="162" fill="#8a8c84" font-family="Silkscreen" font-size="7">ResNeXt50</text>
 
                             <path d="M100 105 H130" stroke="#fffce1" stroke-opacity="0.4"/>
 
-                            <rect x="135" y="85" width="32" height="40" rx="3" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
-                            <rect x="175" y="85" width="32" height="40" rx="3" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
-                            <text x="142" y="108" fill="#fffce1" font-family="JetBrains Mono" font-size="8">t-1</text>
-                            <text x="185" y="108" fill="#fffce1" font-family="JetBrains Mono" font-size="8">t</text>
-                            <text x="140" y="162" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">LSTM Temporal</text>
+                            <rect x="135" y="85" width="32" height="40" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
+                            <rect x="175" y="85" width="32" height="40" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
+                            <text x="141" y="108" fill="#fffce1" font-family="Silkscreen" font-size="7">t-1</text>
+                            <text x="185" y="108" fill="#fffce1" font-family="Silkscreen" font-size="7">t</text>
+                            <text x="136" y="162" fill="#8a8c84" font-family="Silkscreen" font-size="7">LSTM SEQ</text>
 
-                            <path d="M215 105 H235" stroke="#0ae448" stroke-opacity="0.7"/>
-                            <rect x="240" y="78" width="68" height="54" rx="4" stroke="#0ae448" stroke-opacity="0.6" fill="#0f1912"/>
-                            <text x="250" y="101" fill="#0ae448" font-family="JetBrains Mono" font-size="8">REAL: 98%</text>
-                            <text x="250" y="116" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">FAKE: 02%</text>
+                            <path d="M215 105 H235" stroke="#0ae448" stroke-width="2"/>
+                            <rect x="240" y="78" width="68" height="54" stroke="#0ae448" stroke-width="2" fill="#0f1912"/>
+                            <text x="246" y="101" fill="#0ae448" font-family="Silkscreen" font-size="7">REAL:98%</text>
+                            <text x="246" y="116" fill="#8a8c84" font-family="Silkscreen" font-size="7">FAKE:02%</text>
                         </svg>
                     `
                 },
@@ -1952,22 +2040,21 @@
                     status: "VALIDATED PIPELINE",
                     link: "https://github.com/AbheetHacker4278",
                     schematic: `
-                        <svg viewBox="0 0 320 200" fill="none">
+                        <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
                             <line x1="45" y1="160" x2="285" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
                             <line x1="45" y1="30" x2="45" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
                             
-                            <path d="M45 160 Q 85 38, 280 35" stroke="#0ae448" stroke-width="1.75" fill="none"/>
-                            <path d="M45 160 L280 35" stroke="#fffce1" stroke-opacity="0.15" stroke-dasharray="4 4"/>
+                            <path d="M45 160 V90 H85 V55 H150 V38 H280" stroke="#0ae448" stroke-width="2" fill="none"/>
 
-                            <circle cx="95" cy="65" r="3.5" fill="#9d95ff"/>
-                            <circle cx="115" cy="55" r="3.5" fill="#9d95ff"/>
-                            <circle cx="105" cy="80" r="3.5" fill="#9d95ff"/>
-                            <circle cx="185" cy="115" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
-                            <circle cx="205" cy="130" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
-                            <circle cx="220" cy="110" r="3.5" fill="#fffce1" fill-opacity="0.35"/>
+                            <rect x="92" y="62" width="7" height="7" fill="#9d95ff"/>
+                            <rect x="112" y="52" width="7" height="7" fill="#9d95ff"/>
+                            <rect x="102" y="77" width="7" height="7" fill="#9d95ff"/>
+                            <rect x="182" y="112" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
+                            <rect x="202" y="127" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
+                            <rect x="217" y="107" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
 
-                            <text x="175" y="65" fill="#0ae448" font-family="JetBrains Mono" font-size="9">AUC-ROC = 0.992</text>
-                            <text x="55" y="178" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">FPR (1 - Specificity)</text>
+                            <text x="165" y="65" fill="#0ae448" font-family="Silkscreen" font-size="8">AUC = 0.992</text>
+                            <text x="55" y="178" fill="#8a8c84" font-family="Silkscreen" font-size="7">FPR (1 - SPECIFICITY)</text>
                         </svg>
                     `
                 },
@@ -1981,27 +2068,27 @@
                     status: "DAEMON ACTIVE",
                     link: "https://github.com/AbheetHacker4278",
                     schematic: `
-                        <svg viewBox="0 0 320 200" fill="none">
-                            <rect x="20" y="25" width="280" height="150" rx="6" fill="#111312" stroke="#fffce1" stroke-opacity="0.2"/>
-                            <line x1="20" y1="48" x2="300" y2="48" stroke="#fffce1" stroke-opacity="0.12"/>
-                            <circle cx="35" cy="36.5" r="3" fill="#fffce1" fill-opacity="0.3"/>
-                            <circle cx="47" cy="36.5" r="3" fill="#fffce1" fill-opacity="0.3"/>
-                            <text x="115" y="40" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">sec-ops-daemon — bash</text>
+                        <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
+                            <rect x="20" y="25" width="280" height="150" fill="#111312" stroke="#fffce1" stroke-opacity="0.25" stroke-width="2"/>
+                            <line x1="20" y1="48" x2="300" y2="48" stroke="#fffce1" stroke-opacity="0.15"/>
+                            <rect x="32" y="34" width="6" height="6" fill="#0ae448"/>
+                            <rect x="44" y="34" width="6" height="6" fill="#ff8709"/>
+                            <text x="105" y="40" fill="#8a8c84" font-family="Silkscreen" font-size="7">sec-ops-daemon</text>
 
-                            <g stroke="#0ae448" stroke-width="2.5" stroke-linecap="round">
-                                <line x1="45" y1="82" x2="45" y2="94"/>
-                                <line x1="55" y1="74" x2="55" y2="102"/>
-                                <line x1="65" y1="64" x2="65" y2="112"/>
-                                <line x1="75" y1="78" x2="75" y2="98"/>
-                                <line x1="85" y1="70" x2="85" y2="106"/>
-                                <line x1="95" y1="83" x2="95" y2="93"/>
+                            <g fill="#0ae448">
+                                <rect x="43" y="82" width="4" height="12"/>
+                                <rect x="53" y="74" width="4" height="28"/>
+                                <rect x="63" y="64" width="4" height="48"/>
+                                <rect x="73" y="78" width="4" height="20"/>
+                                <rect x="83" y="70" width="4" height="36"/>
+                                <rect x="93" y="83" width="4" height="10"/>
                             </g>
 
-                            <text x="118" y="78" fill="#fffce1" font-family="JetBrains Mono" font-size="8.5">$ voice --audit-ports</text>
-                            <text x="118" y="95" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">> Scanning netstat...</text>
-                            <text x="118" y="112" fill="#0ae448" font-family="JetBrains Mono" font-size="8">> 0 unauthorized listeners</text>
-                            <rect x="42" y="135" width="236" height="22" rx="3" fill="#0b0d0c" stroke="#fffce1" stroke-opacity="0.1"/>
-                            <text x="52" y="149" fill="#8a8c84" font-family="JetBrains Mono" font-size="7.5">STATUS: ENCRYPTED VOICE CHANNEL</text>
+                            <text x="115" y="78" fill="#fffce1" font-family="JetBrains Mono" font-size="8.5">$ voice --audit-ports</text>
+                            <text x="115" y="95" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">> Scanning netstat...</text>
+                            <text x="115" y="112" fill="#0ae448" font-family="JetBrains Mono" font-size="8">> 0 unauthorized listeners</text>
+                            <rect x="42" y="135" width="236" height="22" fill="#0b0d0c" stroke="#fffce1" stroke-opacity="0.15"/>
+                            <text x="50" y="149" fill="#0ae448" font-family="Silkscreen" font-size="6.5">ENCRYPTED VOICE CHANNEL</text>
                         </svg>
                     `
                 }
@@ -2079,7 +2166,6 @@
                 }
             ],
 
-            // 10-Sided 3D Cylinder Items for the GreenSock Scroll-Driven Tube
             cylinderItems: [
                 { title: "CYBER SECURITY", meta: "01 // NETWORK & WEB DEFENSE", accent: "accent-green" },
                 { title: "DIGITAL FORENSICS", meta: "02 // DEEPFAKE & MEDIA ANALYSIS", accent: "accent-purple" },
@@ -2118,7 +2204,7 @@
             }).join('');
         });
 
-        // Populate 3D Cylinder Faces (10 faces arranged in a 360-degree 3D drum)
+        // Populate 3D Cylinder Faces
         const cylinderEl = document.getElementById('cylinder-3d');
         const totalFaces = ABHEET_DATA.cylinderItems.length;
         const radius = window.innerWidth < 768 ? 175 : 235;
@@ -2134,7 +2220,7 @@
 
         // Populate Marquee
         document.getElementById('marquee-track').innerHTML = [...ABHEET_DATA.marqueeSkills, ...ABHEET_DATA.marqueeSkills]
-            .map(skill => `<div class="marquee-item"><span class="dot">●</span><span>${skill}</span></div>`).join('');
+            .map(skill => `<div class="marquee-item"><span class="dot">■</span><span>${skill}</span></div>`).join('');
 
         // Populate About Words
         const aboutContainer = document.getElementById('about-text');
@@ -2158,7 +2244,7 @@
         workContainer.style.width = `${ABHEET_DATA.projects.length * 100}%`;
         workContainer.innerHTML = ABHEET_DATA.projects.map(proj => `
             <div class="panel">
-                <a href="${proj.link}" target="_blank" class="project-card" data-cursor="OPEN">
+                <a href="${proj.link}" target="_blank" class="project-card" data-cursor="[OPEN]">
                     <div class="project-info">
                         <div class="project-header-meta">
                             <span class="project-index">${proj.id} / 05</span>
@@ -2217,8 +2303,7 @@
         // Populate Fixed Convocation & Degree Archive Section
         const archiveGrid = document.getElementById('archive-grid');
         archiveGrid.innerHTML = `
-            <!-- Top Full-Width Split Showcase for Wide Stage Photo -->
-            <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
+            <div class="archive-card" data-cursor="[ZOOM]" data-lightbox-src="https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
                 <div class="archive-card-top">
                     <span><strong>${CONVOCATION_MEDIA.stagePhoto.code}</strong></span>
                     <span>${CONVOCATION_MEDIA.stagePhoto.date}</span>
@@ -2245,12 +2330,11 @@
                 </div>
             </div>
 
-            <!-- Bottom 2-Column Upright Museum Frames for Portrait Degree & Regalia Photos -->
             <div class="archive-docs-grid">
-                <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true" data-lightbox-code="${CONVOCATION_MEDIA.degreeCert.code}" data-lightbox-caption="${CONVOCATION_MEDIA.degreeCert.title}">
+                <div class="archive-card" data-cursor="[ZOOM]" data-lightbox-src="https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true" data-lightbox-code="${CONVOCATION_MEDIA.degreeCert.code}" data-lightbox-caption="${CONVOCATION_MEDIA.degreeCert.title}">
                     <div class="archive-card-top">
                         <span><strong>${CONVOCATION_MEDIA.degreeCert.code}</strong></span>
-                        <span style="color: var(--neon-green)">● VERIFIED SEAL (SL: 111122)</span>
+                        <span style="color: var(--neon-green)">■ VERIFIED SEAL (SL: 111122)</span>
                     </div>
                     <div class="archive-doc-frame">
                         <img src="https://github.com/AbheetHacker4278/Portfolio/blob/main/20261007_161740.jpg?raw=true" alt="${CONVOCATION_MEDIA.degreeCert.title}">
@@ -2261,7 +2345,7 @@
                     </div>
                 </div>
 
-                <div class="archive-card" data-cursor="ZOOM" data-lightbox-src="https://github.com/AbheetHacker4278/Portfolio/blob/main/image.png?raw=true" data-lightbox-code="${CONVOCATION_MEDIA.regaliaPhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.regaliaPhoto.title}">
+                <div class="archive-card" data-cursor="[ZOOM]" data-lightbox-src="https://github.com/AbheetHacker4278/Portfolio/blob/main/image.png?raw=true" data-lightbox-code="${CONVOCATION_MEDIA.regaliaPhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.regaliaPhoto.title}">
                     <div class="archive-card-top">
                         <span><strong>${CONVOCATION_MEDIA.regaliaPhoto.code}</strong></span>
                         <span>REG NO: ${CONVOCATION_MEDIA.regaliaPhoto.date}</span>
@@ -2281,6 +2365,76 @@
         document.getElementById('footer-copy').textContent = `© 2026 ABHEET SETH • B.TECH CSE (CYBER SECURITY & DIGITAL FORENSICS) VIT BHOPAL.`;
         document.getElementById('social-links').innerHTML = ABHEET_DATA.socials
             .map(s => `<a href="${s.url}" target="_blank">${s.name} ↗</a>`).join('');
+
+        /* =====================================================================
+           60FPS MINECRAFT VOXEL BLOCK-BREAK PARTICLE ENGINE + LIVE FPS COUNTER
+           ===================================================================== */
+        const voxelCanvas = document.getElementById('voxel-canvas');
+        const vCtx = voxelCanvas.getContext('2d', { alpha: true });
+        let vWidth = voxelCanvas.width = window.innerWidth;
+        let vHeight = voxelCanvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            vWidth = voxelCanvas.width = window.innerWidth;
+            vHeight = voxelCanvas.height = window.innerHeight;
+        });
+
+        const voxelColors = ['#0ae448', '#9d95ff', '#ff8709', '#00f0ff', '#fffce1'];
+        const particles = [];
+
+        window.addEventListener('mousedown', (e) => {
+            for (let i = 0; i < 14; i++) {
+                const size = Math.floor(Math.random() * 6) + 5; // Crisp pixel blocks
+                particles.push({
+                    x: e.clientX - size / 2,
+                    y: e.clientY - size / 2,
+                    vx: (Math.random() - 0.5) * 9,
+                    vy: (Math.random() - 0.85) * 8,
+                    size: size,
+                    color: voxelColors[Math.floor(Math.random() * voxelColors.length)],
+                    life: 1
+                });
+            }
+        });
+
+        // Live F3-Style FPS Counter + Particle Render Loop piggybacked on GSAP's 60FPS Ticker
+        let frameCount = 0;
+        let lastFpsTime = performance.now();
+        const fpsEl = document.getElementById('fps-counter');
+
+        gsap.ticker.add(() => {
+            // Update FPS Readout every 500ms
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsTime >= 500) {
+                const fps = Math.min(60, Math.round((frameCount * 1000) / (now - lastFpsTime)));
+                if (fpsEl) fpsEl.textContent = `${fps} FPS`;
+                frameCount = 0;
+                lastFpsTime = now;
+            }
+
+            // Render Voxel Particles only when active (Zero idle CPU usage)
+            if (particles.length > 0) {
+                vCtx.clearRect(0, 0, vWidth, vHeight);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.42; // Minecraft block gravity
+                    p.life -= 0.028;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    vCtx.fillStyle = p.color;
+                    vCtx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+                    vCtx.strokeStyle = '#000000';
+                    vCtx.lineWidth = 1.5;
+                    vCtx.strokeRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+                }
+            }
+        });
 
         /* =====================================================================
            LIGHTBOX MODAL LOGIC
@@ -2343,20 +2497,25 @@
         const footerSquiggleLen = footerSquigglePath.getTotalLength();
         gsap.set(footerSquigglePath, { strokeDasharray: footerSquiggleLen, strokeDashoffset: footerSquiggleLen });
 
-        // 1. Preloader + GSAP.com 3D Split-Char & Inline SVG Gadget Choreography
+        // 1. Preloader + GSAP.com 3D Split-Char & Inline Voxel Gadget Choreography
         let counterObj = { val: 0 };
         const counterEl = document.querySelector('.counter');
+        const preloaderFill = document.getElementById('preloader-fill');
         const masterTl = gsap.timeline();
 
         masterTl.to(counterObj, {
             val: 100,
             duration: 1.25,
-            ease: "power3.inOut",
-            onUpdate: () => { counterEl.textContent = Math.floor(counterObj.val) + "%"; }
+            ease: "steps(20)",
+            onUpdate: () => {
+                const v = Math.floor(counterObj.val);
+                counterEl.textContent = v + "%";
+                if (preloaderFill) preloaderFill.style.width = v + "%";
+            }
         })
         .to(".preloader", {
             yPercent: -100,
-            duration: 0.85,
+            duration: 0.8,
             ease: "expo.inOut"
         })
         .from(".hero-char", {
@@ -2365,39 +2524,39 @@
             rotationZ: () => gsap.utils.random(-12, 12),
             scale: 0.65,
             opacity: 0,
-            duration: 1.05,
-            stagger: 0.024,
+            duration: 1.0,
+            stagger: 0.022,
             ease: "back.out(1.8)"
         }, "-=0.45")
         .from(".inline-gadget, #hero-pill", {
             scale: 0,
             rotation: () => gsap.utils.random(-90, 90),
-            duration: 1.15,
+            duration: 1.1,
             stagger: 0.12,
             ease: "elastic.out(1.1, 0.45)"
         }, "-=0.85")
         .to(squigglePath, {
             strokeDashoffset: 0,
-            duration: 0.9,
-            ease: "power3.out"
+            duration: 0.85,
+            ease: "steps(12)"
         }, "-=0.6")
         .from(".sticker", {
             scale: 0,
             rotation: -180,
             opacity: 0,
-            duration: 1.3,
+            duration: 1.2,
             stagger: 0.1,
             ease: "elastic.out(1, 0.5)"
         }, "-=0.9")
         .from(".hero-badges .badge, .hero-sub, .hero-cta-row > *", {
             y: 24,
             opacity: 0,
-            duration: 0.65,
+            duration: 0.6,
             stagger: 0.07,
             ease: "power3.out"
         }, "-=0.85");
 
-        // 2. Interactive Rubber-Band Letter Bounce on Hover (Both Hero & Footer!)
+        // 2. Interactive Rubber-Band + Voxel Pop on Character Hover
         document.querySelectorAll('.hero-char, .footer-char').forEach(char => {
             char.addEventListener('mouseenter', () => {
                 if (!gsap.isTweening(char)) {
@@ -2405,9 +2564,9 @@
                         { y: 0, scaleY: 1, scaleX: 1 },
                         {
                             keyframes: [
-                                { y: -16, scaleY: 1.25, scaleX: 0.85, duration: 0.18, ease: "power2.out" },
-                                { y: 0, scaleY: 0.82, scaleX: 1.18, duration: 0.18, ease: "power2.in" },
-                                { y: 0, scaleY: 1, scaleX: 1, duration: 0.5, ease: "elastic.out(1.2, 0.35)" }
+                                { y: -16, scaleY: 1.25, scaleX: 0.85, duration: 0.16, ease: "power2.out" },
+                                { y: 0, scaleY: 0.82, scaleX: 1.18, duration: 0.16, ease: "power2.in" },
+                                { y: 0, scaleY: 1, scaleX: 1, duration: 0.45, ease: "elastic.out(1.2, 0.35)" }
                             ]
                         }
                     );
@@ -2415,12 +2574,12 @@
             });
         });
 
-        // 3. Continuous Ambient Loops for Inline Gadgets & Stickers (Hero + Footer)
+        // 3. Continuous Stepped/Smooth Ambient Loops for Voxel Gadgets & Stickers
         gsap.to(".windmill-svg", { rotation: 360, duration: 10, repeat: -1, ease: "linear" });
-        gsap.to(".sticker-star, .footer-sticker-star", { rotation: 360, duration: 22, repeat: -1, ease: "linear" });
-        gsap.to(".sticker-ring, .footer-sticker-ring", { rotation: -360, duration: 28, repeat: -1, ease: "linear" });
-        gsap.to(".sticker-cross, .footer-sticker-cross", { rotation: 180, duration: 14, repeat: -1, yoyo: true, ease: "sine.inOut" });
-        gsap.to(".sticker-diamond, .footer-sticker-diamond", { y: -18, rotation: 25, duration: 3.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+        gsap.to(".sticker-star, .footer-sticker-star", { rotation: 360, duration: 22, repeat: -1, ease: "steps(36)" });
+        gsap.to(".sticker-ring, .footer-sticker-ring", { rotation: -360, duration: 28, repeat: -1, ease: "steps(36)" });
+        gsap.to(".sticker-cross, .footer-sticker-cross", { rotation: 180, duration: 14, repeat: -1, yoyo: true, ease: "steps(18)" });
+        gsap.to(".sticker-diamond, .footer-sticker-diamond", { y: -16, duration: 1.8, repeat: -1, yoyo: true, ease: "steps(6)" });
 
         // Live Oscilloscope Sine-Wave Animation inside the Hero Pill
         gsap.to("#gsap-wave-path", {
@@ -2431,21 +2590,30 @@
             ease: "sine.inOut"
         });
 
-        // 4. GSAP quickTo() Mouse-Tracking Physics for Stickers, Glow & Both Eye Pupils
-        const starX = gsap.quickTo(".sticker-star, .footer-sticker-star", "x", { duration: 0.8, ease: "power3.out" });
-        const starY = gsap.quickTo(".sticker-star, .footer-sticker-star", "y", { duration: 0.8, ease: "power3.out" });
-        const ringX = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "x", { duration: 1.1, ease: "power3.out" });
-        const ringY = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "y", { duration: 1.1, ease: "power3.out" });
-        const crossX = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "x", { duration: 0.9, ease: "power3.out" });
-        const crossY = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "y", { duration: 0.9, ease: "power3.out" });
-        const diaX = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "x", { duration: 1.2, ease: "power3.out" });
-        const diaY = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "y", { duration: 1.2, ease: "power3.out" });
-        const glowX = gsap.quickTo(".hero-glow", "x", { duration: 1.4, ease: "power2.out" });
-        const glowY = gsap.quickTo(".hero-glow", "y", { duration: 1.4, ease: "power2.out" });
-        const pupilX = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "x", { duration: 0.25, ease: "power2.out" });
-        const pupilY = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "y", { duration: 0.25, ease: "power2.out" });
+        // 4. GSAP quickTo() 60FPS Mouse-Tracking Physics
+        const starX = gsap.quickTo(".sticker-star, .footer-sticker-star", "x", { duration: 0.6, ease: "power3.out" });
+        const starY = gsap.quickTo(".sticker-star, .footer-sticker-star", "y", { duration: 0.6, ease: "power3.out" });
+        const ringX = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "x", { duration: 0.9, ease: "power3.out" });
+        const ringY = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "y", { duration: 0.9, ease: "power3.out" });
+        const crossX = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "x", { duration: 0.7, ease: "power3.out" });
+        const crossY = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "y", { duration: 0.7, ease: "power3.out" });
+        const diaX = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "x", { duration: 1.0, ease: "power3.out" });
+        const diaY = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "y", { duration: 1.0, ease: "power3.out" });
+        const glowX = gsap.quickTo(".hero-glow", "x", { duration: 1.2, ease: "power2.out" });
+        const glowY = gsap.quickTo(".hero-glow", "y", { duration: 1.2, ease: "power2.out" });
+        const pupilX = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "x", { duration: 0.2, ease: "power2.out" });
+        const pupilY = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "y", { duration: 0.2, ease: "power2.out" });
+
+        // Fast 60FPS Cursor quickTo
+        const cursor = document.querySelector('.cursor');
+        const cursorText = document.getElementById('cursor-text');
+        const curX = gsap.quickTo(cursor, "x", { duration: 0.08, ease: "power3.out" });
+        const curY = gsap.quickTo(cursor, "y", { duration: 0.08, ease: "power3.out" });
 
         window.addEventListener('mousemove', (e) => {
+            curX(e.clientX);
+            curY(e.clientY);
+
             const nx = (e.clientX / window.innerWidth - 0.5);
             const ny = (e.clientY / window.innerHeight - 0.5);
 
@@ -2457,11 +2625,11 @@
             crossY(ny * 55);
             diaX(nx * 60);
             diaY(ny * -60);
-            glowX(nx * 180);
-            glowY(ny * 180);
-            pupilX(nx * 22);
-            pupilY(ny * 22);
-        });
+            glowX(nx * 160);
+            glowY(ny * 160);
+            pupilX(nx * 20);
+            pupilY(ny * 20);
+        }, { passive: true });
 
         // 5. Scroll-Scrubbed Hero Scatter Effect
         gsap.to(".windmill-svg", {
@@ -2519,7 +2687,7 @@
             }
         });
 
-        // Scroll Reveal for Convocation Archive Cards
+// Scroll Reveal for Convocation Archive Cards
         gsap.from(".archive-card", {
             scrollTrigger: {
                 trigger: ".archive-section",
@@ -2532,7 +2700,7 @@
             ease: "power3.out"
         });
 
-        // 6. GreenSock 3D Scroll-Driven Cylinder / Tube Animation (codepen.io/GreenSock/pen/raerLaK style)
+        // 6. GreenSock 3D Scroll-Driven Cylinder / Tube Animation (60FPS Hardware-Accelerated)
         const tunnelTl = gsap.timeline({
             scrollTrigger: {
                 trigger: "#kinetic-scroll-tunnel",
@@ -2555,7 +2723,7 @@
             ease: "none"
         }, 0);
 
-        // 7. Scroll-Triggered GSAP.com Entrance Choreography for 06 // INITIATE CONTACT Footer
+        // 7. Scroll-Triggered GSAP.com + Voxel Entrance Choreography for 06 // INITIATE CONTACT Footer
         const footerTl = gsap.timeline({
             scrollTrigger: {
                 trigger: "#contact",
@@ -2582,8 +2750,8 @@
         }, "-=0.8")
         .to(footerSquigglePath, {
             strokeDashoffset: 0,
-            duration: 0.9,
-            ease: "power3.out"
+            duration: 0.85,
+            ease: "steps(12)"
         }, "-=0.6")
         .from(".footer-sticker", {
             scale: 0,
@@ -2596,19 +2764,12 @@
         .from(".footer-cta-actions > *", {
             y: 24,
             opacity: 0,
-            duration: 0.65,
+            duration: 0.6,
             stagger: 0.1,
             ease: "power3.out"
         }, "-=0.8");
 
-        // Cursor & Magnetic Buttons
-        const cursor = document.querySelector('.cursor');
-        const cursorText = document.getElementById('cursor-text');
-
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1, ease: "power3.out" });
-        });
-
+        // Cursor Hover States & Magnetic Voxel Buttons
         document.querySelectorAll('[data-cursor]').forEach(el => {
             el.addEventListener('mouseenter', () => {
                 cursorText.textContent = el.getAttribute('data-cursor');
@@ -2624,10 +2785,10 @@
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: "power2.out" });
+                gsap.to(btn, { x: x * 0.28, y: y * 0.28, duration: 0.25, ease: "power2.out" });
             });
             btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
+                gsap.to(btn, { x: 0, y: 0, duration: 0.55, ease: "elastic.out(1, 0.3)" });
             });
         });
     </script>
