@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abheet Seth — Software Engineer | Cyber Security & AI</title>
-    
+
     <!-- Google Fonts: Syne, Plus Jakarta Sans, JetBrains Mono + Silkscreen (Pixel Font for Minecraft Voxel Accents) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +23,6 @@
             --neon-purple: #9d95ff;
             --neon-orange: #ff8709;
             --neon-cyan: #00f0ff;
-            /* Minecraft Voxel 3D Bevel Shadows */
             --voxel-bevel: inset 2px 2px 0px rgba(255, 252, 225, 0.12), inset -2px -2px 0px rgba(0, 0, 0, 0.75);
             --voxel-bevel-green: inset 2px 2px 0px rgba(255, 255, 255, 0.35), inset -2px -2px 0px rgba(0, 80, 20, 0.8), 4px 4px 0px #000000;
             --voxel-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85);
@@ -35,7 +35,8 @@
             cursor: none;
         }
 
-        html, body {
+        html,
+        body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -43,12 +44,15 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Pixelated Voxel Grid + Dither Matrix Texture Overlay (GPU Cached Layer) */
+        /* Pixelated Voxel Grid + Dither Matrix Texture Overlay */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: 
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image:
                 linear-gradient(rgba(10, 228, 72, 0.025) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(10, 228, 72, 0.025) 1px, transparent 1px),
                 radial-gradient(rgba(255, 252, 225, 0.06) 2px, transparent 0);
@@ -74,6 +78,44 @@
             text-transform: uppercase;
         }
 
+        /* =================================================================
+           PERSISTENT 3D WEBGL CUBE STAGE
+           ================================================================= */
+        #webgl-seed-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            display: block;
+        }
+
+        /* Subtle HUD Telemetry Readout for the 3D Voxel Cube */
+        .seed-telemetry-hud {
+            position: fixed;
+            bottom: 1.4rem;
+            left: 1.8rem;
+            z-index: 90;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.45rem 0.85rem;
+            background: rgba(14, 16, 15, 0.9);
+            border: 1px solid rgba(10, 228, 72, 0.4);
+            box-shadow: 3px 3px 0px #000;
+            font-family: 'Silkscreen', monospace;
+            font-size: 0.62rem;
+            color: var(--text-muted);
+        }
+
+        .seed-telemetry-hud strong {
+            color: var(--neon-green);
+            font-weight: 400;
+        }
+
         /* 60FPS Voxel Block-Break Particle Canvas */
         #voxel-canvas {
             position: fixed;
@@ -84,7 +126,7 @@
             z-index: 9998;
         }
 
-        /* Preloader (Minecraft World Generation Style) */
+        /* Preloader */
         .preloader {
             position: fixed;
             inset: 0;
@@ -118,13 +160,7 @@
         .preloader-chunk-fill {
             height: 100%;
             width: 0%;
-            background: repeating-linear-gradient(
-                90deg,
-                var(--neon-green) 0px,
-                var(--neon-green) 12px,
-                #06992e 12px,
-                #06992e 16px
-            );
+            background: repeating-linear-gradient(90deg, var(--neon-green) 0px, var(--neon-green) 12px, #06992e 12px, #06992e 16px);
         }
 
         .counter {
@@ -137,12 +173,13 @@
             text-shadow: 6px 6px 0px #0ae448;
         }
 
-        /* Minecraft Pixel Crosshair & Voxel Selection Cursor */
+        /* Custom Pixel Crosshair Cursor */
         .cursor {
             width: 20px;
             height: 20px;
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 10001;
             transform: translate(-50%, -50%);
@@ -156,15 +193,23 @@
             transition: width 0.2s steps(4), height 0.2s steps(4), background-color 0.15s;
         }
 
-        /* Default Crosshair lines */
-        .cursor::before, .cursor::after {
+        .cursor::before,
+        .cursor::after {
             content: "";
             position: absolute;
             background: var(--neon-green);
             box-shadow: 1px 1px 0 #000;
         }
-        .cursor::before { width: 16px; height: 2px; }
-        .cursor::after { width: 2px; height: 16px; }
+
+        .cursor::before {
+            width: 16px;
+            height: 2px;
+        }
+
+        .cursor::after {
+            width: 2px;
+            height: 16px;
+        }
 
         .cursor span {
             opacity: 0;
@@ -179,7 +224,8 @@
             box-shadow: 4px 4px 0px #000;
         }
 
-        .cursor.active::before, .cursor.active::after {
+        .cursor.active::before,
+        .cursor.active::after {
             display: none;
         }
 
@@ -187,10 +233,11 @@
             opacity: 1;
         }
 
-        /* Minecraft XP Bar Style Top Scroll Progress */
+        /* Top XP Scroll Progress Bar */
         .scroll-progress-wrap {
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 6px;
             background: #070808;
@@ -201,13 +248,7 @@
         .scroll-progress {
             height: 100%;
             width: 0%;
-            background: repeating-linear-gradient(
-                90deg,
-                var(--neon-green) 0px,
-                var(--neon-green) 18px,
-                #068e2b 18px,
-                #068e2b 20px
-            );
+            background: repeating-linear-gradient(90deg, var(--neon-green) 0px, var(--neon-green) 18px, #068e2b 18px, #068e2b 20px);
             box-shadow: 0 0 10px rgba(10, 228, 72, 0.6);
             will-change: width;
         }
@@ -215,7 +256,8 @@
         /* Navigation */
         nav {
             position: fixed;
-            top: 6px; width: 100%;
+            top: 6px;
+            width: 100%;
             padding: 1.1rem 4rem;
             display: flex;
             justify-content: space-between;
@@ -237,7 +279,9 @@
             gap: 0.6rem;
         }
 
-        .logo span { color: var(--neon-green); }
+        .logo span {
+            color: var(--neon-green);
+        }
 
         .nav-links {
             display: flex;
@@ -253,7 +297,9 @@
             transition: color 0.15s;
         }
 
-        .nav-links a:not(.nav-btn):hover { color: var(--neon-green); }
+        .nav-links a:not(.nav-btn):hover {
+            color: var(--neon-green);
+        }
 
         .status-pill {
             display: flex;
@@ -276,18 +322,25 @@
         }
 
         .status-dot {
-            width: 8px; height: 8px;
+            width: 8px;
+            height: 8px;
             background: var(--neon-green);
             box-shadow: 0 0 8px var(--neon-green);
             animation: pulse 1.5s steps(2) infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.25; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.25;
+            }
         }
 
-        /* Voxel Beveled Button */
         .nav-btn {
             background: var(--neon-green);
             color: var(--bg);
@@ -307,7 +360,7 @@
         }
 
         /* =================================================================
-           GSAP.COM SIGNATURE HERO + MINECRAFT VOXEL PIXEL-ART GADGETS
+           HERO SECTION
            ================================================================= */
         .hero {
             min-height: 100vh;
@@ -319,7 +372,7 @@
             padding: 8.5rem 2rem 4rem;
             text-align: center;
             overflow: hidden;
-            z-index: 1;
+            z-index: 2;
             perspective: 1200px;
         }
 
@@ -348,7 +401,7 @@
             font-size: 0.68rem;
             padding: 0.45rem 0.9rem;
             border: 2px solid var(--surface-border);
-            background: #141715;
+            background: rgba(20, 23, 21, 0.88);
             color: var(--text-muted);
             box-shadow: var(--voxel-bevel), var(--voxel-shadow);
         }
@@ -358,7 +411,8 @@
             color: var(--neon-green);
         }
 
-        .hero-title, .footer-kinetic-title {
+        .hero-title,
+        .footer-kinetic-title {
             font-family: 'Syne', sans-serif;
             font-size: clamp(2.6rem, 7.8vw, 8.2rem);
             line-height: 0.96;
@@ -372,7 +426,8 @@
             user-select: none;
         }
 
-        .hero-row, .footer-row {
+        .hero-row,
+        .footer-row {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -381,28 +436,29 @@
             perspective: 1000px;
         }
 
-        /* Split 3D Character Styling + Voxel Shadow */
         .char-wrap {
             display: inline-block;
             overflow: visible;
             perspective: 800px;
         }
 
-        .hero-char, .footer-char {
+        .hero-char,
+        .footer-char {
             display: inline-block;
             transform-origin: 50% 100%;
             will-change: transform, opacity;
-            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85);
+            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.9);
             transition: color 0.15s steps(2);
         }
 
-        .hero-char:hover, .footer-char:hover {
+        .hero-char:hover,
+        .footer-char:hover {
             color: var(--neon-green);
             text-shadow: 4px 4px 0px #065f1e;
         }
 
-        /* Inline Animated Voxel Gadgets */
-        .inline-gadget, .footer-inline-gadget {
+        .inline-gadget,
+        .footer-inline-gadget {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -416,7 +472,6 @@
             height: clamp(2.4rem, 6vw, 5.6rem);
         }
 
-        /* Minecraft Enchanted Item Shimmer Pill */
         .word-pill-gsap {
             display: inline-flex;
             align-items: center;
@@ -424,7 +479,7 @@
             border: 3px solid var(--neon-green);
             padding: 0.04em 0.36em 0.08em;
             color: var(--neon-green);
-            background: linear-gradient(110deg, rgba(10, 228, 72, 0.1) 35%, rgba(157, 149, 255, 0.28) 50%, rgba(10, 228, 72, 0.1) 65%);
+            background: linear-gradient(110deg, rgba(14, 16, 15, 0.85) 35%, rgba(157, 149, 255, 0.32) 50%, rgba(14, 16, 15, 0.85) 65%);
             background-size: 200% 100%;
             animation: enchantGlint 3.5s linear infinite;
             box-shadow: var(--voxel-bevel), 6px 6px 0px #000000;
@@ -432,8 +487,13 @@
         }
 
         @keyframes enchantGlint {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         .word-pill-purple {
@@ -441,7 +501,6 @@
             color: var(--neon-purple);
         }
 
-        /* Pixel-Art Ender Eye Gadget */
         .gadget-eye {
             width: clamp(2.1rem, 4.6vw, 4.4rem);
             height: clamp(2.1rem, 4.6vw, 4.4rem);
@@ -470,7 +529,7 @@
             justify-content: center;
             height: clamp(2.2rem, 5.4vw, 5.2rem);
             padding: 0 1.1rem;
-            background: rgba(157, 149, 255, 0.12);
+            background: rgba(20, 23, 21, 0.88);
             border: 3px solid var(--neon-purple);
             box-shadow: var(--voxel-bevel), 5px 5px 0px #000;
         }
@@ -504,6 +563,7 @@
             font-size: 1.06rem;
             line-height: 1.65;
             z-index: 2;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
         }
 
         .hero-sub strong {
@@ -511,7 +571,6 @@
             font-weight: 600;
         }
 
-        /* Voxel Beveled Curly-Brace CTA Row */
         .hero-cta-row {
             margin-top: 2.4rem;
             display: flex;
@@ -548,7 +607,9 @@
             transform: translate(-2px, -2px);
         }
 
-        .gsap-brace-btn:hover .brace { color: var(--bg); }
+        .gsap-brace-btn:hover .brace {
+            color: var(--bg);
+        }
 
         .hero-secondary-link {
             font-family: 'Silkscreen', monospace;
@@ -556,7 +617,7 @@
             color: var(--text-muted);
             text-decoration: none;
             padding: 0.9rem 1.3rem;
-            background: var(--surface);
+            background: rgba(19, 22, 20, 0.9);
             border: 2px solid var(--surface-border);
             box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
             transition: color 0.2s, border-color 0.2s;
@@ -567,24 +628,48 @@
             border-color: var(--neon-green);
         }
 
-        /* Floating 16x16 Pixel-Art Voxel SVG Stickers */
-        .sticker, .footer-sticker {
+        .sticker,
+        .footer-sticker {
             position: absolute;
             z-index: 1;
             pointer-events: none;
             will-change: transform;
             image-rendering: pixelated;
-            filter: drop-shadow(5px 5px 0px rgba(0,0,0,0.85));
+            filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 0.85));
         }
-        .sticker-star { top: 17%; left: 7%; width: 80px; height: 80px; }
-        .sticker-ring { bottom: 16%; right: 8%; width: 96px; height: 96px; }
-        .sticker-cross { top: 20%; right: 10%; width: 72px; height: 72px; }
-        .sticker-diamond { bottom: 19%; left: 9%; width: 78px; height: 78px; }
 
-        /* Velocity Marquee */
+        .sticker-star {
+            top: 17%;
+            left: 7%;
+            width: 80px;
+            height: 80px;
+        }
+
+        .sticker-ring {
+            bottom: 16%;
+            right: 8%;
+            width: 96px;
+            height: 96px;
+        }
+
+        .sticker-cross {
+            top: 20%;
+            right: 10%;
+            width: 72px;
+            height: 72px;
+        }
+
+        .sticker-diamond {
+            bottom: 19%;
+            left: 9%;
+            width: 78px;
+            height: 78px;
+        }
+
+        /* Marquee */
         .marquee-wrapper {
             padding: 1rem 0;
-            background: #101311;
+            background: rgba(16, 19, 17, 0.92);
             color: var(--text);
             overflow: hidden;
             white-space: nowrap;
@@ -622,8 +707,8 @@
             margin-bottom: 0.9rem;
             display: inline-block;
             padding: 0.3rem 0.7rem;
-            background: rgba(10, 228, 72, 0.08);
-            border: 1px solid rgba(10, 228, 72, 0.35);
+            background: rgba(14, 18, 15, 0.92);
+            border: 1px solid rgba(10, 228, 72, 0.4);
             box-shadow: 3px 3px 0px #000;
         }
 
@@ -632,6 +717,15 @@
             font-size: clamp(2rem, 3.8vw, 3.2rem);
             font-weight: 700;
             letter-spacing: -0.03em;
+            text-shadow: 0 4px 16px rgba(0, 0, 0, 0.85);
+        }
+
+        /* =================================================================
+           3D CUBE EMERGENCE STYLING FOR SECTIONS
+           ================================================================= */
+        .cube-emerge-header {
+            will-change: transform, opacity;
+            transform-origin: center center;
         }
 
         /* About Section */
@@ -641,6 +735,7 @@
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            perspective: 1200px;
         }
 
         .reveal-text {
@@ -652,6 +747,7 @@
             flex-wrap: wrap;
             gap: 0.28em;
             margin-top: 1rem;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
         }
 
         .reveal-word {
@@ -664,15 +760,19 @@
             grid-template-columns: repeat(4, 1fr);
             border: 2px solid var(--surface-border);
             margin-top: 5rem;
-            background: var(--surface);
+            background: rgba(19, 22, 20, 0.92);
             box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
+            will-change: transform, opacity;
         }
 
         .stat-box {
             padding: 2.2rem;
             border-right: 2px solid var(--surface-border);
         }
-        .stat-box:last-child { border-right: none; }
+
+        .stat-box:last-child {
+            border-right: none;
+        }
 
         .stat-box h4 {
             font-family: 'Silkscreen', monospace;
@@ -689,13 +789,14 @@
         }
 
         /* =================================================================
-           UPGRADED EDITORIAL + VOXEL PROJECT COMPONENT
+           02 // ENGINEERED WORKS
            ================================================================= */
         .work-section {
             overflow: hidden;
             position: relative;
             z-index: 2;
             padding-top: 3rem;
+            perspective: 1400px;
         }
 
         .work-header {
@@ -712,6 +813,7 @@
             display: flex;
             flex-wrap: nowrap;
             will-change: transform;
+            transform-style: preserve-3d;
         }
 
         .panel {
@@ -721,14 +823,15 @@
             justify-content: center;
             align-items: center;
             padding: 1rem 4rem;
+            perspective: 1200px;
         }
 
         .project-card {
             width: 100%;
             max-width: 1220px;
             height: 78%;
-            background: #111412;
-            border: 2px solid rgba(255, 252, 225, 0.18);
+            background: rgba(17, 20, 18, 0.93);
+            border: 2px solid rgba(255, 252, 225, 0.2);
             box-shadow: var(--voxel-bevel), 8px 8px 0px #000000;
             display: grid;
             grid-template-columns: 1.15fr 0.85fr;
@@ -736,12 +839,12 @@
             overflow: hidden;
             text-decoration: none;
             color: var(--text);
-            transition: border-color 0.2s steps(2), transform 0.2s steps(2);
+            will-change: transform, opacity;
+            transition: border-color 0.2s steps(2);
         }
 
         .project-card:hover {
             border-color: var(--neon-green);
-            transform: translate(-3px, -3px);
         }
 
         .project-info {
@@ -819,19 +922,20 @@
 
         .project-schematic {
             position: relative;
-            background: #0a0c0b;
+            background: rgba(10, 12, 11, 0.94);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 1.8rem 2.2rem;
             overflow: hidden;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(10, 228, 72, 0.035) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(10, 228, 72, 0.035) 1px, transparent 1px);
             background-size: 16px 16px;
         }
 
-        .schematic-top, .schematic-bottom {
+        .schematic-top,
+        .schematic-bottom {
             display: flex;
             justify-content: space-between;
             font-family: 'Silkscreen', monospace;
@@ -849,7 +953,8 @@
 
         .schematic-status::before {
             content: "";
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             background: var(--neon-green);
         }
 
@@ -874,13 +979,16 @@
             transform: scale(1.04);
         }
 
-        /* Skills Voxel Bento Grid */
+        /* =================================================================
+           03 // CORE STACK & THEORY
+           ================================================================= */
         .skills-section {
             padding: 8rem 4rem;
             max-width: 1260px;
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            perspective: 1400px;
         }
 
         .bento-grid {
@@ -888,10 +996,11 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 1.2rem;
             margin-top: 2.5rem;
+            transform-style: preserve-3d;
         }
 
         .bento-card {
-            background: var(--surface);
+            background: rgba(19, 22, 20, 0.92);
             padding: 2.2rem;
             display: flex;
             flex-direction: column;
@@ -900,14 +1009,17 @@
             overflow: hidden;
             border: 2px solid var(--surface-border);
             box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
-            transition: border-color 0.2s, transform 0.2s steps(2);
+            will-change: transform, opacity;
+            transition: border-color 0.2s;
         }
 
         .bento-card:hover {
             border-color: var(--neon-green);
-            transform: translate(-2px, -2px);
         }
-        .bento-card.wide { grid-column: span 2; }
+
+        .bento-card.wide {
+            grid-column: span 2;
+        }
 
         .bento-card h3 {
             font-size: 1.35rem;
@@ -945,13 +1057,16 @@
             color: var(--neon-purple);
         }
 
-        /* Academic & Milestones */
+        /* =================================================================
+           04 // EDUCATION & HONORS
+           ================================================================= */
         .timeline-section {
             padding: 4rem 4rem 6rem;
             max-width: 1260px;
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            perspective: 1400px;
         }
 
         .timeline-grid {
@@ -959,19 +1074,20 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 1.2rem;
             margin-top: 2.5rem;
+            transform-style: preserve-3d;
         }
 
         .milestone-card {
-            background: var(--surface);
+            background: rgba(19, 22, 20, 0.92);
             border: 2px solid var(--surface-border);
             box-shadow: var(--voxel-bevel), 6px 6px 0px #000;
             padding: 2.2rem;
-            transition: border-color 0.2s, transform 0.2s steps(2);
+            will-change: transform, opacity;
+            transition: border-color 0.2s;
         }
 
         .milestone-card:hover {
             border-color: var(--neon-orange);
-            transform: translate(-2px, -2px);
         }
 
         .milestone-date {
@@ -1003,14 +1119,15 @@
         }
 
         /* =================================================================
-           FIXED SECTION: 05 // CONVOCATION & DEGREE ARCHIVE (ZERO CROPPING)
+           05 // CONVOCATION & DEGREE ARCHIVE
            ================================================================= */
         .archive-section {
-            padding: 4rem 4rem 7rem;
+            padding: 4rem 4rem 9rem;
             max-width: 1260px;
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            perspective: 1400px;
         }
 
         .archive-header {
@@ -1028,7 +1145,7 @@
             color: var(--text);
             padding: 0.55rem 1rem;
             border: 2px solid var(--surface-border);
-            background: var(--surface);
+            background: rgba(19, 22, 20, 0.92);
             box-shadow: var(--voxel-bevel), 4px 4px 0px #000;
             display: flex;
             align-items: center;
@@ -1045,15 +1162,17 @@
             display: flex;
             flex-direction: column;
             gap: 1.4rem;
+            transform-style: preserve-3d;
         }
 
         .archive-card {
-            background: #111312;
+            background: rgba(17, 19, 18, 0.92);
             border: 2px solid rgba(255, 252, 225, 0.16);
             box-shadow: var(--voxel-bevel), 7px 7px 0px #000;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            will-change: transform, opacity;
             transition: border-color 0.25s;
         }
 
@@ -1090,7 +1209,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(10, 228, 72, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(10, 228, 72, 0.03) 1px, transparent 1px);
             background-size: 16px 16px;
@@ -1115,7 +1234,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background: #111312;
+            background: rgba(17, 19, 18, 0.94);
         }
 
         .archive-stage-info h3 {
@@ -1161,6 +1280,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1.4rem;
+            transform-style: preserve-3d;
         }
 
         .archive-doc-frame {
@@ -1171,7 +1291,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(10, 228, 72, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(10, 228, 72, 0.03) 1px, transparent 1px);
             background-size: 16px 16px;
@@ -1195,7 +1315,7 @@
         .archive-card-footer {
             padding: 1.5rem 1.8rem;
             border-top: 2px solid rgba(255, 252, 225, 0.08);
-            background: #111312;
+            background: rgba(17, 19, 18, 0.94);
         }
 
         .archive-card-footer h3 {
@@ -1211,152 +1331,6 @@
             color: var(--text-muted);
             line-height: 1.55;
         }
-
-        /* =================================================================
-           60FPS HARDWARE-ACCELERATED 3D SCROLL CYLINDER / TUBE SECTION
-           (No backdrop-filter blur on 3D faces to guarantee locked 60FPS)
-           ================================================================= */
-        .tunnel-section {
-            height: 100vh;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 3.5rem 4rem;
-            border-top: 2px solid var(--surface-border);
-            background: radial-gradient(circle at 50% 50%, rgba(157, 149, 255, 0.07) 0%, rgba(10, 228, 72, 0.04) 38%, rgba(14, 16, 15, 0) 70%);
-            z-index: 2;
-        }
-
-        .tunnel-hud-top, .tunnel-hud-bottom {
-            width: 100%;
-            max-width: 1260px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Silkscreen', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .tunnel-stage {
-            position: relative;
-            width: 100%;
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 1100px;
-            overflow: visible;
-        }
-
-        /* Central 3D Voxel Cube / Wireframe Core */
-        .tunnel-core-mesh {
-            position: absolute;
-            width: clamp(220px, 28vw, 340px);
-            height: clamp(220px, 28vw, 340px);
-            transform-style: preserve-3d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            will-change: transform;
-        }
-
-        .core-ring {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed rgba(10, 228, 72, 0.35);
-            transform-style: preserve-3d;
-        }
-
-        .core-ring.ring-2 {
-            inset: 12%;
-            border: 2px solid rgba(157, 149, 255, 0.35);
-            transform: rotateX(60deg) rotateY(25deg);
-        }
-
-        .core-ring.ring-3 {
-            inset: 24%;
-            border: 2px dashed rgba(255, 135, 9, 0.4);
-            transform: rotateY(65deg) rotateX(-25deg);
-        }
-
-        .core-ring.ring-4 {
-            inset: 36%;
-            border: 2px solid rgba(0, 240, 255, 0.4);
-        }
-
-        .cylinder-3d {
-            position: relative;
-            width: 100%;
-            height: 74px;
-            transform-style: preserve-3d;
-            will-change: transform;
-        }
-
-        .cylinder-face {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: min(86vw, 820px);
-            height: 72px;
-            margin-left: calc(min(86vw, 820px) / -2);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            background: #141715;
-            border: 2px solid rgba(255, 252, 225, 0.2);
-            box-shadow: var(--voxel-bevel), 0 10px 25px rgba(0, 0, 0, 0.7);
-            backface-visibility: visible;
-            transform-style: preserve-3d;
-        }
-
-        .cylinder-face.accent-green {
-            border-color: var(--neon-green);
-            background: #101d14;
-        }
-
-        .cylinder-face.accent-purple {
-            border-color: var(--neon-purple);
-            background: #161523;
-        }
-
-        .cylinder-face.accent-orange {
-            border-color: var(--neon-orange);
-            background: #21160e;
-        }
-
-        .cylinder-face.accent-cyan {
-            border-color: var(--neon-cyan);
-            background: #0e1e21;
-        }
-
-        .face-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(1.1rem, 2.5vw, 2.1rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: var(--text);
-            text-transform: uppercase;
-        }
-
-        .face-meta {
-            font-family: 'Silkscreen', monospace;
-            font-size: 0.68rem;
-            color: var(--text-muted);
-        }
-
-        .accent-green .face-meta { color: var(--neon-green); }
-        .accent-purple .face-meta { color: var(--neon-purple); }
-        .accent-orange .face-meta { color: var(--neon-orange); }
-        .accent-cyan .face-meta { color: var(--neon-cyan); }
 
         /* Lightbox Modal */
         .lightbox {
@@ -1378,7 +1352,8 @@
             pointer-events: auto;
         }
 
-        .lightbox-top, .lightbox-bottom {
+        .lightbox-top,
+        .lightbox-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1420,7 +1395,7 @@
         }
 
         /* =================================================================
-           UPGRADED GSAP.COM KINETIC FOOTER SECTION (06 // INITIATE CONTACT)
+           06 // INITIATE CONTACT FOOTER
            ================================================================= */
         footer {
             min-height: 92vh;
@@ -1448,10 +1423,33 @@
             z-index: 0;
         }
 
-        .footer-sticker-star { top: 18%; left: 8%; width: 76px; height: 76px; }
-        .footer-sticker-ring { bottom: 22%; right: 8%; width: 92px; height: 92px; }
-        .footer-sticker-cross { top: 22%; right: 11%; width: 64px; height: 64px; }
-        .footer-sticker-diamond { bottom: 24%; left: 10%; width: 72px; height: 72px; }
+        .footer-sticker-star {
+            top: 18%;
+            left: 8%;
+            width: 76px;
+            height: 76px;
+        }
+
+        .footer-sticker-ring {
+            bottom: 22%;
+            right: 8%;
+            width: 92px;
+            height: 92px;
+        }
+
+        .footer-sticker-cross {
+            top: 22%;
+            right: 11%;
+            width: 64px;
+            height: 64px;
+        }
+
+        .footer-sticker-diamond {
+            bottom: 24%;
+            left: 10%;
+            width: 72px;
+            height: 72px;
+        }
 
         .footer-cta {
             text-align: center;
@@ -1523,47 +1521,113 @@
             transition: color 0.15s;
         }
 
-        .social-links a:hover { color: var(--neon-green); }
+        .social-links a:hover {
+            color: var(--neon-green);
+        }
 
         @media (max-width: 968px) {
-            nav { padding: 1.1rem 1.8rem; }
-            .nav-links a:not(.nav-btn), .status-pill { display: none; }
-            .about-section, .skills-section, .timeline-section, .archive-section { padding: 4rem 1.5rem; }
-            .project-card { grid-template-columns: 1fr; height: auto; }
-            .project-info { border-right: none; border-bottom: 2px solid var(--surface-border); padding: 2rem; }
-            .project-schematic { height: 220px; }
-            .bento-grid, .timeline-grid, .archive-stage-body, .archive-docs-grid { grid-template-columns: 1fr; }
-            .archive-stage-media { border-right: none; border-bottom: 2px solid rgba(255, 252, 225, 0.08); }
-            .bento-card.wide { grid-column: span 1; }
-            .about-stats { grid-template-columns: 1fr 1fr; }
-            .archive-doc-frame { height: 340px; }
-            .panel { padding: 1rem 1.5rem; }
-            .lightbox { padding: 1.5rem; }
-            .sticker, .footer-sticker { display: none; }
-            .tunnel-section { padding: 2rem 1.2rem; }
-            .face-meta { display: none; }
-            .cylinder-face { justify-content: center; }
+            nav {
+                padding: 1.1rem 1.8rem;
+            }
+
+            .nav-links a:not(.nav-btn),
+            .status-pill,
+            .seed-telemetry-hud {
+                display: none;
+            }
+
+            .about-section,
+            .skills-section,
+            .timeline-section,
+            .archive-section {
+                padding: 4rem 1.5rem;
+            }
+
+            .project-card {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .project-info {
+                border-right: none;
+                border-bottom: 2px solid var(--surface-border);
+                padding: 2rem;
+            }
+
+            .project-schematic {
+                height: 220px;
+            }
+
+            .bento-grid,
+            .timeline-grid,
+            .archive-stage-body,
+            .archive-docs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .archive-stage-media {
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 252, 225, 0.08);
+            }
+
+            .bento-card.wide {
+                grid-column: span 1;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .archive-doc-frame {
+                height: 340px;
+            }
+
+            .panel {
+                padding: 1rem 1.5rem;
+            }
+
+            .lightbox {
+                padding: 1.5rem;
+            }
+
+            .sticker,
+            .footer-sticker {
+                display: none;
+            }
         }
     </style>
 </head>
+
 <body>
 
+    <!-- =================================================================
+         PERSISTENT 3D WEBGL CUBE STAGE (STARTS CLOSED, OPENS SLOWLY ON SCROLL)
+         ================================================================= -->
+    <canvas id="webgl-seed-canvas" aria-hidden="true"></canvas>
+
+    <!-- Live 3D Cube State Telemetry HUD -->
+    <div class="seed-telemetry-hud" aria-hidden="true">
+        <span>3D CUBE: <strong id="seed-phase-readout">STATE // SEALED CLOSED [0%]</strong></span>
+        <span>•</span>
+        <span id="seed-coords-readout">OPEN: 0%</span>
+    </div>
+
     <!-- 60FPS Voxel Block-Break Particle Canvas -->
-    <canvas id="voxel-canvas"></canvas>
+    <canvas id="voxel-canvas" aria-hidden="true"></canvas>
 
     <!-- Minecraft XP Bar Top Scroll Progress -->
     <div class="scroll-progress-wrap">
         <div class="scroll-progress" id="scroll-progress"></div>
     </div>
 
-    <!-- Preloader (Minecraft World Generation Style) -->
+    <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-top">
             <span>GENERATING WORLD // ABHEET_SETH_2026</span>
             <span>SEED: 22BCY10162 • CGPA: 8.94</span>
         </div>
         <div>
-            <div class="pixel-font" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">BUILDING TERRAIN &amp; LOADING CHUNKS...</div>
+            <div class="pixel-font" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem;">LOCKING 3D VOXEL CUBE &amp; LOADING CHUNKS...</div>
             <div class="preloader-chunk-bar">
                 <div class="preloader-chunk-fill" id="preloader-fill"></div>
             </div>
@@ -1574,7 +1638,7 @@
     <!-- Custom Pixel Crosshair Cursor -->
     <div class="cursor"><span id="cursor-text">[OPEN]</span></div>
 
-    <!-- Full-Screen Lightbox Modal for Degree & Convocation Photos -->
+    <!-- Full-Screen Lightbox Modal -->
     <div class="lightbox" id="lightbox">
         <div class="lightbox-top">
             <span id="lightbox-code">ARCHIVE // VERIFIED DOCUMENT</span>
@@ -1592,13 +1656,12 @@
     <!-- Navigation -->
     <nav>
         <a href="#" class="logo">
-            <!-- Mini 8-bit Voxel Block Icon -->
             <svg width="22" height="22" viewBox="0 0 16 16" shape-rendering="crispEdges">
-                <rect x="2" y="2" width="12" height="12" fill="#0ae448"/>
-                <rect x="2" y="2" width="12" height="3" fill="#6bff95"/>
-                <rect x="4" y="6" width="3" height="3" fill="#0e100f"/>
-                <rect x="9" y="6" width="3" height="3" fill="#0e100f"/>
-                <rect x="6" y="9" width="4" height="4" fill="#0e100f"/>
+                <rect x="2" y="2" width="12" height="12" fill="#0ae448" />
+                <rect x="2" y="2" width="12" height="3" fill="#6bff95" />
+                <rect x="4" y="6" width="3" height="3" fill="#0e100f" />
+                <rect x="9" y="6" width="3" height="3" fill="#0e100f" />
+                <rect x="6" y="9" width="4" height="4" fill="#0e100f" />
             </svg>
             𝗔𝗯𝗵𝗲𝗲𝘁 𝗦𝗲𝘁𝗵 𝗣𝗼𝗿𝘁𝗳𝗼𝗹𝗶𝗼<span>.</span>
         </a>
@@ -1618,35 +1681,31 @@
     </nav>
 
     <!-- =================================================================
-         GSAP.COM STYLE HERO + MINECRAFT PIXEL-ART SVG STICKERS
+         HERO SECTION (3D CUBE IS 100% SEALED CLOSED HERE)
          ================================================================= -->
     <section class="hero" id="hero">
         <div class="hero-glow"></div>
 
-        <!-- 1. Pixel-Art Nether Star Sticker -->
         <svg class="sticker sticker-star" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448"/>
-            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
-            <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
+            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448" />
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1" />
+            <rect x="7" y="7" width="2" height="2" fill="#0e100f" />
         </svg>
 
-        <!-- 2. Pixel-Art Ender Portal Frame Ring -->
         <svg class="sticker sticker-ring" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff"/>
-            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
+            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff" />
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448" />
         </svg>
 
-        <!-- 3. Pixel-Art Redstone Torch / Cyber Cross -->
         <svg class="sticker sticker-cross" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709"/>
-            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
+            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709" />
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1" />
         </svg>
 
-        <!-- 4. Pixel-Art Minecraft Diamond / Emerald Gem -->
         <svg class="sticker sticker-diamond" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff"/>
-            <path d="M6 3h4v2h2v4h-2v2H6V9H4V5h2V3z" fill="#fffce1"/>
-            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
+            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff" />
+            <path d="M6 3h4v2h2v4h-2v2H6V9H4V5h2V3z" fill="#fffce1" />
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448" />
         </svg>
 
         <div class="hero-badges">
@@ -1654,22 +1713,20 @@
             <span class="badge">CYBER SECURITY &amp; DIGITAL FORENSICS</span>
             <span class="badge">XP LEVEL: 8.94 / 10</span>
         </div>
-        
+
         <h1 class="hero-title">
-            <!-- Row 1: ABHEET + Spinning Pixel Starburst Gadget + SETH -->
             <div class="hero-row">
                 <span class="split-words" data-text="ABHEET">ABHEET</span>
                 <span class="inline-gadget gadget-windmill" aria-hidden="true">
                     <svg class="windmill-svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
-                        <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#ff8709"/>
-                        <rect x="5" y="5" width="6" height="6" fill="#0ae448"/>
-                        <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
+                        <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#ff8709" />
+                        <rect x="5" y="5" width="6" height="6" fill="#0ae448" />
+                        <rect x="7" y="7" width="2" height="2" fill="#0e100f" />
                     </svg>
                 </span>
                 <span class="split-words" data-text="SETH">SETH</span>
             </div>
 
-            <!-- Row 2: Enchanted Voxel Pill [CYBER SECURITY] + Pixel Eye of Ender + & AI -->
             <div class="hero-row">
                 <span class="word-pill-gsap" id="hero-pill">
                     <span class="split-words" data-text="CYBER">CYBER</span>
@@ -1681,27 +1738,25 @@
                 <span class="split-words" data-text="& AI">&amp; AI</span>
             </div>
 
-            <!-- Row 3: Pixel Step-Wave Pill + ENGINEER with Voxel Squiggle -->
             <div class="hero-row">
                 <span class="inline-gadget gadget-wave-pill" aria-hidden="true">
                     <svg viewBox="0 0 120 40" fill="none">
-                        <path id="gsap-wave-path" d="M 4 20 Q 18 2, 32 20 T 60 20 T 88 20 T 116 20" stroke="#9d95ff" stroke-width="5" stroke-linecap="square" fill="none"/>
+                        <path id="gsap-wave-path" d="M 4 20 Q 18 2, 32 20 T 60 20 T 88 20 T 116 20" stroke="#9d95ff" stroke-width="5" stroke-linecap="square" fill="none" />
                     </svg>
                 </span>
                 <span class="hero-underline-wrap">
                     <span class="split-words" data-text="ENGINEER">ENGINEER</span>
                     <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
-                        <path id="squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#0ae448" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+                        <path id="squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#0ae448" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter" />
                     </svg>
                 </span>
             </div>
         </h1>
 
         <p class="hero-sub">
-            Computer Science &amp; Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software. <span class="pixel-font" style="font-size: 0.7rem; color: var(--neon-green);">[CLICK ANYWHERE TO BREAK VOXELS]</span>
+            Computer Science &amp; Engineering graduate combining <strong>Full-Stack MERN Development</strong>, <strong>Cyber Security</strong>, and <strong>Deep Learning</strong> to build resilient, high-utility software. <span class="pixel-font" style="font-size: 0.7rem; color: var(--neon-green);">[SCROLL DOWN TO UNLOCK &amp; OPEN THE 3D CUBE ↓]</span>
         </p>
 
-        <!-- Voxel Curly-Brace Action Bar -->
         <div class="hero-cta-row">
             <a href="#work" class="gsap-brace-btn magnetic">
                 <span class="brace brace-left">[</span>
@@ -1717,18 +1772,20 @@
         <div class="marquee-track" id="marquee-track"></div>
     </div>
 
-    <!-- About Section -->
+    <!-- 01 // About Section -->
     <section class="about-section" id="about">
-        <span class="section-tag">01 // ENGINEERING OVERVIEW</span>
+        <div class="cube-emerge-header">
+            <span class="section-tag">01 // ENGINEERING OVERVIEW</span>
+        </div>
         <div class="reveal-text" id="about-text"></div>
         <div class="about-stats" id="about-stats"></div>
     </section>
 
-    <!-- Upgraded Horizontal Scroll Projects -->
+    <!-- 02 // Engineered Works (Emerges from Opening 3D Cube) -->
     <section class="work-section" id="work">
-        <div class="work-header">
+        <div class="work-header cube-emerge-header" id="work-header">
             <div>
-                <span class="section-tag">02 // SELECTED SYSTEMS</span>
+                <span class="section-tag">02 // UNBOXED FROM 3D CORE</span>
                 <h2 class="section-heading">Engineered Works</h2>
             </div>
             <p class="pixel-font" style="color: var(--text-muted); font-size: 0.72rem;">SCROLL TO INSPECT [01 — 05] →</p>
@@ -1737,23 +1794,27 @@
         <div class="work-container" id="work-container"></div>
     </section>
 
-    <!-- Bento Arsenal -->
+    <!-- 03 // Core Stack & Theory (Emerges from Opening 3D Cube) -->
     <section class="skills-section" id="skills">
-        <span class="section-tag">03 // TECHNICAL PROFICIENCY</span>
-        <h2 class="section-heading">Core Stack &amp; Theory</h2>
+        <div class="cube-emerge-header" id="skills-header">
+            <span class="section-tag">03 // TECHNICAL PROFICIENCY</span>
+            <h2 class="section-heading">Core Stack &amp; Theory</h2>
+        </div>
         <div class="bento-grid" id="bento-grid"></div>
     </section>
 
-    <!-- Academic & Milestones -->
+    <!-- 04 // Education & Honors (Emerges from Opening 3D Cube) -->
     <section class="timeline-section" id="journey">
-        <span class="section-tag">04 // CREDENTIALS &amp; VISION</span>
-        <h2 class="section-heading">Education &amp; Honors</h2>
+        <div class="cube-emerge-header" id="journey-header">
+            <span class="section-tag">04 // CREDENTIALS &amp; VISION</span>
+            <h2 class="section-heading">Education &amp; Honors</h2>
+        </div>
         <div class="timeline-grid" id="timeline-grid"></div>
     </section>
 
-    <!-- FIXED SECTION: 05 // CONVOCATION & DEGREE ARCHIVE -->
+    <!-- 05 // 7th Annual Convocation & Degree (Emerges from Opening 3D Cube) -->
     <section class="archive-section" id="convocation">
-        <div class="archive-header">
+        <div class="archive-header cube-emerge-header" id="convocation-header">
             <div>
                 <span class="section-tag">05 // OFFICIAL ACADEMIC ARCHIVE</span>
                 <h2 class="section-heading">7th Annual Convocation &amp; Degree</h2>
@@ -1767,84 +1828,51 @@
         <div class="archive-layout" id="archive-grid"></div>
     </section>
 
-    <!-- =================================================================
-         60FPS GREENSOCK 3D SCROLL-DRIVEN KINETIC CYLINDER / TUBE
-         ================================================================= -->
-    <section class="tunnel-section" id="kinetic-scroll-tunnel">
-        <div class="tunnel-hud-top">
-            <span style="color: var(--neon-green)">■ 3D VOXEL CYLINDER // SCROLL-DRIVEN TUBE</span>
-            <span>60 FPS HARDWARE ACCELERATED • 360° ARCHITECTURE</span>
-        </div>
-
-        <div class="tunnel-stage" id="tunnel-stage">
-            <!-- 3D Voxel Wireframe Core -->
-            <div class="tunnel-core-mesh" id="tunnel-core-mesh">
-                <div class="core-ring ring-1"></div>
-                <div class="core-ring ring-2"></div>
-                <div class="core-ring ring-3"></div>
-                <div class="core-ring ring-4"></div>
-            </div>
-
-            <!-- 3D Rotating Cylinder Tube -->
-            <div class="cylinder-3d" id="cylinder-3d"></div>
-        </div>
-
-        <div class="tunnel-hud-bottom">
-            <span>ABHEET SETH // FULL-STACK • CYBER • AI</span>
-            <span>[ SCROLL TO ROTATE 3D CYLINDER ↓ ]</span>
-        </div>
-    </section>
-
-    <!-- =================================================================
-         UPGRADED GSAP.COM + MINECRAFT KINETIC FOOTER (06 // INITIATE CONTACT)
-         ================================================================= -->
+    <!-- 06 // Initiate Contact Footer -->
     <footer id="contact">
         <div class="footer-glow"></div>
 
-        <!-- Floating 16x16 Pixel-Art Stickers for Footer -->
         <svg class="footer-sticker footer-sticker-star" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448"/>
-            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
+            <path d="M7 0h2v4h3v3h4v2h-4v3H9v4H7v-4H4V9H0V7h4V4h3V0z" fill="#0ae448" />
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1" />
         </svg>
 
         <svg class="footer-sticker footer-sticker-ring" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff"/>
-            <rect x="6" y="6" width="4" height="4" fill="#0ae448"/>
+            <path d="M4 1h8v2h2v2h1v6h-1v2h-2v2H4v-2H2v-2H1V5h1V3h2V1zm1 3v1H4v6h1v1h6v-1h1V5h-1V4H5z" fill="#9d95ff" />
+            <rect x="6" y="6" width="4" height="4" fill="#0ae448" />
         </svg>
 
         <svg class="footer-sticker footer-sticker-cross" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709"/>
-            <rect x="6" y="6" width="4" height="4" fill="#fffce1"/>
+            <path d="M6 1h4v5h5v4h-5v5H6v-5H1V6h5V1z" fill="#ff8709" />
+            <rect x="6" y="6" width="4" height="4" fill="#fffce1" />
         </svg>
 
         <svg class="footer-sticker footer-sticker-diamond" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff"/>
-            <rect x="6" y="6" width="4" height="4" fill="#ff8709"/>
+            <path d="M5 1h6v2h2v2h1v6h-1v2h-2v2H5v-2H3v-2H2V5h1V3h2V1z" fill="#00f0ff" />
+            <rect x="6" y="6" width="4" height="4" fill="#ff8709" />
         </svg>
 
         <div class="footer-cta">
             <span class="section-tag">06 // INITIATE CONTACT</span>
 
             <h2 class="footer-kinetic-title">
-                <!-- Row 1: LET'S + Spinning Pixel Starburst + ENGINEER -->
                 <div class="footer-row">
                     <span class="split-footer-words" data-text="LET'S">LET'S</span>
                     <span class="footer-inline-gadget gadget-windmill" aria-hidden="true">
                         <svg class="windmill-svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
-                            <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#0ae448"/>
-                            <rect x="5" y="5" width="6" height="6" fill="#9d95ff"/>
-                            <rect x="7" y="7" width="2" height="2" fill="#0e100f"/>
+                            <path d="M7 1h2v3h3v3h3v2h-3v3H9v3H7v-3H4V9H1V7h3V4h3V1z" fill="#0ae448" />
+                            <rect x="5" y="5" width="6" height="6" fill="#9d95ff" />
+                            <rect x="7" y="7" width="2" height="2" fill="#0e100f" />
                         </svg>
                     </span>
                     <span class="split-footer-words" data-text="ENGINEER">ENGINEER</span>
                 </div>
 
-                <!-- Row 2: SOMETHING (with Stepped Pixel Squiggle) + Pixel Eye + [SOLID.] Pill -->
                 <div class="footer-row">
                     <span class="hero-underline-wrap">
                         <span class="split-footer-words" data-text="SOMETHING">SOMETHING</span>
                         <svg class="hero-squiggle" viewBox="0 0 420 28" fill="none" preserveAspectRatio="none">
-                            <path id="footer-squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#ff8709" stroke-width="6" stroke-linecap="square"/>
+                            <path id="footer-squiggle-path" d="M4 20 L70 8 L140 22 L210 8 L280 22 L350 8 L416 18" stroke="#ff8709" stroke-width="6" stroke-linecap="square" />
                         </svg>
                     </span>
                     <span class="footer-inline-gadget gadget-eye" aria-hidden="true">
@@ -1874,10 +1902,13 @@
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // Force GPU 3D acceleration across all GSAP tweens for locked 60FPS
-        gsap.config({ force3D: true });
+        gsap.config({
+            force3D: true
+        });
+        gsap.registerPlugin(ScrollTrigger);
 
         const CONVOCATION_MEDIA = {
             stagePhoto: {
@@ -1886,13 +1917,30 @@
                 date: "03 OCT 2026",
                 title: "7th Annual Convocation Ceremony — VIT Bhopal University",
                 desc: "Conferral of the Bachelor of Technology degree in Computer Science & Engineering (Cyber Security & Digital Forensics) at the Convocation Hall, VIT Bhopal University.",
-                meta: [
-                    { label: "EVENT", value: "7th Convocation" },
-                    { label: "DATE", value: "03.10.2026" },
-                    { label: "VENUE", value: "Convocation Hall" },
-                    { label: "CGPA", value: "8.94 / 10" },
-                    { label: "REG NO", value: "22BCY10162" },
-                    { label: "SPECIALIZATION", value: "Cyber Security" }
+                meta: [{
+                        label: "EVENT",
+                        value: "7th Convocation"
+                    },
+                    {
+                        label: "DATE",
+                        value: "03.10.2026"
+                    },
+                    {
+                        label: "VENUE",
+                        value: "Convocation Hall"
+                    },
+                    {
+                        label: "CGPA",
+                        value: "8.94 / 10"
+                    },
+                    {
+                        label: "REG NO",
+                        value: "22BCY10162"
+                    },
+                    {
+                        label: "SPECIALIZATION",
+                        value: "Cyber Security"
+                    }
                 ]
             },
             degreeCert: {
@@ -1913,7 +1961,6 @@
 
         const ABHEET_DATA = {
             email: "aseth9588@gmail.com",
-            
             marqueeSkills: [
                 "CYBER SECURITY & DIGITAL FORENSICS",
                 "MERN STACK",
@@ -1923,18 +1970,25 @@
                 "DOCKER & LINUX",
                 "GSSOC '24 TOP 950"
             ],
-
             aboutBio: "Graduated on 3 October 2026 from VIT Bhopal with a B.Tech. in Computer Science and Engineering (Cyber Security & Digital Forensics) and an 8.94 CGPA. I bridge foundational computer science—DSA, Operating Systems, Networks, DBMS, and Theory of Computation—with full-stack product development, deep learning, and security engineering.",
-
-            stats: [
-                { number: "8.94", label: "B.Tech. CGPA / 10 (VIT Bhopal)" },
-                { number: "Top 950", label: "GirlScript Summer of Code '24" },
-                { number: "05", label: "Production & Research Systems" },
-                { number: "IIT KGP", label: "NPTEL Cyber-Physical Systems" }
-            ],
-
-            projects: [
+            stats: [{
+                    number: "8.94",
+                    label: "B.Tech. CGPA / 10 (VIT Bhopal)"
+                },
                 {
+                    number: "Top 950",
+                    label: "GirlScript Summer of Code '24"
+                },
+                {
+                    number: "05",
+                    label: "Production & Research Systems"
+                },
+                {
+                    number: "IIT KGP",
+                    label: "NPTEL Cyber-Physical Systems"
+                }
+            ],
+            projects: [{
                     id: "01",
                     category: "FULL-STACK MERN PLATFORM",
                     title: "PawVaidya",
@@ -1948,19 +2002,15 @@
                             <rect x="10" y="30" width="85" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
                             <text x="22" y="52" fill="#fffce1" font-family="Silkscreen" font-size="8">CLIENT UI</text>
                             <text x="22" y="66" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">React + TW</text>
-                            
                             <rect x="10" y="120" width="85" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
                             <text x="22" y="142" fill="#fffce1" font-family="Silkscreen" font-size="8">ADMIN OPS</text>
                             <text x="22" y="156" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">RBAC Panel</text>
-
                             <rect x="125" y="65" width="80" height="70" stroke="#0ae448" stroke-width="2" fill="#0f1912"/>
                             <text x="138" y="96" fill="#0ae448" font-family="Silkscreen" font-size="8">REST API</text>
                             <text x="138" y="112" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Node + JWT</text>
-
                             <rect x="235" y="75" width="75" height="50" stroke="#fffce1" stroke-opacity="0.3" fill="#141715"/>
                             <text x="245" y="98" fill="#fffce1" font-family="Silkscreen" font-size="8">MONGODB</text>
                             <text x="248" y="111" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">Cluster</text>
-
                             <path d="M95 55 H110 V90 H125" stroke="#fffce1" stroke-opacity="0.35" stroke-dasharray="4 4"/>
                             <path d="M95 145 H110 V110 H125" stroke="#fffce1" stroke-opacity="0.35" stroke-dasharray="4 4"/>
                             <path d="M205 100 H235" stroke="#0ae448" stroke-width="2"/>
@@ -1986,13 +2036,11 @@
                             <path d="M140 45 H190 V100 H240" stroke="#9d95ff" stroke-width="2"/>
                             <path d="M140 45 H270" stroke="#0ae448" stroke-dasharray="4 4"/>
                             <path d="M140 155 H190 V100 H240" stroke="#fffce1" stroke-opacity="0.3"/>
-
                             <rect x="33" y="93" width="14" height="14" fill="#141715" stroke="#fffce1" stroke-width="2"/>
                             <rect x="133" y="38" width="14" height="14" fill="#141715" stroke="#9d95ff" stroke-width="2"/>
                             <rect x="133" y="148" width="14" height="14" fill="#141715" stroke="#fffce1" stroke-opacity="0.4" stroke-width="2"/>
                             <rect x="233" y="93" width="16" height="16" fill="#0f1912" stroke="#0ae448" stroke-width="2"/>
                             <rect x="265" y="40" width="10" height="10" fill="#9d95ff"/>
-
                             <text x="20" y="128" fill="#8a8c84" font-family="Silkscreen" font-size="7">root/main</text>
                             <text x="110" y="25" fill="#9d95ff" font-family="Silkscreen" font-size="7">feat/ast</text>
                             <text x="215" y="128" fill="#0ae448" font-family="Silkscreen" font-size="7">HEAD v2.4</text>
@@ -2014,15 +2062,12 @@
                             <rect x="32" y="65" width="45" height="65" stroke="#fffce1" stroke-opacity="0.45" fill="#141715"/>
                             <rect x="44" y="75" width="45" height="65" stroke="#ff8709" stroke-width="2" fill="#181410"/>
                             <text x="18" y="162" fill="#8a8c84" font-family="Silkscreen" font-size="7">ResNeXt50</text>
-
                             <path d="M100 105 H130" stroke="#fffce1" stroke-opacity="0.4"/>
-
                             <rect x="135" y="85" width="32" height="40" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
                             <rect x="175" y="85" width="32" height="40" stroke="#fffce1" stroke-opacity="0.4" fill="#141715"/>
                             <text x="141" y="108" fill="#fffce1" font-family="Silkscreen" font-size="7">t-1</text>
                             <text x="185" y="108" fill="#fffce1" font-family="Silkscreen" font-size="7">t</text>
                             <text x="136" y="162" fill="#8a8c84" font-family="Silkscreen" font-size="7">LSTM SEQ</text>
-
                             <path d="M215 105 H235" stroke="#0ae448" stroke-width="2"/>
                             <rect x="240" y="78" width="68" height="54" stroke="#0ae448" stroke-width="2" fill="#0f1912"/>
                             <text x="246" y="101" fill="#0ae448" font-family="Silkscreen" font-size="7">REAL:98%</text>
@@ -2043,16 +2088,13 @@
                         <svg viewBox="0 0 320 200" fill="none" shape-rendering="crispEdges">
                             <line x1="45" y1="160" x2="285" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
                             <line x1="45" y1="30" x2="45" y2="160" stroke="#fffce1" stroke-opacity="0.25"/>
-                            
                             <path d="M45 160 V90 H85 V55 H150 V38 H280" stroke="#0ae448" stroke-width="2" fill="none"/>
-
                             <rect x="92" y="62" width="7" height="7" fill="#9d95ff"/>
                             <rect x="112" y="52" width="7" height="7" fill="#9d95ff"/>
                             <rect x="102" y="77" width="7" height="7" fill="#9d95ff"/>
                             <rect x="182" y="112" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
                             <rect x="202" y="127" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
                             <rect x="217" y="107" width="7" height="7" fill="#fffce1" fill-opacity="0.35"/>
-
                             <text x="165" y="65" fill="#0ae448" font-family="Silkscreen" font-size="8">AUC = 0.992</text>
                             <text x="55" y="178" fill="#8a8c84" font-family="Silkscreen" font-size="7">FPR (1 - SPECIFICITY)</text>
                         </svg>
@@ -2074,7 +2116,6 @@
                             <rect x="32" y="34" width="6" height="6" fill="#0ae448"/>
                             <rect x="44" y="34" width="6" height="6" fill="#ff8709"/>
                             <text x="105" y="40" fill="#8a8c84" font-family="Silkscreen" font-size="7">sec-ops-daemon</text>
-
                             <g fill="#0ae448">
                                 <rect x="43" y="82" width="4" height="12"/>
                                 <rect x="53" y="74" width="4" height="28"/>
@@ -2083,7 +2124,6 @@
                                 <rect x="83" y="70" width="4" height="36"/>
                                 <rect x="93" y="83" width="4" height="10"/>
                             </g>
-
                             <text x="115" y="78" fill="#fffce1" font-family="JetBrains Mono" font-size="8.5">$ voice --audit-ports</text>
                             <text x="115" y="95" fill="#8a8c84" font-family="JetBrains Mono" font-size="8">> Scanning netstat...</text>
                             <text x="115" y="112" fill="#0ae448" font-family="JetBrains Mono" font-size="8">> 0 unauthorized listeners</text>
@@ -2093,9 +2133,7 @@
                     `
                 }
             ],
-
-            arsenal: [
-                {
+            arsenal: [{
                     tag: "01 // FULL-STACK & SAAS",
                     title: "Web & API Engineering",
                     desc: "Building responsive interfaces and scalable backend services with secure authentication and relational/NoSQL databases.",
@@ -2138,9 +2176,7 @@
                     wide: false
                 }
             ],
-
-            milestones: [
-                {
+            milestones: [{
                     date: "GRADUATED: 03 OCT 2026",
                     title: "B.Tech. in CSE (Cyber Security & Digital Forensics)",
                     sub: "Vellore Institute of Technology (VIT), Bhopal • CGPA: 8.94 / 10",
@@ -2165,29 +2201,26 @@
                     desc: "Focused on pursuing M.Tech programmes in Computer Science and competitive entrance examinations while engineering secure AI and SaaS applications."
                 }
             ],
-
-            cylinderItems: [
-                { title: "CYBER SECURITY", meta: "01 // NETWORK & WEB DEFENSE", accent: "accent-green" },
-                { title: "DIGITAL FORENSICS", meta: "02 // DEEPFAKE & MEDIA ANALYSIS", accent: "accent-purple" },
-                { title: "MERN ARCHITECTURE", meta: "03 // SCALABLE FULL-STACK SAAS", accent: "" },
-                { title: "DEEP LEARNING AI", meta: "04 // PYTORCH & TENSORFLOW", accent: "accent-orange" },
-                { title: "RESNEXT50 + LSTM", meta: "05 // SPATIO-TEMPORAL VISION", accent: "accent-cyan" },
-                { title: "VIT BHOPAL '26", meta: "06 // 8.94 CGPA DISTINCTION", accent: "accent-green" },
-                { title: "DATA STRUCTURES", meta: "07 // ALGORITHMIC PROBLEM SOLVING", accent: "" },
-                { title: "LINUX & DOCKER", meta: "08 // CONTAINERIZED SEC-OPS", accent: "accent-purple" },
-                { title: "OPEN SOURCE GSSOC", meta: "09 // TOP 950 RANK NATIONWIDE", accent: "accent-orange" },
-                { title: "M.TECH ASPIRANT", meta: "10 // ADVANCED CS RESEARCH", accent: "accent-cyan" }
-            ],
-
-            socials: [
-                { name: "GITHUB", url: "https://github.com/AbheetHacker4278" },
-                { name: "LINKEDIN", url: "https://www.linkedin.com/in/abheet-seth-58533a251/" },
-                { name: "TWITTER / X", url: "https://x.com" },
-                { name: "EMAIL", url: "mailto:aseth9588@gmail.com" }
+            socials: [{
+                    name: "GITHUB",
+                    url: "https://github.com/AbheetHacker4278"
+                },
+                {
+                    name: "LINKEDIN",
+                    url: "https://www.linkedin.com/in/abheet-seth-58533a251/"
+                },
+                {
+                    name: "TWITTER / X",
+                    url: "https://x.com"
+                },
+                {
+                    name: "EMAIL",
+                    url: "mailto:aseth9588@gmail.com"
+                }
             ]
         };
 
-        // 0. Split Hero & Footer Words into Individual 3D Characters
+        // Split Hero & Footer Words into Individual 3D Characters
         document.querySelectorAll('.split-words').forEach(el => {
             const text = el.getAttribute('data-text') || el.textContent;
             el.innerHTML = text.split('').map(char => {
@@ -2203,20 +2236,6 @@
                 return `<span class="char-wrap"><span class="footer-char">${char}</span></span>`;
             }).join('');
         });
-
-        // Populate 3D Cylinder Faces
-        const cylinderEl = document.getElementById('cylinder-3d');
-        const totalFaces = ABHEET_DATA.cylinderItems.length;
-        const radius = window.innerWidth < 768 ? 175 : 235;
-        cylinderEl.innerHTML = ABHEET_DATA.cylinderItems.map((item, idx) => {
-            const angle = idx * (360 / totalFaces);
-            return `
-                <div class="cylinder-face ${item.accent}" style="transform: rotateX(${angle}deg) translateZ(${radius}px);">
-                    <span class="face-title">${item.title}</span>
-                    <span class="face-meta">${item.meta}</span>
-                </div>
-            `;
-        }).join('');
 
         // Populate Marquee
         document.getElementById('marquee-track').innerHTML = [...ABHEET_DATA.marqueeSkills, ...ABHEET_DATA.marqueeSkills]
@@ -2239,7 +2258,7 @@
             </div>
         `).join('');
 
-        // Populate Upgraded Editorial Project Cards
+        // Populate Project Cards
         const workContainer = document.getElementById('work-container');
         workContainer.style.width = `${ABHEET_DATA.projects.length * 100}%`;
         workContainer.innerHTML = ABHEET_DATA.projects.map(proj => `
@@ -2300,7 +2319,7 @@
             </div>
         `).join('');
 
-        // Populate Fixed Convocation & Degree Archive Section
+        // Populate Convocation & Degree Archive
         const archiveGrid = document.getElementById('archive-grid');
         archiveGrid.innerHTML = `
             <div class="archive-card" data-cursor="[ZOOM]" data-lightbox-src="https://raw.githubusercontent.com/AbheetHacker4278/Portfolio/refs/heads/main/NMPF5834.JPG" data-lightbox-code="${CONVOCATION_MEDIA.stagePhoto.code}" data-lightbox-caption="${CONVOCATION_MEDIA.stagePhoto.title}">
@@ -2367,10 +2386,481 @@
             .map(s => `<a href="${s.url}" target="_blank">${s.name} ↗</a>`).join('');
 
         /* =====================================================================
-           60FPS MINECRAFT VOXEL BLOCK-BREAK PARTICLE ENGINE + LIVE FPS COUNTER
+           THREE.JS 3D CUBE UNBOXING ENGINE (SLOW, MONUMENTAL & DELIBERATE)
+           Starts 100% SEALED CLOSED at Hero -> Opens slowly and smoothly on scroll
+           ===================================================================== */
+        const seedPhaseEl = document.getElementById('seed-phase-readout');
+        const seedCoordsEl = document.getElementById('seed-coords-readout');
+        let threeUpdater = () => {};
+
+        (function initVoxelCube3D() {
+            const canvas = document.getElementById('webgl-seed-canvas');
+            if (!canvas || typeof THREE === 'undefined') return;
+
+            let renderer;
+            try {
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    alpha: true,
+                    antialias: window.innerWidth > 768,
+                    powerPreference: "high-performance"
+                });
+            } catch (e) {
+                canvas.style.display = 'none';
+                return;
+            }
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0e100f, 0.048);
+
+            const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0, 11.2);
+
+            const ambientLight = new THREE.AmbientLight(0xfffce1, 0.55);
+            scene.add(ambientLight);
+
+            const greenLight = new THREE.PointLight(0x0ae448, 3.8, 25);
+            greenLight.position.set(4, 4, 5);
+            scene.add(greenLight);
+
+            const purpleLight = new THREE.PointLight(0x9d95ff, 3.0, 25);
+            purpleLight.position.set(-5, -3, 4);
+            scene.add(purpleLight);
+
+            const orangeRimLight = new THREE.DirectionalLight(0xff8709, 1.6);
+            orangeRimLight.position.set(0, -6, -4);
+            scene.add(orangeRimLight);
+
+            const seedRoot = new THREE.Group();
+            scene.add(seedRoot);
+
+            const seedRig = new THREE.Group();
+            seedRoot.add(seedRig);
+
+            // 1. Inner Glowing Quantum Cyber Nucleus (Hidden inside when Cube is closed!)
+            const coreGroup = new THREE.Group();
+            seedRig.add(coreGroup);
+
+            const coreGeo = new THREE.OctahedronGeometry(0.62, 0);
+            const coreMat = new THREE.MeshStandardMaterial({
+                color: 0x0ae448,
+                emissive: 0x0ae448,
+                emissiveIntensity: 1.4,
+                roughness: 0.1,
+                metalness: 0.85,
+                flatShading: true
+            });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            coreGroup.add(coreMesh);
+
+            const coreWireGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(0.95, 0.95, 0.95));
+            const coreWireMat = new THREE.LineBasicMaterial({
+                color: 0xfffce1,
+                transparent: true,
+                opacity: 0.9
+            });
+            const coreWire = new THREE.LineSegments(coreWireGeo, coreWireMat);
+            coreGroup.add(coreWire);
+
+            // 2. 26 Outer Voxel Blocks — Flush blockSize = 0.58 so at explode=0 the Cube is 100% SEALED CLOSED
+            const voxelShellGroup = new THREE.Group();
+            seedRig.add(voxelShellGroup);
+
+            const voxelBlocks = [];
+            const blockSize = 0.58;
+            const closedGap = 0.58;
+            const sharedBoxGeo = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
+            const sharedEdgesGeo = new THREE.EdgesGeometry(sharedBoxGeo);
+
+            const darkObsidianMat = new THREE.MeshStandardMaterial({
+                color: 0x151917,
+                roughness: 0.22,
+                metalness: 0.88
+            });
+
+            const edgeColors = [0x0ae448, 0x9d95ff, 0x00f0ff, 0xff8709];
+            const edgeMats = edgeColors.map(col => new THREE.LineBasicMaterial({
+                color: col,
+                transparent: true,
+                opacity: 0.85
+            }));
+
+            let idxCounter = 0;
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    for (let z = -1; z <= 1; z++) {
+                        if (x === 0 && y === 0 && z === 0) continue;
+
+                        const blockWrapper = new THREE.Group();
+                        const mesh = new THREE.Mesh(sharedBoxGeo, darkObsidianMat);
+                        const edge = new THREE.LineSegments(sharedEdgesGeo, edgeMats[idxCounter % edgeMats.length]);
+                        blockWrapper.add(mesh);
+                        blockWrapper.add(edge);
+
+                        const closedX = x * closedGap;
+                        const closedY = y * closedGap;
+                        const closedZ = z * closedGap;
+                        blockWrapper.position.set(closedX, closedY, closedZ);
+
+                        const helixAngle = idxCounter * (Math.PI * 2 / 13);
+                        const helixRadius = 2.35;
+                        const helixX = Math.cos(helixAngle) * helixRadius;
+                        const helixZ = Math.sin(helixAngle) * helixRadius;
+                        const helixY = (idxCounter - 13) * 0.16;
+
+                        voxelShellGroup.add(blockWrapper);
+                        voxelBlocks.push({
+                            group: blockWrapper,
+                            gx: x,
+                            gy: y,
+                            gz: z,
+                            closedX,
+                            closedY,
+                            closedZ,
+                            helixX,
+                            helixY,
+                            helixZ,
+                            phaseOffset: idxCounter * 0.35
+                        });
+                        idxCounter++;
+                    }
+                }
+            }
+
+            // 3. Gyroscopic Voxel Orbital Rings (Start tucked inside the closed cube)
+            const ringsGroup = new THREE.Group();
+            ringsGroup.scale.setScalar(0.15);
+            seedRig.add(ringsGroup);
+
+            const createSquareVoxelRing = (size, colorHex, rotX, rotY) => {
+                const ringGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(size, size, 0.08));
+                const ringMat = new THREE.LineBasicMaterial({
+                    color: colorHex,
+                    transparent: true,
+                    opacity: 0.48
+                });
+                const ring = new THREE.LineSegments(ringGeo, ringMat);
+                ring.rotation.set(rotX, rotY, 0);
+                ringsGroup.add(ring);
+                return ring;
+            };
+
+            const orbitRing1 = createSquareVoxelRing(3.5, 0x0ae448, 0.5, 0.4);
+            const orbitRing2 = createSquareVoxelRing(4.2, 0x9d95ff, -0.6, 0.8);
+            const orbitRing3 = createSquareVoxelRing(4.9, 0x00f0ff, 1.1, -0.3);
+
+            // 4. Floating Voxel Data Spores
+            const sporeCount = 85;
+            const sporeGeo = new THREE.BoxGeometry(0.09, 0.09, 0.09);
+            const sporeMat = new THREE.MeshBasicMaterial({
+                color: 0x0ae448,
+                transparent: true,
+                opacity: 0.55
+            });
+            const sporeInstanced = new THREE.InstancedMesh(sporeGeo, sporeMat, sporeCount);
+            const dummy = new THREE.Object3D();
+
+            for (let i = 0; i < sporeCount; i++) {
+                const r = 3.2 + Math.random() * 6.5;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = (Math.random() - 0.5) * Math.PI;
+                dummy.position.set(
+                    r * Math.cos(theta) * Math.cos(phi),
+                    r * Math.sin(phi),
+                    r * Math.sin(theta) * Math.cos(phi)
+                );
+                dummy.updateMatrix();
+                sporeInstanced.setMatrixAt(i, dummy.matrix);
+            }
+            seedRoot.add(sporeInstanced);
+
+            // =================================================================
+            // SLOW, DELIBERATE SCROLL-DRIVEN CUBE STATE
+            // =================================================================
+            const isMobile = window.innerWidth < 968;
+            const targetState = {
+                posX: 0,
+                posY: 0.05,
+                posZ: isMobile ? -1.4 : 0.3,
+                rotX: 0.35,
+                rotY: 0.65,
+                rotZ: 0,
+                scale: isMobile ? 0.78 : 1.05,
+                explode: 0.0, // 0.0 = 100% SEALED CLOSED CUBE at start
+                helixMorph: 0.0,
+                ringScale: 0.15,
+                coreScale: 0.2
+            };
+
+            const curState = {
+                ...targetState
+            };
+
+            const setPhaseLabel = (label) => {
+                if (seedPhaseEl && seedPhaseEl.textContent !== label) {
+                    seedPhaseEl.textContent = label;
+                }
+            };
+
+            // Stage 1: Scrolling from Hero -> About (Slowly Unlocks & Starts Opening)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#hero",
+                        start: "top top",
+                        endTrigger: "#about",
+                        end: "bottom center",
+                        scrub: 2.2,
+                        onUpdate: (self) => {
+                            if (self.progress < 0.05) {
+                                setPhaseLabel("STATE // SEALED CLOSED [0%]");
+                            } else {
+                                setPhaseLabel("STAGE 01 // CUBE UNLOCKING");
+                            }
+                        }
+                    }
+                })
+                .to(targetState, {
+                    posX: isMobile ? 0 : 2.3,
+                    posY: -0.08,
+                    posZ: 0.6,
+                    rotX: Math.PI * 0.35,
+                    rotY: Math.PI * 0.55,
+                    explode: 0.75,
+                    ringScale: 0.95,
+                    coreScale: 1.15,
+                    ease: "none"
+                });
+
+            // Stage 2: Engineered Works (Slowly Glides Left & Opens into Portal)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#work",
+                        start: "top bottom",
+                        end: () => "+=" + (document.querySelector(".work-container").offsetWidth + window.innerHeight),
+                        scrub: 2.2,
+                        onEnter: () => setPhaseLabel("STAGE 02 // EJECTING ENGINEERED WORKS"),
+                        onEnterBack: () => setPhaseLabel("STAGE 02 // EJECTING ENGINEERED WORKS")
+                    }
+                })
+                .to(targetState, {
+                    posX: isMobile ? 0 : -2.0,
+                    posY: 0.08,
+                    posZ: -0.3,
+                    rotX: Math.PI * 0.65,
+                    rotY: Math.PI * 1.15,
+                    rotZ: 0.18,
+                    explode: 1.25,
+                    helixMorph: 0.65,
+                    coreScale: 1.35,
+                    ringScale: 1.2,
+                    ease: "none"
+                });
+
+            // Stage 3: Core Stack & Theory (Slowly Shifts Right & Opens Lateral Chambers)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#skills",
+                        start: "top bottom",
+                        end: "bottom center",
+                        scrub: 2.2,
+                        onEnter: () => setPhaseLabel("STAGE 03 // EJECTING CORE STACK"),
+                        onEnterBack: () => setPhaseLabel("STAGE 03 // EJECTING CORE STACK")
+                    }
+                })
+                .to(targetState, {
+                    posX: isMobile ? 0 : 2.4,
+                    posY: 0.0,
+                    posZ: 0.4,
+                    rotX: Math.PI * 0.9,
+                    rotY: Math.PI * 1.55,
+                    rotZ: -0.12,
+                    explode: 1.15,
+                    helixMorph: 0.15,
+                    coreScale: 1.3,
+                    ringScale: 1.15,
+                    ease: "none"
+                });
+
+            // Stage 4: Education & Honors (Gentle Rotation & Ejects Credentials)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#journey",
+                        start: "top bottom",
+                        end: "bottom center",
+                        scrub: 2.2,
+                        onEnter: () => setPhaseLabel("STAGE 04 // EJECTING CREDENTIALS"),
+                        onEnterBack: () => setPhaseLabel("STAGE 04 // EJECTING CREDENTIALS")
+                    }
+                })
+                .to(targetState, {
+                    posX: isMobile ? 0 : -2.2,
+                    posY: 0.1,
+                    posZ: 0.2,
+                    rotX: Math.PI * 1.15,
+                    rotY: Math.PI * 1.85,
+                    rotZ: 0.08,
+                    explode: 1.4,
+                    helixMorph: 0.3,
+                    coreScale: 1.4,
+                    ringScale: 1.28,
+                    ease: "none"
+                });
+
+            // Stage 5: 7th Annual Convocation & Degree (Slowly Opens into Grand Ceremonial Halo)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#convocation",
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 2.2,
+                        onEnter: () => setPhaseLabel("STAGE 05 // EJECTING DEGREE ARCHIVE"),
+                        onEnterBack: () => setPhaseLabel("STAGE 05 // EJECTING DEGREE ARCHIVE")
+                    }
+                })
+                .to(targetState, {
+                    posX: 0,
+                    posY: 0.2,
+                    posZ: -2.8,
+                    rotX: Math.PI * 1.35,
+                    rotY: Math.PI * 2.15,
+                    rotZ: 0,
+                    explode: 1.85,
+                    helixMorph: 0.5,
+                    ringScale: 1.55,
+                    coreScale: 1.2,
+                    ease: "none"
+                });
+
+            // Stage 6: 06 // Initiate Contact Footer (Calm Supernova Expansion behind CTA)
+            gsap.timeline({
+                    scrollTrigger: {
+                        trigger: "#contact",
+                        start: "top bottom",
+                        end: "bottom bottom",
+                        scrub: 2.2,
+                        onEnter: () => setPhaseLabel("STAGE 06 // SUPERNOVA NEXUS OPEN [100%]"),
+                        onEnterBack: () => setPhaseLabel("STAGE 06 // SUPERNOVA NEXUS OPEN [100%]")
+                    }
+                })
+                .to(targetState, {
+                    posX: 0,
+                    posY: 0.18,
+                    posZ: 0.2,
+                    rotX: Math.PI * 1.55,
+                    rotY: Math.PI * 2.45,
+                    rotZ: 0,
+                    explode: 1.65,
+                    helixMorph: 0.25,
+                    coreScale: 1.65,
+                    ringScale: 1.45,
+                    ease: "none"
+                });
+
+            // Gentle Mouse Parallax Targets
+            let targetMouseX = 0;
+            let targetMouseY = 0;
+            let currentMouseX = 0;
+            let currentMouseY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                targetMouseX = (e.clientX / window.innerWidth - 0.5) * 0.45;
+                targetMouseY = (e.clientY / window.innerHeight - 0.5) * 0.45;
+            }, {
+                passive: true
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Slow, Heavy Exponential Damping Update (Called at 60FPS inside GSAP Master Ticker)
+            threeUpdater = (time) => {
+                const lerpFactor = 0.042; // Slow, luxurious, weighty interpolation
+
+                curState.posX += (targetState.posX - curState.posX) * lerpFactor;
+                curState.posY += (targetState.posY - curState.posY) * lerpFactor;
+                curState.posZ += (targetState.posZ - curState.posZ) * lerpFactor;
+                curState.rotX += (targetState.rotX - curState.rotX) * lerpFactor;
+                curState.rotY += (targetState.rotY - curState.rotY) * lerpFactor;
+                curState.rotZ += (targetState.rotZ - curState.rotZ) * lerpFactor;
+                curState.scale += (targetState.scale - curState.scale) * lerpFactor;
+                curState.explode += (targetState.explode - curState.explode) * lerpFactor;
+                curState.helixMorph += (targetState.helixMorph - curState.helixMorph) * lerpFactor;
+                curState.ringScale += (targetState.ringScale - curState.ringScale) * lerpFactor;
+                curState.coreScale += (targetState.coreScale - curState.coreScale) * lerpFactor;
+
+                currentMouseX += (targetMouseX - currentMouseX) * 0.035;
+                currentMouseY += (targetMouseY - currentMouseY) * 0.035;
+
+                seedRoot.position.set(curState.posX, curState.posY, curState.posZ);
+                seedRoot.rotation.set(curState.rotX, curState.rotY, curState.rotZ);
+                seedRoot.scale.setScalar(curState.scale);
+
+                // Slow, calm idle levitation & rotation
+                const idleWave = prefersReducedMotion ? 0 : Math.sin(time * 0.75) * 0.09;
+                seedRig.position.y = idleWave;
+                seedRig.rotation.y = currentMouseX + (prefersReducedMotion ? 0 : time * 0.08);
+                seedRig.rotation.x = currentMouseY;
+
+                // Slow inner quantum nucleus pulse
+                const pulse = curState.coreScale + (prefersReducedMotion ? 0 : Math.sin(time * 1.6) * 0.04 * curState.explode);
+                coreGroup.scale.setScalar(Math.max(0.01, pulse));
+                coreGroup.rotation.y = -time * 0.32;
+                coreGroup.rotation.z = time * 0.22;
+
+                // Update 26 Articulated Voxel Blocks
+                const exp = 1 + curState.explode;
+                const hm = curState.helixMorph;
+
+                for (let i = 0; i < voxelBlocks.length; i++) {
+                    const b = voxelBlocks[i];
+                    const breath = prefersReducedMotion ? 0 : Math.sin(time * 0.95 + b.phaseOffset) * (0.05 * Math.min(1, curState.explode));
+
+                    const cubeX = b.closedX * (exp + breath);
+                    const cubeY = b.closedY * (exp + breath);
+                    const cubeZ = b.closedZ * (exp + breath);
+
+                    b.group.position.x = cubeX + (b.helixX - cubeX) * hm;
+                    b.group.position.y = cubeY + (b.helixY - cubeY) * hm;
+                    b.group.position.z = cubeZ + (b.helixZ - cubeZ) * hm;
+
+                    const subRot = (curState.explode * 0.45 + hm * 0.65);
+                    b.group.rotation.x = b.gx * subRot;
+                    b.group.rotation.y = b.gy * subRot;
+                }
+
+                // Slow, majestic orbital ring rotation
+                ringsGroup.scale.setScalar(Math.max(0.01, curState.ringScale));
+                orbitRing1.rotation.z = time * 0.14;
+                orbitRing2.rotation.x = -0.6 + time * 0.11;
+                orbitRing3.rotation.y = -0.3 - time * 0.09;
+
+                sporeInstanced.rotation.y = -time * 0.025;
+                sporeInstanced.rotation.x = time * 0.012;
+
+                if (seedCoordsEl && Math.floor(time * 60) % 8 === 0) {
+                    const openPct = Math.min(100, Math.round((curState.explode / 1.65) * 100));
+                    seedCoordsEl.textContent = `OPEN: ${openPct}% // ROT: ${curState.rotY.toFixed(1)}`;
+                }
+
+                renderer.render(scene, camera);
+            };
+        })();
+
+        /* =====================================================================
+           60FPS MINECRAFT VOXEL BLOCK-BREAK PARTICLE ENGINE
            ===================================================================== */
         const voxelCanvas = document.getElementById('voxel-canvas');
-        const vCtx = voxelCanvas.getContext('2d', { alpha: true });
+        const vCtx = voxelCanvas.getContext('2d', {
+            alpha: true
+        });
         let vWidth = voxelCanvas.width = window.innerWidth;
         let vHeight = voxelCanvas.height = window.innerHeight;
         window.addEventListener('resize', () => {
@@ -2383,7 +2873,7 @@
 
         window.addEventListener('mousedown', (e) => {
             for (let i = 0; i < 14; i++) {
-                const size = Math.floor(Math.random() * 6) + 5; // Crisp pixel blocks
+                const size = Math.floor(Math.random() * 6) + 5;
                 particles.push({
                     x: e.clientX - size / 2,
                     y: e.clientY - size / 2,
@@ -2393,46 +2883,6 @@
                     color: voxelColors[Math.floor(Math.random() * voxelColors.length)],
                     life: 1
                 });
-            }
-        });
-
-        // Live F3-Style FPS Counter + Particle Render Loop piggybacked on GSAP's 60FPS Ticker
-        let frameCount = 0;
-        let lastFpsTime = performance.now();
-        const fpsEl = document.getElementById('fps-counter');
-
-        gsap.ticker.add(() => {
-            // Update FPS Readout every 500ms
-            frameCount++;
-            const now = performance.now();
-            if (now - lastFpsTime >= 500) {
-                const fps = Math.min(60, Math.round((frameCount * 1000) / (now - lastFpsTime)));
-                if (fpsEl) fpsEl.textContent = `${fps} FPS`;
-                frameCount = 0;
-                lastFpsTime = now;
-            }
-
-            // Render Voxel Particles only when active (Zero idle CPU usage)
-            if (particles.length > 0) {
-                vCtx.clearRect(0, 0, vWidth, vHeight);
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    const p = particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.42; // Minecraft block gravity
-                    p.life -= 0.028;
-
-                    if (p.life <= 0) {
-                        particles.splice(i, 1);
-                        continue;
-                    }
-
-                    vCtx.fillStyle = p.color;
-                    vCtx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
-                    vCtx.strokeStyle = '#000000';
-                    vCtx.lineWidth = 1.5;
-                    vCtx.strokeRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
-                }
             }
         });
 
@@ -2464,19 +2914,57 @@
         });
 
         /* =====================================================================
-           GSAP.COM SIGNATURE HERO + 3D CYLINDER + FOOTER ANIMATION ENGINE
+           UNIFIED 60FPS MASTER LOOP (LENIS + THREE.JS + VOXEL PARTICLES + GSAP)
            ===================================================================== */
-        gsap.registerPlugin(ScrollTrigger);
-
         const lenis = new Lenis({
-            duration: 1.15,
+            duration: 1.25,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true
         });
         lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => lenis.raf(time * 1000));
+
+        let frameCount = 0;
+        let lastFpsTime = performance.now();
+        const fpsEl = document.getElementById('fps-counter');
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+            threeUpdater(time);
+
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsTime >= 500) {
+                const fps = Math.min(60, Math.round((frameCount * 1000) / (now - lastFpsTime)));
+                if (fpsEl) fpsEl.textContent = `${fps} FPS`;
+                frameCount = 0;
+                lastFpsTime = now;
+            }
+
+            if (particles.length > 0) {
+                vCtx.clearRect(0, 0, vWidth, vHeight);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.42;
+                    p.life -= 0.028;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    vCtx.fillStyle = p.color;
+                    vCtx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+                    vCtx.strokeStyle = '#000000';
+                    vCtx.lineWidth = 1.5;
+                    vCtx.strokeRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+                }
+            }
+        });
         gsap.ticker.lagSmoothing(0);
 
+        // Top Scroll Progress Bar
         gsap.to("#scroll-progress", {
             width: "100%",
             ease: "none",
@@ -2491,99 +2979,153 @@
         // Prep SVG Squiggle stroke dash for Hero & Footer
         const squigglePath = document.getElementById('squiggle-path');
         const squiggleLen = squigglePath.getTotalLength();
-        gsap.set(squigglePath, { strokeDasharray: squiggleLen, strokeDashoffset: squiggleLen });
+        gsap.set(squigglePath, {
+            strokeDasharray: squiggleLen,
+            strokeDashoffset: squiggleLen
+        });
 
         const footerSquigglePath = document.getElementById('footer-squiggle-path');
         const footerSquiggleLen = footerSquigglePath.getTotalLength();
-        gsap.set(footerSquigglePath, { strokeDasharray: footerSquiggleLen, strokeDashoffset: footerSquiggleLen });
+        gsap.set(footerSquigglePath, {
+            strokeDasharray: footerSquiggleLen,
+            strokeDashoffset: footerSquiggleLen
+        });
 
-        // 1. Preloader + GSAP.com 3D Split-Char & Inline Voxel Gadget Choreography
-        let counterObj = { val: 0 };
+        // 1. Preloader + Hero Intro Choreography
+        let counterObj = {
+            val: 0
+        };
         const counterEl = document.querySelector('.counter');
         const preloaderFill = document.getElementById('preloader-fill');
         const masterTl = gsap.timeline();
 
         masterTl.to(counterObj, {
-            val: 100,
-            duration: 1.25,
-            ease: "steps(20)",
-            onUpdate: () => {
-                const v = Math.floor(counterObj.val);
-                counterEl.textContent = v + "%";
-                if (preloaderFill) preloaderFill.style.width = v + "%";
-            }
-        })
-        .to(".preloader", {
-            yPercent: -100,
-            duration: 0.8,
-            ease: "expo.inOut"
-        })
-        .from(".hero-char", {
-            yPercent: 130,
-            rotationX: -95,
-            rotationZ: () => gsap.utils.random(-12, 12),
-            scale: 0.65,
-            opacity: 0,
-            duration: 1.0,
-            stagger: 0.022,
-            ease: "back.out(1.8)"
-        }, "-=0.45")
-        .from(".inline-gadget, #hero-pill", {
-            scale: 0,
-            rotation: () => gsap.utils.random(-90, 90),
-            duration: 1.1,
-            stagger: 0.12,
-            ease: "elastic.out(1.1, 0.45)"
-        }, "-=0.85")
-        .to(squigglePath, {
-            strokeDashoffset: 0,
-            duration: 0.85,
-            ease: "steps(12)"
-        }, "-=0.6")
-        .from(".sticker", {
-            scale: 0,
-            rotation: -180,
-            opacity: 0,
-            duration: 1.2,
-            stagger: 0.1,
-            ease: "elastic.out(1, 0.5)"
-        }, "-=0.9")
-        .from(".hero-badges .badge, .hero-sub, .hero-cta-row > *", {
-            y: 24,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.07,
-            ease: "power3.out"
-        }, "-=0.85");
+                val: 100,
+                duration: 1.2,
+                ease: "steps(20)",
+                onUpdate: () => {
+                    const v = Math.floor(counterObj.val);
+                    counterEl.textContent = v + "%";
+                    if (preloaderFill) preloaderFill.style.width = v + "%";
+                }
+            })
+            .to(".preloader", {
+                yPercent: -100,
+                duration: 0.8,
+                ease: "expo.inOut"
+            })
+            .from(".hero-char", {
+                yPercent: 130,
+                rotationX: -95,
+                rotationZ: () => gsap.utils.random(-12, 12),
+                scale: 0.65,
+                opacity: 0,
+                duration: 1.0,
+                stagger: 0.022,
+                ease: "back.out(1.8)"
+            }, "-=0.45")
+            .from(".inline-gadget, #hero-pill", {
+                scale: 0,
+                rotation: () => gsap.utils.random(-90, 90),
+                duration: 1.1,
+                stagger: 0.12,
+                ease: "elastic.out(1.1, 0.45)"
+            }, "-=0.85")
+            .to(squigglePath, {
+                strokeDashoffset: 0,
+                duration: 0.85,
+                ease: "steps(12)"
+            }, "-=0.6")
+            .from(".sticker", {
+                scale: 0,
+                rotation: -180,
+                opacity: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: "elastic.out(1, 0.5)"
+            }, "-=0.9")
+            .from(".hero-badges .badge, .hero-sub, .hero-cta-row > *", {
+                y: 24,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.07,
+                ease: "power3.out"
+            }, "-=0.85");
 
         // 2. Interactive Rubber-Band + Voxel Pop on Character Hover
         document.querySelectorAll('.hero-char, .footer-char').forEach(char => {
             char.addEventListener('mouseenter', () => {
                 if (!gsap.isTweening(char)) {
-                    gsap.fromTo(char,
-                        { y: 0, scaleY: 1, scaleX: 1 },
-                        {
-                            keyframes: [
-                                { y: -16, scaleY: 1.25, scaleX: 0.85, duration: 0.16, ease: "power2.out" },
-                                { y: 0, scaleY: 0.82, scaleX: 1.18, duration: 0.16, ease: "power2.in" },
-                                { y: 0, scaleY: 1, scaleX: 1, duration: 0.45, ease: "elastic.out(1.2, 0.35)" }
-                            ]
-                        }
-                    );
+                    gsap.fromTo(char, {
+                        y: 0,
+                        scaleY: 1,
+                        scaleX: 1
+                    }, {
+                        keyframes: [{
+                                y: -16,
+                                scaleY: 1.25,
+                                scaleX: 0.85,
+                                duration: 0.16,
+                                ease: "power2.out"
+                            },
+                            {
+                                y: 0,
+                                scaleY: 0.82,
+                                scaleX: 1.18,
+                                duration: 0.16,
+                                ease: "power2.in"
+                            },
+                            {
+                                y: 0,
+                                scaleY: 1,
+                                scaleX: 1,
+                                duration: 0.45,
+                                ease: "elastic.out(1.2, 0.35)"
+                            }
+                        ]
+                    });
                 }
             });
         });
 
-        // 3. Continuous Stepped/Smooth Ambient Loops for Voxel Gadgets & Stickers
-        gsap.to(".windmill-svg", { rotation: 360, duration: 10, repeat: -1, ease: "linear" });
-        gsap.to(".sticker-star, .footer-sticker-star", { rotation: 360, duration: 22, repeat: -1, ease: "steps(36)" });
-        gsap.to(".sticker-ring, .footer-sticker-ring", { rotation: -360, duration: 28, repeat: -1, ease: "steps(36)" });
-        gsap.to(".sticker-cross, .footer-sticker-cross", { rotation: 180, duration: 14, repeat: -1, yoyo: true, ease: "steps(18)" });
-        gsap.to(".sticker-diamond, .footer-sticker-diamond", { y: -16, duration: 1.8, repeat: -1, yoyo: true, ease: "steps(6)" });
+        // 3. Continuous Ambient Loops for Gadgets & Stickers
+        gsap.to(".windmill-svg", {
+            rotation: 360,
+            duration: 10,
+            repeat: -1,
+            ease: "linear"
+        });
+        gsap.to(".sticker-star, .footer-sticker-star", {
+            rotation: 360,
+            duration: 22,
+            repeat: -1,
+            ease: "steps(36)"
+        });
+        gsap.to(".sticker-ring, .footer-sticker-ring", {
+            rotation: -360,
+            duration: 28,
+            repeat: -1,
+            ease: "steps(36)"
+        });
+        gsap.to(".sticker-cross, .footer-sticker-cross", {
+            rotation: 180,
+            duration: 14,
+            repeat: -1,
+            yoyo: true,
+            ease: "steps(18)"
+        });
+        gsap.to(".sticker-diamond, .footer-sticker-diamond", {
+            y: -16,
+            duration: 1.8,
+            repeat: -1,
+            yoyo: true,
+            ease: "steps(6)"
+        });
 
-        // Live Oscilloscope Sine-Wave Animation inside the Hero Pill
         gsap.to("#gsap-wave-path", {
-            attr: { d: "M 4 20 Q 18 38, 32 20 T 60 20 T 88 20 T 116 20" },
+            attr: {
+                d: "M 4 20 Q 18 38, 32 20 T 60 20 T 88 20 T 116 20"
+            },
             duration: 0.65,
             repeat: -1,
             yoyo: true,
@@ -2591,24 +3133,65 @@
         });
 
         // 4. GSAP quickTo() 60FPS Mouse-Tracking Physics
-        const starX = gsap.quickTo(".sticker-star, .footer-sticker-star", "x", { duration: 0.6, ease: "power3.out" });
-        const starY = gsap.quickTo(".sticker-star, .footer-sticker-star", "y", { duration: 0.6, ease: "power3.out" });
-        const ringX = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "x", { duration: 0.9, ease: "power3.out" });
-        const ringY = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "y", { duration: 0.9, ease: "power3.out" });
-        const crossX = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "x", { duration: 0.7, ease: "power3.out" });
-        const crossY = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "y", { duration: 0.7, ease: "power3.out" });
-        const diaX = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "x", { duration: 1.0, ease: "power3.out" });
-        const diaY = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "y", { duration: 1.0, ease: "power3.out" });
-        const glowX = gsap.quickTo(".hero-glow", "x", { duration: 1.2, ease: "power2.out" });
-        const glowY = gsap.quickTo(".hero-glow", "y", { duration: 1.2, ease: "power2.out" });
-        const pupilX = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "x", { duration: 0.2, ease: "power2.out" });
-        const pupilY = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "y", { duration: 0.2, ease: "power2.out" });
+        const starX = gsap.quickTo(".sticker-star, .footer-sticker-star", "x", {
+            duration: 0.6,
+            ease: "power3.out"
+        });
+        const starY = gsap.quickTo(".sticker-star, .footer-sticker-star", "y", {
+            duration: 0.6,
+            ease: "power3.out"
+        });
+        const ringX = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "x", {
+            duration: 0.9,
+            ease: "power3.out"
+        });
+        const ringY = gsap.quickTo(".sticker-ring, .footer-sticker-ring", "y", {
+            duration: 0.9,
+            ease: "power3.out"
+        });
+        const crossX = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "x", {
+            duration: 0.7,
+            ease: "power3.out"
+        });
+        const crossY = gsap.quickTo(".sticker-cross, .footer-sticker-cross", "y", {
+            duration: 0.7,
+            ease: "power3.out"
+        });
+        const diaX = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "x", {
+            duration: 1.0,
+            ease: "power3.out"
+        });
+        const diaY = gsap.quickTo(".sticker-diamond, .footer-sticker-diamond", "y", {
+            duration: 1.0,
+            ease: "power3.out"
+        });
+        const glowX = gsap.quickTo(".hero-glow", "x", {
+            duration: 1.2,
+            ease: "power2.out"
+        });
+        const glowY = gsap.quickTo(".hero-glow", "y", {
+            duration: 1.2,
+            ease: "power2.out"
+        });
+        const pupilX = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "x", {
+            duration: 0.2,
+            ease: "power2.out"
+        });
+        const pupilY = gsap.quickTo("#eye-pupil, #footer-eye-pupil", "y", {
+            duration: 0.2,
+            ease: "power2.out"
+        });
 
-        // Fast 60FPS Cursor quickTo
         const cursor = document.querySelector('.cursor');
         const cursorText = document.getElementById('cursor-text');
-        const curX = gsap.quickTo(cursor, "x", { duration: 0.08, ease: "power3.out" });
-        const curY = gsap.quickTo(cursor, "y", { duration: 0.08, ease: "power3.out" });
+        const curX = gsap.quickTo(cursor, "x", {
+            duration: 0.08,
+            ease: "power3.out"
+        });
+        const curY = gsap.quickTo(cursor, "y", {
+            duration: 0.08,
+            ease: "power3.out"
+        });
 
         window.addEventListener('mousemove', (e) => {
             curX(e.clientX);
@@ -2629,7 +3212,9 @@
             glowY(ny * 160);
             pupilX(nx * 20);
             pupilY(ny * 20);
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
         // 5. Scroll-Scrubbed Hero Scatter Effect
         gsap.to(".windmill-svg", {
@@ -2661,7 +3246,7 @@
             ease: "linear"
         });
 
-        // About Word Scrub
+        // About Word Scrub + Stats Emerging from the Unlocking 3D Cube
         gsap.to(".reveal-word", {
             opacity: 1,
             stagger: 0.08,
@@ -2669,11 +3254,73 @@
                 trigger: ".about-section",
                 start: "top 75%",
                 end: "bottom 65%",
-                scrub: 1
+                scrub: 1.5
             }
         });
 
-        // Horizontal Scroll Projects
+        gsap.fromTo(".about-stats", {
+            scale: 0.35,
+            z: -500,
+            rotationX: 35,
+            opacity: 0
+        }, {
+            scale: 1,
+            z: 0,
+            rotationX: 0,
+            opacity: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".about-stats",
+                start: "top 95%",
+                end: "top 60%",
+                scrub: 1.8
+            }
+        });
+
+        /* =====================================================================
+           SYNCHRONIZED CUBE-EMERGENCE SCROLL ANIMATIONS FOR ALL SECTIONS
+           Each section physically unboxes and scales out from the 3D Cube Core!
+           ===================================================================== */
+
+        // A. 02 // ENGINEERED WORKS: Emerges out of the Opening 3D Cube + Horizontal Scroll
+        gsap.fromTo("#work-header", {
+            scale: 0.4,
+            y: 120,
+            opacity: 0
+        }, {
+            scale: 1,
+            y: 0,
+            opacity: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".work-section",
+                start: "top 90%",
+                end: "top 35%",
+                scrub: 1.8
+            }
+        });
+
+        gsap.fromTo(".work-container .panel:first-child .project-card", {
+            scale: 0.28,
+            z: -650,
+            rotationX: 28,
+            rotationY: -18,
+            opacity: 0
+        }, {
+            scale: 1,
+            z: 0,
+            rotationX: 0,
+            rotationY: 0,
+            opacity: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".work-section",
+                start: "top 85%",
+                end: "top 15%",
+                scrub: 1.8
+            }
+        });
+
         const panels = gsap.utils.toArray(".panel");
         gsap.to(panels, {
             xPercent: -100 * (panels.length - 1),
@@ -2681,49 +3328,149 @@
             scrollTrigger: {
                 trigger: ".work-section",
                 pin: true,
-                scrub: 1,
+                scrub: 1.5,
                 snap: 1 / (panels.length - 1),
                 end: () => "+=" + document.querySelector(".work-container").offsetWidth
             }
         });
 
-// Scroll Reveal for Convocation Archive Cards
-        gsap.from(".archive-card", {
+        // B. 03 // CORE STACK & THEORY: Bento Cards Eject Out of the 3D Cube Core
+        gsap.fromTo("#skills-header", {
+            scale: 0.45,
+            y: 100,
+            opacity: 0
+        }, {
+            scale: 1,
+            y: 0,
+            opacity: 1,
+            ease: "power3.out",
             scrollTrigger: {
-                trigger: ".archive-section",
-                start: "top 78%"
-            },
-            y: 45,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: "power3.out"
-        });
-
-        // 6. GreenSock 3D Scroll-Driven Cylinder / Tube Animation (60FPS Hardware-Accelerated)
-        const tunnelTl = gsap.timeline({
-            scrollTrigger: {
-                trigger: "#kinetic-scroll-tunnel",
-                pin: true,
-                start: "top top",
-                end: "+=2200",
-                scrub: 1
+                trigger: ".skills-section",
+                start: "top 90%",
+                end: "top 50%",
+                scrub: 1.8
             }
         });
 
-        tunnelTl.fromTo("#cylinder-3d",
-            { rotationX: -20, rotationZ: -8, scale: 0.86 },
-            { rotationX: 340, rotationZ: 8, scale: 1.06, ease: "none" },
-            0
-        )
-        .to("#tunnel-core-mesh", {
-            rotationY: 360,
-            rotationX: 180,
-            scale: 1.25,
-            ease: "none"
-        }, 0);
+        gsap.utils.toArray(".bento-card").forEach((card, i) => {
+            const colOffset = (i % 3 === 0) ? 260 : (i % 3 === 2 ? -260 : 0);
+            gsap.fromTo(card, {
+                scale: 0.22,
+                x: colOffset,
+                y: -140,
+                z: -600,
+                rotationX: 40,
+                rotationY: (i % 2 === 0 ? -25 : 25),
+                opacity: 0
+            }, {
+                scale: 1,
+                x: 0,
+                y: 0,
+                z: 0,
+                rotationX: 0,
+                rotationY: 0,
+                opacity: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".bento-grid",
+                    start: "top 92%",
+                    end: "center 55%",
+                    scrub: 1.8
+                }
+            });
+        });
 
-        // 7. Scroll-Triggered GSAP.com + Voxel Entrance Choreography for 06 // INITIATE CONTACT Footer
+        // C. 04 // EDUCATION & HONORS: Milestone Cards Eject Out of the 3D Cube Core
+        gsap.fromTo("#journey-header", {
+            scale: 0.45,
+            y: 100,
+            opacity: 0
+        }, {
+            scale: 1,
+            y: 0,
+            opacity: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".timeline-section",
+                start: "top 90%",
+                end: "top 50%",
+                scrub: 1.8
+            }
+        });
+
+        gsap.utils.toArray(".milestone-card").forEach((card, i) => {
+            const dirX = (i % 2 === 0) ? 240 : -240;
+            const dirY = (i < 2) ? 120 : -120;
+            gsap.fromTo(card, {
+                scale: 0.22,
+                x: dirX,
+                y: dirY,
+                z: -550,
+                rotationX: 35,
+                rotationZ: (i % 2 === 0 ? -12 : 12),
+                opacity: 0
+            }, {
+                scale: 1,
+                x: 0,
+                y: 0,
+                z: 0,
+                rotationX: 0,
+                rotationZ: 0,
+                opacity: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".timeline-grid",
+                    start: "top 92%",
+                    end: "center 55%",
+                    scrub: 1.8
+                }
+            });
+        });
+
+        // D. 05 // 7th ANNUAL CONVOCATION & DEGREE: Emerges from the 3D Cube Halo
+        gsap.fromTo("#convocation-header", {
+            scale: 0.45,
+            y: 100,
+            opacity: 0
+        }, {
+            scale: 1,
+            y: 0,
+            opacity: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".archive-section",
+                start: "top 90%",
+                end: "top 50%",
+                scrub: 1.8
+            }
+        });
+
+        gsap.utils.toArray(".archive-card").forEach((card, i) => {
+            gsap.fromTo(card, {
+                scale: 0.25,
+                y: -120,
+                z: -650,
+                rotationX: 32,
+                rotationY: i === 0 ? 0 : (i === 1 ? 25 : -25),
+                opacity: 0
+            }, {
+                scale: 1,
+                y: 0,
+                z: 0,
+                rotationX: 0,
+                rotationY: 0,
+                opacity: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 95%",
+                    end: "top 45%",
+                    scrub: 1.8
+                }
+            });
+        });
+
+        // 6. Scroll-Triggered GSAP.com + Voxel Entrance Choreography for 06 // INITIATE CONTACT Footer
         const footerTl = gsap.timeline({
             scrollTrigger: {
                 trigger: "#contact",
@@ -2732,42 +3479,42 @@
         });
 
         footerTl.from(".footer-char", {
-            yPercent: 130,
-            rotationX: -95,
-            rotationZ: () => gsap.utils.random(-12, 12),
-            scale: 0.65,
-            opacity: 0,
-            duration: 1,
-            stagger: 0.022,
-            ease: "back.out(1.8)"
-        })
-        .from(".footer-inline-gadget, .word-pill-purple", {
-            scale: 0,
-            rotation: () => gsap.utils.random(-90, 90),
-            duration: 1.1,
-            stagger: 0.12,
-            ease: "elastic.out(1.1, 0.45)"
-        }, "-=0.8")
-        .to(footerSquigglePath, {
-            strokeDashoffset: 0,
-            duration: 0.85,
-            ease: "steps(12)"
-        }, "-=0.6")
-        .from(".footer-sticker", {
-            scale: 0,
-            rotation: -180,
-            opacity: 0,
-            duration: 1.2,
-            stagger: 0.1,
-            ease: "elastic.out(1, 0.5)"
-        }, "-=0.9")
-        .from(".footer-cta-actions > *", {
-            y: 24,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "power3.out"
-        }, "-=0.8");
+                yPercent: 130,
+                rotationX: -95,
+                rotationZ: () => gsap.utils.random(-12, 12),
+                scale: 0.65,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.022,
+                ease: "back.out(1.8)"
+            })
+            .from(".footer-inline-gadget, .word-pill-purple", {
+                scale: 0,
+                rotation: () => gsap.utils.random(-90, 90),
+                duration: 1.1,
+                stagger: 0.12,
+                ease: "elastic.out(1.1, 0.45)"
+            }, "-=0.8")
+            .to(footerSquigglePath, {
+                strokeDashoffset: 0,
+                duration: 0.85,
+                ease: "steps(12)"
+            }, "-=0.6")
+            .from(".footer-sticker", {
+                scale: 0,
+                rotation: -180,
+                opacity: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: "elastic.out(1, 0.5)"
+            }, "-=0.9")
+            .from(".footer-cta-actions > *", {
+                y: 24,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power3.out"
+            }, "-=0.8");
 
         // Cursor Hover States & Magnetic Voxel Buttons
         document.querySelectorAll('[data-cursor]').forEach(el => {
@@ -2785,12 +3532,23 @@
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                gsap.to(btn, { x: x * 0.28, y: y * 0.28, duration: 0.25, ease: "power2.out" });
+                gsap.to(btn, {
+                    x: x * 0.28,
+                    y: y * 0.28,
+                    duration: 0.25,
+                    ease: "power2.out"
+                });
             });
             btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, { x: 0, y: 0, duration: 0.55, ease: "elastic.out(1, 0.3)" });
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.55,
+                    ease: "elastic.out(1, 0.3)"
+                });
             });
         });
     </script>
 </body>
+
 </html>
